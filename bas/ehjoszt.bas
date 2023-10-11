@@ -1,24 +1,41 @@
-
 Option Explicit
 Private piSkála As Integer
 Private pdblValue As Integer
 Private pOszlopSzam As Long
-
-Public Sub Ini(skála As Integer)
+Private piSzakaszSzám As Integer 'a Szakaszok száma összesen
+Private piJelenlegiSzakasz As Integer 'a Szakaszok számlálója
+'###
+Public Sub Class_Initialize()
+    piSzakaszSzám = 5
+End Sub
+Public Sub Ini(Optional Skála As Integer = 100)
         Dim xxx As String
         Dim i As Long
     xxx = ""
-    piSkála = skála
-    'Application.DisplayStatusBar = True
-    'Application.StatusBar = xxx
+    piSkála = Skála
+    piJelenlegiSzakasz = 1
+    
     Status (xxx)
     For i = 1 To piSkála
         xxx = xxx & "-"
     Next
     xxx = xxx & "   0%"
-    'Application.StatusBar = xxx
+
     Status (xxx)
 End Sub
+Public Property Get SzakaszSzám() As Integer
+     SzakaszSzám = piSzakaszSzám
+End Property
+Public Property Let SzakaszSzám(ByVal SzakaszokSzáma As Integer)
+    If SzakaszokSzáma = 0 Then piSzakaszSzám = 1
+    piSzakaszSzám = SzakaszokSzáma
+End Property
+Public Property Get JelenlegiSzakasz() As Integer
+    JelenlegiSzakasz = SzakaszSzámláló()
+End Property
+Public Property Get Skála() As Integer
+    Skála = piSkála
+End Property
 Public Property Get OszlopSzam() As Long
     OszlopSzam = pOszlopSzam
 End Property
@@ -38,12 +55,11 @@ Public Sub Novel()
     Frissit
 End Sub
 Private Sub Frissit()
-    Dim dblÁllás As Double
     Dim dblXszám As Double
     Dim n As Long
     Dim xxx As String
-    dblÁllás = Me.Value / Me.OszlopSzam 'A jelenlegi állás
-    dblXszám = Round(piSkála * dblÁllás, 0) ' Egész számra kerekítve a kiírandó X-ek száma
+    
+    dblXszám = Round(piSkála * állás(), 0) ' Egész számra kerekítve a kiírandó X-ek száma
     xxx = ""
     For n = 1 To piSkála
         If n <= dblXszám Then
@@ -60,7 +76,7 @@ Private Sub Frissit()
         Case 3
             xxx = xxx & " "
     End Select
-    xxx = xxx & piSkála & "%"
+    xxx = xxx & Round(állás() * 100, 0) & "%"
     'Application.StatusBar = xxx
     Status (xxx)
     'Debug.Print dblÁllás
@@ -69,5 +85,17 @@ End Sub
 Public Sub Torol()
 '    Application.StatusBar = ""
     Status ("")
+    piSkála = 0
+    pdblValue = 0
+    pOszlopSzam = 0
+    piSzakaszSzám = 0
+    piJelenlegiSzakasz = 0
 End Sub
-
+Private Function állás()
+'A jelenlegi állást adja vissza, kerekítés nélkül pl.:0,145789
+    állás = Me.Value / Me.OszlopSzam
+End Function
+Private Function SzakaszSzámláló() As Integer
+    'a jelenlegi állás / (skála / szakszok száma) egész része
+    SzakaszSzámláló = Round(állás() * 100 / (piSkála / piSzakaszSzám), 0)
+End Function

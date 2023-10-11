@@ -1,0 +1,4 @@
+SELECT mSyslkMezõnevek.MezõNév, lkEllenõrzõLekérdezések2csakLekérdezések.EllenõrzõLekérdezés
+FROM lkEllenõrzõLekérdezések2csakLekérdezések LEFT JOIN mSyslkMezõnevek ON lkEllenõrzõLekérdezések2csakLekérdezések.EllenõrzõLekérdezés=mSyslkMezõnevek.QueryName
+WHERE (((lkEllenõrzõLekérdezések2csakLekérdezések.EllenõrzõLekérdezés)=[Forms]![ûLekérdezésMezõTípusok]![LekrédezésNeve]))
+ORDER BY lkEllenõrzõLekérdezések2csakLekérdezések.EllenõrzõLekérdezés, mSyslkMezõnevek.MezõNév;

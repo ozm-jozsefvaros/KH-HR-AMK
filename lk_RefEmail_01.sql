@@ -1,0 +1,2 @@
+SELECT tSzervezetiEgységek.azSzervezet, tSzervezetiEgységek.[Szervezeti egység kódja], tReferensek.azRef AS azRef, tReferensek.[Hivatali email], tSzervezetiEgységek.Fõosztály, tSzervezetiEgységek.Osztály
+FROM (tSzervezetiEgységek LEFT JOIN ktReferens_SzervezetiEgység ON tSzervezetiEgységek.azSzervezet=ktReferens_SzervezetiEgység.azSzervezet) LEFT JOIN tReferensek ON ktReferens_SzervezetiEgység.azRef=tReferensek.azRef;

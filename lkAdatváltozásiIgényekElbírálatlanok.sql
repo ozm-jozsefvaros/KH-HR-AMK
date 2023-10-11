@@ -1,0 +1,3 @@
+SELECT lkAdatváltoztatásiIgények.Azonosító AS Kif1, lkSzemélyek.[Szervezeti egység kódja], lkSzemélyek.Fõosztály, lkSzemélyek.Osztály, lkAdatváltoztatásiIgények.[Adóazonosító jel], lkAdatváltoztatásiIgények.[Dolgozó neve], lkSzemélyek.[Státusz kódja], lkAdatváltoztatásiIgények.Állapot, Format([Igény dátuma],"yyyymmdd") AS [Igény kelte], kt_azNexon_Adójel.NLink
+FROM kt_azNexon_Adójel RIGHT JOIN (lkAdatváltoztatásiIgények LEFT JOIN lkSzemélyek ON lkAdatváltoztatásiIgények.Adójel = lkSzemélyek.Adójel) ON kt_azNexon_Adójel.Adójel = lkAdatváltoztatásiIgények.Adójel
+WHERE (((lkAdatváltoztatásiIgények.Állapot)="Elbírálatlan"));

@@ -1,0 +1,3 @@
+SELECT DISTINCT lkSzemélyek.Adójel, lkSzemélyek.[Dolgozó teljes neve] AS Név, lkSzemélyek.Fõosztály, lkSzemélyek.Osztály, lkSzervezetiÁlláshelyek.[Tervezett betöltési adatok - Elõmeneteli fokozat megnevezés] AS [Szervezeti struktúra], lkSzemélyek.Besorolás AS [Személyi karton], lkSzemélyek.[Jogviszony típusa / jogviszony típus], lkSzemélyek.[Tartós távollét típusa], lkSzervezetiÁlláshelyek.ÁlláshelyAzonosító AS [Álláshely azonosító]
+FROM lkSzervezetiÁlláshelyek LEFT JOIN lkSzemélyek ON lkSzervezetiÁlláshelyek.ÁlláshelyAzonosító=lkSzemélyek.[Státusz kódja]
+WHERE (((lkSzervezetiÁlláshelyek.[Tervezett betöltési adatok - Elõmeneteli fokozat megnevezés])<>[Besorolás]) AND ((lkSzemélyek.[Jogviszony típusa / jogviszony típus])<>"Munkaviszony"));

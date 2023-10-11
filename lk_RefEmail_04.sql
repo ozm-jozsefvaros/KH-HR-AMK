@@ -1,0 +1,2 @@
+SELECT lk_RefEmail_03.azSzervezet, lk_RefEmail_03.[Szervezeti egység kódja], lk_RefEmail_03.Fõosztály, lk_RefEmail_03.Osztály, lk_RefEmail_03.[1], lk_RefEmail_03.[2], lk_RefEmail_03.[3], lk_RefEmail_03.[4], lk_RefEmail_03.[5], lk_RefEmail_03.[6], [1] & IIf(Nz([2],"")="","","; " & [2]) & IIf(Nz([3],"")="","","; " & [3]) & IIf(Nz([4],"")="","","; " & [4]) & IIf(Nz([5],"")="","","; " & [5]) & IIf(Nz([6],"")="","","; " & [6]) AS [TO]
+FROM lk_RefEmail_03;

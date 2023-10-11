@@ -1,3 +1,14 @@
-SELECT lkSzervezet¡ll·shelyek.¡ll·shely, lkSzervezet¡ll·shelyek.[Tervezett betˆltÈsi adatok - Elımeneteli fokozat megnevezÈs], lkSzemÈlyek.[Besorol·si  fokozat (KT)], ¡ll·shelyek.[¡ll·shely besorol·si kategÛri·ja], lkSzemÈlyek.Besorol·s, lkSzemÈlyek.[Jogviszony tÌpusa / jogviszony tÌpus], IIf(UCase$(Nz([¡ll·shely besorol·si kategÛri·ja],""))=UCase$(Nz([Tervezett betˆltÈsi adatok - Elımeneteli fokozat megnevezÈs],"")),True,False) AS ¡nyr_vs_Szervezeti, IIf(Nz([Tervezett betˆltÈsi adatok - Elımeneteli fokozat megnevezÈs],"")=Nz([lkSzemÈlyek].[Besorol·s],""),True,False) AS Szervezeti_vs_SzemÈlyi
-FROM ¡ll·shelyek RIGHT JOIN (lkSzemÈlyek RIGHT JOIN lkSzervezet¡ll·shelyek ON lkSzemÈlyek.[St·tusz kÛdja] = lkSzervezet¡ll·shelyek.¡ll·shely) ON ¡ll·shelyek.[¡ll·shely azonosÌtÛ] = lkSzervezet¡ll·shelyek.¡ll·shely
-WHERE (((lkSzervezet¡ll·shelyek.¡ll·shely)="S-047738"));
+SELECT lkSzervezet√Åll√°shelyek.√Åll√°shely, 
+  lkSzervezet√Åll√°shelyek.[Tervezett bet√∂lt√©si adatok - El≈ëmeneteli fokozat megnevez√©s], 
+  lkSzem√©lyek.[Besorol√°si  fokozat (KT)], √Åll√°shelyek.[√Åll√°shely besorol√°si kateg√≥ri√°ja], 
+  lkSzem√©lyek.Besorol√°s, lkSzem√©lyek.[Jogviszony t√≠pusa / jogviszony t√≠pus], 
+  IIf(UCase$(Nz([√Åll√°shely besorol√°si kateg√≥ri√°ja],""))=UCase$(Nz([Tervezett bet√∂lt√©si adatok - El≈ëmeneteli fokozat megnevez√©s],"")),True,False) AS √Ånyr_vs_Szervezeti, 
+  IIf(Nz([Tervezett bet√∂lt√©si adatok - El≈ëmeneteli fokozat megnevez√©s],"")=Nz([lkSzem√©lyek].[Besorol√°s],""),True,False) AS Szervezeti_vs_Szem√©lyi
+FROM √Åll√°shelyek 
+  RIGHT JOIN 
+    (lkSzem√©lyek 
+        RIGHT JOIN lkSzervezet√Åll√°shelyek 
+        ON lkSzem√©lyek.[St√°tusz k√≥dja] = lkSzervezet√Åll√°shelyek.√Åll√°shely
+    ) 
+  ON √Åll√°shelyek.[√Åll√°shely azonos√≠t√≥] = lkSzervezet√Åll√°shelyek.√Åll√°shely
+;

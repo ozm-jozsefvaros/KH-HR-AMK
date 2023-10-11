@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ImportExportSpecification Path = "L:\Ugyintezok\Adatszolgáltatók\Alapadatok\KIRA\HR_TO_KIRA_MUNK_999999_20230728_Hiba.xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+     <ImportExcel FirstRowHasNames="true" Destination="tKiraHiba" Range="HR_TO_KIRA_MUNK_999999_20230728$" >
+            <Columns PrimaryKey="{Auto}">
+                  <Column Name="Col1" FieldName="Adóazonosító" Indexed="YESDUPLICATES" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col2" FieldName="Név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col3" FieldName="KIRAzonosító" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col4" FieldName="Egység" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col5" FieldName="Hiba" Indexed="NO" SkipColumn="false" DataType="Text" />
+             </Columns>
+        </ImportExcel>
+</ImportExportSpecification>

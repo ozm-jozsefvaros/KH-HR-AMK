@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ImportExportSpecification Path = "\\Teve1-jkf-hrf2-oes\vol1\Human\HRF\Ugyintezok\Oláh Zoltán\Alapadatok\Ellenõrzés\xls\lkHaviLétszám.xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+	<ExportExcelPresentation  AccessObject="lkHaviLétszám" ObjectType="Query" AutoStart="true" ExcelFormat="Excel12Xml" />
+</ImportExportSpecification>

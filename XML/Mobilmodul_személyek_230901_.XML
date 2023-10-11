@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ImportExportSpecification Path = "L:\Ugyintezok\Adatszolgáltatók\Pénzügynek\Mobilmodul_személyek_230901.xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+     <ImportExcel FirstRowHasNames="true" Destination="SIM adatok - 2023-08-29 (2)" Range="&apos;SIM adatok - 2023-08-29 (2)$&apos;" >
+            <Columns PrimaryKey="{Auto}">
+                  <Column Name="Col1" FieldName="TelefonszámId" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col2" FieldName="Telefonszám" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col3" FieldName="Megjegyzés" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col4" FieldName="Dolgozó név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col5" FieldName="Személytörzsben aktív -e" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col6" FieldName="Személytörzs szerinti e-mail cím" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col7" FieldName="Személytörzsben szervezeti egysége" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col8" FieldName="NEXON ID" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col9" FieldName="Beosztás" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col10" FieldName="Szervezeti egység" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col11" FieldName="Dolgozó státusz" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col12" FieldName="Adóazon" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col13" FieldName="Személy e-mail címe" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col14" FieldName="Mezõ14" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col15" FieldName="Szervezeti egység név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col16" FieldName="Szakfeladat részletezõ" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col17" FieldName="Szakfeladat részletezõ név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col18" FieldName="Ügylet" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col19" FieldName="Érvényesség kezdete" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col20" FieldName="Érvényesség vége" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col21" FieldName="Rögzítõ" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col22" FieldName="Egyedi gyûktõ3" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col23" FieldName="Pénzforrás" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col24" FieldName="Megnevezése" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col25" FieldName="Egyedi gyûjtõ név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col26" FieldName="Leírás" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col27" FieldName="Kötváll szám" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col28" FieldName="Kötváll megn" Indexed="NO" SkipColumn="false" DataType="Text" />
+             </Columns>
+        </ImportExcel>
+</ImportExportSpecification>

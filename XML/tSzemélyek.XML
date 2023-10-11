@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ImportExportSpecification Path = "L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Személy\1-Személytörzs alapriport-202310100747.xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+     <ImportExcel FirstRowHasNames="true" Destination="tSzemélyek" Range="tSzemélyek" >
+            <Columns PrimaryKey="{Auto}">
+                  <Column Name="Col1" FieldName="Adójel" Indexed="YESDUPLICATES" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col2" FieldName="Dolgozó teljes neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col3" FieldName="Dolgozó születési neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col4" FieldName="Születési idõ" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col5" FieldName="Születési hely" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col6" FieldName="Anyja neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col7" FieldName="Neme" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col8" FieldName="Törzsszám" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col9" FieldName="Egyedi azonosító" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col10" FieldName="Adóazonosító jel" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col11" FieldName="TAJ szám" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col12" FieldName="Ügyfélkapu kód" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col13" FieldName="Elsõdleges állampolgárság" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col14" FieldName="Személyi igazolvány száma" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col15" FieldName="Személyi igazolvány érvényesség kezdete" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col16" FieldName="Személyi igazolvány érvényesség vége" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col17" FieldName="Nyelvtudás Angol" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col18" FieldName="Nyelvtudás Arab" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col19" FieldName="Nyelvtudás Bolgár" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col20" FieldName="Nyelvtudás Cigány" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col21" FieldName="Nyelvtudás Cigány (lovári)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col22" FieldName="Nyelvtudás Cseh" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col23" FieldName="Nyelvtudás Eszperantó" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col24" FieldName="Nyelvtudás Finn" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col25" FieldName="Nyelvtudás Francia" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col26" FieldName="Nyelvtudás Héber" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col27" FieldName="Nyelvtudás Holland" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col28" FieldName="Nyelvtudás Horvát" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col29" FieldName="Nyelvtudás Japán" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col30" FieldName="Nyelvtudás Jelnyelv" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col31" FieldName="Nyelvtudás Kínai" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col32" FieldName="Nyelvtudás Latin" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col33" FieldName="Nyelvtudás Lengyel" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col34" FieldName="Nyelvtudás Német" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col35" FieldName="Nyelvtudás Norvég" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col36" FieldName="Nyelvtudás Olasz" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col37" FieldName="Nyelvtudás Orosz" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col38" FieldName="Nyelvtudás Portugál" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col39" FieldName="Nyelvtudás Román" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col40" FieldName="Nyelvtudás Spanyol" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col41" FieldName="Nyelvtudás Szerb" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col42" FieldName="Nyelvtudás Szlovák" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col43" FieldName="Nyelvtudás Szlovén" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col44" FieldName="Nyelvtudás Török" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col45" FieldName="Nyelvtudás Újgörög" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col46" FieldName="Nyelvtudás Ukrán" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col47" FieldName="Orvosi vizsgálat idõpontja" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col48" FieldName="Orvosi vizsgálat típusa" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col49" FieldName="Orvosi vizsgálat eredménye" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col50" FieldName="Orvosi vizsgálat észrevételek" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col51" FieldName="Orvosi vizsgálat következõ idõpontja" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col52" FieldName="Erkölcsi bizonyítvány száma" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col53" FieldName="Erkölcsi bizonyítvány dátuma" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col54" FieldName="Erkölcsi bizonyítvány eredménye" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col55" FieldName="Erkölcsi bizonyítvány kérelem azonosító" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col56" FieldName="Erkölcsi bizonyítvány közügyektõl eltiltva" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col57" FieldName="Erkölcsi bizonyítvány jármûvezetéstõl eltiltva" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col58" FieldName="Erkölcsi bizonyítvány intézkedés alatt áll" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col59" FieldName="Munkaköri leírások (csatolt dokumentumok fájlnevei)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col60" FieldName="Egyéb HR dokumentumok (csatolt dokumentumok fájlnevei)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col61" FieldName="Kormányhivatal rövid neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col62" FieldName="Szervezeti egység kódja" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col63" FieldName="Szervezeti egység neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col64" FieldName="Szervezeti munkakör neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col65" FieldName="Vezetõi megbízás típusa" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col66" FieldName="Státusz kódja" Indexed="YESDUPLICATES" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col67" FieldName="Státusz költséghelyének kódja" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col68" FieldName="Státusz költséghelyének neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col69" FieldName="Létszámon felül létrehozott státusz" Indexed="NO" SkipColumn="false" DataType="Boolean" />
+                  <Column Name="Col70" FieldName="Státusz típusa" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col71" FieldName="Státusz neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col72" FieldName="Többes betöltés" Indexed="NO" SkipColumn="false" DataType="Boolean" />
+                  <Column Name="Col73" FieldName="Vezetõ neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col74" FieldName="Vezetõ adóazonosító jele" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col75" FieldName="Vezetõ email címe" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col76" FieldName="Állandó lakcím" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col77" FieldName="Tartózkodási lakcím" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col78" FieldName="Mezõ78" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col79" FieldName="Öregségi nyugdíj-korhatár elérésének idõpontja (dátum)" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col80" FieldName="Nyugdíjas" Indexed="NO" SkipColumn="false" DataType="Boolean" />
+                  <Column Name="Col81" FieldName="Nyugdíj típusa" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col82" FieldName="Nyugdíjas korú továbbfoglalkoztatási engedéllyel rendelkezik" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col83" FieldName="Megváltozott munkaképesség" Indexed="NO" SkipColumn="false" DataType="Boolean" />
+                  <Column Name="Col84" FieldName="Önkéntes tartalékos katona" Indexed="NO" SkipColumn="false" DataType="Boolean" />
+                  <Column Name="Col85" FieldName="Utolsó vagyonnyilatkozat leadásának dátuma" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col86" FieldName="Vagyonnyilatkozat nyilvántartási száma" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col87" FieldName="Következõ vagyonnyilatkozat esedékessége" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col88" FieldName="Nemzetbiztonsági ellenõrzés dátuma" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col89" FieldName="Védett állományba tartozó munkakör" Indexed="NO" SkipColumn="false" DataType="Boolean" />
+                  <Column Name="Col90" FieldName="Mezõ90" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col91" FieldName="Vezetõi beosztás megnevezése" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col92" FieldName="Vezetõi beosztás (megbízás) kezdete" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col93" FieldName="Vezetõi beosztás (megbízás) vége" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col94" FieldName="Iskolai végzettség foka" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col95" FieldName="Iskolai végzettség neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col96" FieldName="Alapvizsga kötelezés dátuma" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col97" FieldName="Alapvizsga letétel tényleges határideje" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col98" FieldName="Alapvizsga mentesség" Indexed="NO" SkipColumn="false" DataType="Boolean" />
+                  <Column Name="Col99" FieldName="Alapvizsga mentesség oka" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col100" FieldName="Szakvizsga kötelezés dátuma" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col101" FieldName="Szakvizsga letétel tényleges határideje" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col102" FieldName="Szakvizsga mentesség" Indexed="NO" SkipColumn="false" DataType="Boolean" />
+                  <Column Name="Col103" FieldName="Foglalkozási viszony" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col104" FieldName="Foglalkozási viszony statisztikai besorolása" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col105" FieldName="Dolgozó szerzõdéses/kinevezéses munkaköre / kinevezési okmányban" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col106" FieldName="Beosztástervezés helyszínek" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col107" FieldName="Beosztástervezés tevékenységek" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col108" FieldName="Részleges távmunka szerzõdés kezdete" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col109" FieldName="Részleges távmunka szerzõdés vége" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col110" FieldName="Részleges távmunka szerzõdés intervalluma" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col111" FieldName="Részleges távmunka szerzõdés mértéke" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col112" FieldName="Részleges távmunka szerzõdés helyszíne" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col113" FieldName="Részleges távmunka szerzõdés helyszíne 2" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col114" FieldName="Részleges távmunka szerzõdés helyszíne 3" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col115" FieldName="Egyéni túlóra keret megállapodás kezdete" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col116" FieldName="Egyéni túlóra keret megállapodás vége" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col117" FieldName="Egyéni túlóra keret megállapodás mértéke" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col118" FieldName="KIRA feladat azonosítója - intézmény prefix-szel ellátva" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col119" FieldName="KIRA feladat azonosítója" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col120" FieldName="KIRA feladat megnevezés" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col121" FieldName="Osztott munkakör" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col122" FieldName="Funkciócsoport: kód-megnevezés" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col123" FieldName="Funkció: kód-megnevezés" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col124" FieldName="Dolgozó költséghelyének kódja" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col125" FieldName="Dolgozó költséghelyének neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col126" FieldName="Feladatkör" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col127" FieldName="Elsõdleges feladatkör" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col128" FieldName="Feladatok" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col129" FieldName="FEOR" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col130" FieldName="Elméleti (szerzõdés/kinevezés szerinti) ledolgozandó napi óraker" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col131" FieldName="Elméleti (szerzõdés/kinevezés szerinti) ledolgozandó heti óraker" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col132" FieldName="Elméleti (szerzõdés/kinevezés szerinti) ledolgozandó havi óraker" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col133" FieldName="Szerzõdés/Kinevezés típusa" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col134" FieldName="Iktatószám" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col135" FieldName="Mezõ135" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col136" FieldName="Mezõ136" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col137" FieldName="Mezõ137" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col138" FieldName="Szerzõdés dokumentum (csatolt dokumentumok fájlnevei)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col139" FieldName="Megjegyzés (pl határozott szerzõdés/kinevezés oka)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col140" FieldName="Munkavégzés helye - megnevezés" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col141" FieldName="Munkavégzés helye - cím" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col142" FieldName="Jogviszony típusa / jogviszony típus" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col143" FieldName="Jogviszony sorszáma" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col144" FieldName="KIRA jogviszony jelleg" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col145" FieldName="Kölcsönbe adó cég" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col146" FieldName="Teljesítményértékelés - Értékelõ személy" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col147" FieldName="Teljesítményértékelés - Érvényesség kezdet" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col148" FieldName="Teljesítményértékelés - Értékelt idõszak kezdet" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col149" FieldName="Teljesítményértékelés - Értékelt idõszak vége" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col150" FieldName="Teljesítményértékelés dátuma" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col151" FieldName="Teljesítményértékelés - Beállási százalék" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col152" FieldName="Teljesítményértékelés - Pontszám" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col153" FieldName="Teljesítményértékelés - Megjegyzés" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col154" FieldName="Dolgozói jellemzõk" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col155" FieldName="Fizetési osztály (KA)/ Pedagógusi fokozat (KA pedagógus)/besorol" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col156" FieldName="Besorolási  fokozat (KT)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col157" FieldName="Jogfolytonos idõ kezdete" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col158" FieldName="Jogviszony kezdete (belépés dátuma)" Indexed="YESDUPLICATES" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col159" FieldName="Jogviszony vége (kilépés dátuma)" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col160" FieldName="Utolsó munkában töltött nap" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col161" FieldName="Kezdeményezés dátuma" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col162" FieldName="Hatályossá válik" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col163" FieldName="HR kapcsolat megszûnés módja (Kilépés módja)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col164" FieldName="HR kapcsolat megszûnes indoka (Kilépés indoka)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col165" FieldName="Indokolás" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col166" FieldName="Következõ munkahely" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col167" FieldName="MT: Felmondási idõ kezdete KJT, KTTV: Felmentési idõ kezdete" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col168" FieldName="Felmondási idõ vége (MT) Felmentési idõ vége (KJT, KTTV)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col169" FieldName="Munkavégzés alóli mentesítés kezdete (KJT, KTTV) Felmentési idõ " Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col170" FieldName="Munkavégzés alóli mentesítés vége (KJT, KTTV) Felmentési idõ vég" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col171" FieldName="Átmeneti eltérõ foglalkoztatás típusa" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col172" FieldName="Átmeneti eltérõ foglalkoztatás kezdete" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col173" FieldName="Átmeneti eltérõ foglalkoztatás vége" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col174" FieldName="Tartós távollét típusa" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col175" FieldName="Tartós távollét kezdete" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col176" FieldName="Tartós távollét vége" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col177" FieldName="Tartós távollét tervezett vége" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col178" FieldName="Helyettesített dolgozó neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col179" FieldName="Helyettesített dolgozó szerzõdés/kinevezéses munkaköre" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col180" FieldName="Szerzõdés/Kinevezés - próbaidõ vége" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col181" FieldName="Utalási cím" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col182" FieldName="Alapilletmény / Munkabér / Megbízási díj (eltérítés nélküli)" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col183" FieldName="Garantált bérminimumra történõ kiegészítés" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col184" FieldName="Kerekítés" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col185" FieldName="Egyéb pótlék, GARANTÁLT BÉRMINIMUMRA VALÓ KIEGÉSZÍTÉS % (eltérít" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col186" FieldName="Egyéb pótlék, GARANTÁLT BÉRMINIMUMRA VALÓ KIEGÉSZÍTÉS összeg (el" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col187" FieldName="Egyéb pótlék, KEREKÍTÉSBÕL ADÓDÓ ILLETMÉNY % (eltérítés nélküli)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col188" FieldName="Egyéb pótlék, KEREKÍTÉSBÕL ADÓDÓ ILLETMÉNY összeg (eltérítés nél" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col189" FieldName="Egyéb pótlék - összeg (eltérítés nélküli)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col190" FieldName="Illetmény összesen kerekítés nélkül (eltérítés nélküli)" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col191" FieldName="Kerekített 100 %-os illetmény (eltérítés nélküli)" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col192" FieldName="Eltérítés %" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col193" FieldName="Alapilletmény / Munkabér / Megbízási díj (eltérített)" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col194" FieldName="Mezõ194" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col195" FieldName="Mezõ195" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col196" FieldName="Egyéb pótlék, KEREKÍTÉSBÕL ADÓDÓ ILLETMÉNY % (eltérített)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col197" FieldName="Egyéb pótlék, KEREKÍTÉSBÕL ADÓDÓ ILLETMÉNY összeg (eltérített)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col198" FieldName="Egyéb pótlék - összeg (eltérített)" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col199" FieldName="Illetmény összesen kerekítés nélkül (eltérített)" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col200" FieldName="Kerekített 100 %-os illetmény (eltérített)" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col201" FieldName="További munkavégzés helye 1 Teljes munkaidõ %-a" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col202" FieldName="További munkavégzés helye 2 Teljes munkaidõ %-a" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col203" FieldName="KT: Kerekített 100 %-os illetmény (eltérített) + Helyettesítési " Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col204" FieldName="Szint 1 szervezeti egység név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col205" FieldName="Szint 1 szervezeti egység kód" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col206" FieldName="Szint 2 szervezeti egység név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col207" FieldName="Szint 2 szervezeti egység kód" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col208" FieldName="Szint 3 szervezeti egység név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col209" FieldName="Szint 3 szervezeti egység kód" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col210" FieldName="Szint 4 szervezeti egység név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col211" FieldName="Szint 4 szervezeti egység kód" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col212" FieldName="Szint 5 szervezeti egység név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col213" FieldName="Szint 5 szervezeti egység kód" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col214" FieldName="AD egyedi azonosító" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col215" FieldName="Hivatali email" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col216" FieldName="Hivatali mobil" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col217" FieldName="Hivatali telefon" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col218" FieldName="Hivatali telefon mellék" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col219" FieldName="Iroda" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col220" FieldName="Otthoni e-mail" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col221" FieldName="Otthoni mobil" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col222" FieldName="Otthoni telefon" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col223" FieldName="További otthoni mobil" Indexed="NO" SkipColumn="false" DataType="Text" />
+             </Columns>
+        </ImportExcel>
+</ImportExportSpecification>

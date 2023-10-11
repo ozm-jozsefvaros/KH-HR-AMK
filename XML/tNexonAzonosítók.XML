@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ImportExportSpecification         Path="L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Személy\Személytörzs (15).xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+	<ImportExcel FirstRowHasNames="true" AppendToTable="tNexonAzonosítók" Range="Sheet1$">
+		<Columns PrimaryKey="{Auto}">
+			<Column Name="Col1" FieldName="Személy azonosító" Indexed="NO" SkipColumn="false" DataType="Double"/>
+			<Column Name="Col2" FieldName="HR kapcsolat azonosító" Indexed="NO" SkipColumn="false" DataType="Double"/>
+			<Column Name="Col3" FieldName="Név" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col4" FieldName="Adóazonosító jel" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col5" FieldName="TAJ szám" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col6" FieldName="Egyedi azonosító" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col7" FieldName="Törzsszám" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col8" FieldName="Jogviszony típus" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col9" FieldName="Kezdete" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col10" FieldName="Vége" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col11" FieldName="Szervezeti egység" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col12" FieldName="Szervezeti egység kategória" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col13" FieldName="Munkakör" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col14" FieldName="Státusz" Indexed="NO" SkipColumn="false" DataType="Text"/>
+		</Columns>
+	</ImportExcel>
+</ImportExportSpecification>

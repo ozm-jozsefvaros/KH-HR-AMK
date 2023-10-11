@@ -1,0 +1,4 @@
+SELECT lkMeghagyás03.Fõosztály, lkSzemélyek.Osztály, lkMeghagyásB02.[Státuszának kódja] AS ÁNYR, lkSzemélyek.[KIRA feladat megnevezés], [CountOfLétszám]-[Meghagyandók] AS MegNemHagyandók, lkMeghagyásB02.Sorszám3, IIf([Sorszám3]<=([CountOfLétszám]-[Meghagyandók]),"Nem kerül meghagyásra",IIf([Szervezeti egység kódja]="BFKH.1.27.2.","Nem kerül meghagyásra","Meghagyandó")) AS Eredmény
+FROM lkSzemélyek RIGHT JOIN (lkMeghagyás03 RIGHT JOIN lkMeghagyásB02 ON lkMeghagyás03.FõosztályKód=lkMeghagyásB02.FõosztályKód) ON lkSzemélyek.[Státusz kódja]=lkMeghagyásB02.[Státuszának kódja]
+WHERE (((IIf([Sorszám3]<=([CountOfLétszám]-[Meghagyandók]),"Nem kerül meghagyásra",IIf([Szervezeti egység kódja]="BFKH.1.27.2.","Nem kerül meghagyásra","Meghagyandó")))="Meghagyandó"))
+ORDER BY lkMeghagyás03.FõosztályKód, lkMeghagyásB02.Sorszám3;

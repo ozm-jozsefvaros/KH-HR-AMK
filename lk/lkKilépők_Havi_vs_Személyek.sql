@@ -1,0 +1,3 @@
+SELECT lkKilépõk_Havi.Név AS NévHavi, lkKilépõk_Havi.Adóazonosító, lkKilépõk_Havi.Kilépés, lkSzemélyek.[Dolgozó teljes neve] AS Név_, lkSzemélyek.Adójel, lkSzemélyek.[Jogviszony vége (kilépés dátuma)] AS Kilépés_, lkSzemélyek.[Helyettesített dolgozó neve], lkSzemélyek.[Tartós távollét típusa], lkSzemélyek.[HR kapcsolat megszûnés módja (Kilépés módja)], lkSzemélyek.[Jogviszony típusa / jogviszony típus]
+FROM lkSzemélyek LEFT JOIN lkKilépõk_Havi ON lkSzemélyek.Adójel = lkKilépõk_Havi.Adóazonosító
+WHERE (((lkKilépõk_Havi.Adóazonosító) Is Null) AND ((lkSzemélyek.[Jogviszony vége (kilépés dátuma)]) Between #1/1/2023# And #4/30/2023#) AND ((lkSzemélyek.[Jogviszony típusa / jogviszony típus]) Not Like "Személyes*"));

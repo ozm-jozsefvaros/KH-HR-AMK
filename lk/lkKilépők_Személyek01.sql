@@ -1,0 +1,3 @@
+SELECT tSzemélyek.[Dolgozó teljes neve] AS Név, Year([Jogviszony vége (kilépés dátuma)]) AS KilépésÉve, Month([Jogviszony vége (kilépés dátuma)]) AS KilépésHava, [tSzemélyek].[Adójel]*1 AS Adóazonosító, tSzemélyek.[Jogviszony vége (kilépés dátuma)] AS Kilépés, tSzemélyek.[Szervezeti egység kódja], -1 AS Létszám
+FROM tSzemélyek
+WHERE (((tSzemélyek.[Jogviszony vége (kilépés dátuma)]) Is Not Null) AND ((tSzemélyek.[Szervezeti egység kódja]) Not Like "BFKH-MEGB")) OR (((tSzemélyek.[Jogviszony vége (kilépés dátuma)]) Is Not Null) AND ((tSzemélyek.[Szervezeti egység kódja])="")) OR (((tSzemélyek.[Jogviszony vége (kilépés dátuma)]) Is Not Null) AND ((tSzemélyek.[Szervezeti egység kódja]) Is Null));

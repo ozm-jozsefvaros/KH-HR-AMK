@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ImportExportSpecification                Path="L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Elbírálatlan igények (Adatváltozások)\Adatváltozási igények (13).xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+    <ImportExcel FirstRowHasNames="true" Destination="tAdatváltoztatásiIgények" Range="Sheet1$">
+        <Columns PrimaryKey="{Auto}">
+           <Column Name="Col1" FieldName="Dolgozó neve" Indexed="NO" SkipColumn="false" DataType="Text"/>
+           <Column Name="Col2" FieldName="Adóazonosító jel" Indexed="YESDUPLICATES" SkipColumn="false" DataType="Text"/>
+           <Column Name="Col3" FieldName="Egyedi azonosító" Indexed="NO" SkipColumn="true" DataType="Text"/>
+           <Column Name="Col4" FieldName="Adatkör" Indexed="NO" SkipColumn="false" DataType="Text"/>
+           <Column Name="Col5" FieldName="Igény dátuma" Indexed="NO" SkipColumn="false" DataType="Text"/>
+           <Column Name="Col6" FieldName="Állapot" Indexed="NO" SkipColumn="false" DataType="Text"/>
+           <Column Name="Col7" FieldName="Elbírálás dátuma" Indexed="NO" SkipColumn="false" DataType="Text"/>
+           <Column Name="Col8" FieldName="Elbíráló" Indexed="NO" SkipColumn="false" DataType="Text"/>
+        </Columns>
+    </ImportExcel>
+</ImportExportSpecification>

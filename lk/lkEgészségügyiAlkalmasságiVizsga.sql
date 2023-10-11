@@ -1,0 +1,3 @@
+SELECT DISTINCT lkSzemélyek.[Dolgozó teljes neve], lkSzemélyek.Fõosztály, lkSzemélyek.Osztály, lkSzemélyek.[Hivatali telefon], lkSzemélyek.[Hivatali email], Format([TAJ szám] & ""," @") AS TAJ, lkSzemélyek.[Jogviszony kezdete (belépés dátuma)], lkSzemélyek.[Orvosi vizsgálat következõ idõpontja], lkSzemélyek.[Orvosi vizsgálat eredménye], lkSzemélyek.[Jogviszony sorszáma]
+FROM lkSzemélyek
+WHERE (((lkSzemélyek.Fõosztály) Like "Rehab*") AND ((lkSzemélyek.[Jogviszony kezdete (belépés dátuma)])>=DateSerial(Year(DateAdd("m",-3,Date())),Month(DateAdd("m",-3,Date())),1)) AND ((lkSzemélyek.[Státusz neve])="Álláshely"));

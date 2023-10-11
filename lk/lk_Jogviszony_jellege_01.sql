@@ -1,0 +1,3 @@
+SELECT tSzemélyek.[Szervezeti egység kódja], tSzemélyek.[Dolgozó teljes neve], tSzemélyek.[Szint 2 szervezeti egység név], tSzemélyek.[Szint 3 szervezeti egység név], tSzemélyek.[Szint 4 szervezeti egység név], tSzemélyek.[KIRA jogviszony jelleg] AS Kira, IIf([Jogviszony típusa / jogviszony típus]="Kormányzati szolgálati jogviszony",[Jogviszony típusa / jogviszony típus] & " (KIT)",[Jogviszony típusa / jogviszony típus]) AS Nexon, IIf([KIRA]<>[NEXON],1,0) AS hiba
+FROM tSzemélyek
+WHERE (((tSzemélyek.[Szervezeti egység kódja]) Is Not Null And (tSzemélyek.[Szervezeti egység kódja])<>"BFKH-MEGB") AND ((tSzemélyek.[Státusz típusa]) Is Not Null));

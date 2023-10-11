@@ -1,0 +1,2 @@
+SELECT Belépõk.Sorszám, Belépõk.Név, Belépõk.Adóazonosító, Belépõk.[Megyei szint VAGY Járási Hivatal], Belépõk.Mezõ5, Belépõk.Mezõ6, Belépõk.[ÁNYR SZERVEZETI EGYSÉG AZONOSÍTÓ], Belépõk.Mezõ8, Belépõk.[Besorolási fokozat kód:], Belépõk.[Besorolási fokozat megnevezése:], Belépõk.[Álláshely azonosító], Belépõk.[Jogviszony kezdõ dátuma], Belépõk.[Foglalkoztatás idõtartama Határozatlan (HL) / Határozott (HT)], Belépõk.[Illetmény (Ft/hó)], "-" AS Üres
+FROM Belépõk;

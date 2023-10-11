@@ -1,0 +1,3 @@
+SELECT lk_TT_TTH_ellenõrzés_01.Név, [Adóazonosító]*1 AS Adójel, lk_TT_TTH_ellenõrzés_01.SzervezetKód, lk_TT_TTH_ellenõrzés_01.[Álláshely azonosító], lk_TT_TTH_ellenõrzés_01.[Garantált bérminimumban részesül (GB) / tartós távollévõ nincs h], lk_TT_TTH_ellenõrzés_01.[Tartós távollévõ esetén a távollét jogcíme (CSED, GYED, GYES, Tp], IIf(InStr(1,[Garantált bérminimumban részesül (GB) / tartós távollévõ nincs h],"TTH"),1,0) AS TTH, IIf(InStr(1,[Garantált bérminimumban részesül (GB) / tartós távollévõ nincs h],"TTH"),0,1) AS TT
+FROM lk_TT_TTH_ellenõrzés_01
+WHERE (((IIf(InStr(1,[Garantált bérminimumban részesül (GB) / tartós távollévõ nincs h],"TTH"),1,0))=1));

@@ -1,0 +1,3 @@
+SELECT Járási_állomány.[ÁNYR SZERVEZETI EGYSÉG AZONOSÍTÓ] AS BFKHKód, Járási_állomány.[Járási Hivatal] AS Fõosztály, Járási_állomány.Mezõ7 AS Osztály, Sum(IIf([Mezõ4]="üres állás",0,1)) AS Betöltött, Sum(IIf([Mezõ4]="üres állás",1,0)) AS Üres
+FROM Járási_állomány
+GROUP BY Járási_állomány.[ÁNYR SZERVEZETI EGYSÉG AZONOSÍTÓ], Járási_állomány.[Járási Hivatal], Járási_állomány.Mezõ7;

@@ -1,0 +1,3 @@
+SELECT lkIlletményNöveléshezAdatok01.Az, lkIlletményNöveléshezAdatok01.[Szervezeti egység kódja], lkIlletményNöveléshezAdatok01.Fõosztály, lkIlletményNöveléshezAdatok01.Osztály, lkIlletményNöveléshezAdatok01.Név, lkIlletményNöveléshezAdatok01.Besorolás, lkIlletményNöveléshezAdatok01.[Jelenlegi illetmény], lkIlletményNöveléshezAdatok01.[Heti munkaidõ], lkIlletményNöveléshezAdatok01.Kilépés, lkIlletményNöveléshezAdatok02.[Fõosztályi létszám]
+FROM lkIlletményNöveléshezAdatok02 RIGHT JOIN lkIlletményNöveléshezAdatok01 ON lkIlletményNöveléshezAdatok02.Fõosztály=lkIlletményNöveléshezAdatok01.Fõosztály
+ORDER BY lkIlletményNöveléshezAdatok01.Fõosztály;

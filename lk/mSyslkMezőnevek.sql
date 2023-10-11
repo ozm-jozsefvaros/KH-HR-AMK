@@ -1,0 +1,3 @@
+SELECT IIf([MSysQueries_1].[Name1] Is Null,[MSysQueries_1].[Expression],[MSysQueries_1].[Name1]) AS MezõNév, MSysObjects.Name AS QueryName, MSysQueries.Name1, MSysQueries.Attribute, MSysQueries.Flag, MSysQueries_1.Attribute, MSysQueries_1.Flag, MSysQueries.Expression, MSysQueries_1.Expression
+FROM (MSysObjects RIGHT JOIN MSysQueries ON MSysObjects.Id=MSysQueries.ObjectId) LEFT JOIN MSysQueries AS MSysQueries_1 ON MSysQueries.ObjectId=MSysQueries_1.ObjectId
+WHERE (((MSysQueries.Attribute)=1) AND ((MSysQueries.Flag)=1 Or (MSysQueries.Flag)=6) AND ((MSysQueries_1.Attribute)=6) AND ((MSysQueries_1.Flag)=0 Or (MSysQueries_1.Flag)=1)) OR (((MSysQueries.Attribute)=0) AND ((MSysQueries_1.Attribute)=6) AND ((MSysQueries_1.Flag)=0 Or (MSysQueries_1.Flag)=1));

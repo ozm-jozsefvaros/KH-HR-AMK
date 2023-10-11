@@ -1,0 +1,2 @@
+SELECT DISTINCT lkSzervezetiBetöltések.FõosztályKód, tBesorolás_átalakító.Sorrend, lkSzervezetiBetöltések.[Státuszának kódja], Replace([Státuszának kódja],"S-","")*1 AS Szám
+FROM (lkSzervezetiBetöltések INNER JOIN lkSzemélyek ON lkSzervezetiBetöltések.[Szervezetmenedzsment kód] = lkSzemélyek.[Adóazonosító jel]) INNER JOIN tBesorolás_átalakító ON lkSzemélyek.Besorolás2 = tBesorolás_átalakító.Besorolási_fokozat;

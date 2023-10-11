@@ -1,0 +1,3 @@
+SELECT DISTINCT lkEllenõrzõLekérdezések2.EllenõrzõLekérdezés
+FROM lkEllenõrzõLekérdezések2
+ORDER BY lkEllenõrzõLekérdezések2.EllenõrzõLekérdezés;

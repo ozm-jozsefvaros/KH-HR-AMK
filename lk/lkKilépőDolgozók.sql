@@ -1,0 +1,4 @@
+SELECT DISTINCT bfkh([Szervezeti egység kódja]) AS BFKH, lkSzemélyek.Fõosztály, lkSzemélyek.Osztály, lkSzemélyek.Adójel, lkSzemélyek.[Dolgozó teljes neve] AS Név, lkSzemélyek.[Státusz kódja], IIf(Nz([besorolási  fokozat (KT)],"")="",[Tervezett betöltési adatok - Elõmeneteli fokozat megnevezés],Nz([besorolási  fokozat (KT)],"")) AS Besorolás, lkSzemélyek.[Státusz típusa], lkSzemélyek.[KIRA jogviszony jelleg], lkSzemélyek.[Jogviszony vége (kilépés dátuma)], lkSzemélyek.[HR kapcsolat megszûnés módja (Kilépés módja)]
+FROM lkSzemélyek LEFT JOIN lkSzervezetÁlláshelyek ON lkSzemélyek.[Státusz kódja] = lkSzervezetÁlláshelyek.Álláshely
+WHERE (((lkSzemélyek.[Jogviszony vége (kilépés dátuma)])>Date()) AND ((lkSzemélyek.[Státusz neve])="Álláshely")) OR (((lkSzemélyek.[Jogviszony vége (kilépés dátuma)]) Is Null) AND ((lkSzemélyek.[HR kapcsolat megszûnés módja (Kilépés módja)]) Is Not Null) AND ((lkSzemélyek.[Státusz neve])="Álláshely"))
+ORDER BY bfkh([Szervezeti egység kódja]);

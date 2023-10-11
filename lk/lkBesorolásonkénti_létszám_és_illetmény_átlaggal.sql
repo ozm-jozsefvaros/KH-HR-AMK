@@ -1,0 +1,3 @@
+SELECT Nz([rang],0)*1 AS Rang_, lkBesorolásonkénti_létszám_és_illetmény.Besorolás, lkBesorolásonkénti_létszám_és_illetmény.Összilletmény, lkBesorolásonkénti_létszám_és_illetmény.Fõ, lkBesorolásonkénti_létszám_és_illetmény.Átlag, lkBesorolásonkénti_létszám_és_illetmény.[Átlagtól való eltérés (StDev)]
+FROM lkBesorolásonkénti_létszám_és_illetmény LEFT JOIN tBesorolásKonverzió ON lkBesorolásonkénti_létszám_és_illetmény.Besorolás=tBesorolásKonverzió.Személytörzsbõl
+GROUP BY Nz([rang],0)*1, lkBesorolásonkénti_létszám_és_illetmény.Besorolás, lkBesorolásonkénti_létszám_és_illetmény.Összilletmény, lkBesorolásonkénti_létszám_és_illetmény.Fõ, lkBesorolásonkénti_létszám_és_illetmény.Átlag, lkBesorolásonkénti_létszám_és_illetmény.[Átlagtól való eltérés (StDev)];

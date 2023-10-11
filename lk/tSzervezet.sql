@@ -1,0 +1,2 @@
+SELECT tSzervezeti.*
+FROM tSzervezeti;

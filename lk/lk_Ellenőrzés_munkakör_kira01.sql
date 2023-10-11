@@ -1,0 +1,4 @@
+SELECT bfkh(Nz([lkszemélyek].[Szervezeti egység kódja],"")) AS BFKH, IIf(Nz([Fõosztály],"")="","_Kilépett",[Fõosztály]) AS Fõoszt, lkSzemélyek.Osztály, lkSzemélyek.Adójel, lkSzemélyek.[Dolgozó teljes neve], lkSzemélyek.[Dolgozó szerzõdéses/kinevezéses munkaköre / kinevezési okmányban] AS [Nexon munkakör], lkJogviszonyok.[Munkakör megnevezése] AS [Kira munkakör], kt_azNexon_Adójel02.NLink
+FROM lkJogviszonyok RIGHT JOIN (kt_azNexon_Adójel02 RIGHT JOIN lkSzemélyek ON kt_azNexon_Adójel02.Adójel=lkSzemélyek.Adójel) ON lkJogviszonyok.Adójel=lkSzemélyek.Adójel
+WHERE (((lkSzemélyek.[Státusz neve])="Álláshely" Or (lkSzemélyek.[Státusz neve]) Is Null) AND ((lkSzemélyek.[Jogviszony típusa / jogviszony típus])="Munkaviszony"))
+ORDER BY bfkh(Nz([lkszemélyek].[Szervezeti egység kódja],"")), IIf(Nz([Fõosztály],"")="","_Kilépett",[Fõosztály]), lkSzemélyek.[Dolgozó teljes neve];

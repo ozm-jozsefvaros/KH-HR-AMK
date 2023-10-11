@@ -1,0 +1,3 @@
+SELECT tSzemélyek.[Dolgozó teljes neve] AS Név, Year([Jogviszony kezdete (belépés dátuma)]) AS BelépésÉve, Month([Jogviszony kezdete (belépés dátuma)]) AS BelépésHava, [tSzemélyek].[Adójel]*1 AS Adóazonosító, tSzemélyek.[Jogviszony kezdete (belépés dátuma)] AS Belépés, tSzemélyek.[Szervezeti egység kódja], 1 AS Létszám
+FROM tSzemélyek
+WHERE (((tSzemélyek.[Jogviszony kezdete (belépés dátuma)]) Is Not Null) AND ((tSzemélyek.[Szervezeti egység kódja]) Not Like "BFKH-MEGB")) OR (((tSzemélyek.[Jogviszony kezdete (belépés dátuma)]) Is Not Null) AND ((tSzemélyek.[Szervezeti egység kódja])="")) OR (((tSzemélyek.[Jogviszony kezdete (belépés dátuma)]) Is Not Null) AND ((tSzemélyek.[Szervezeti egység kódja]) Is Null));

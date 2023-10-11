@@ -1,0 +1,3 @@
+SELECT lk_Ellenõrzés_foglalkoztatás_01.Adójel, lk_Ellenõrzés_foglalkoztatás_01.Név, lk_Ellenõrzés_foglalkoztatás_01.SzervezetAz, lk_Ellenõrzés_foglalkoztatás_01.Fõosztály, lk_Ellenõrzés_foglalkoztatás_01.Osztály, lk_Ellenõrzés_foglalkoztatás_01.[Státusz típusa], IIf([A]=[B],"-","Nexon/Foglalkozás/Foglalkozási viszony mezõ és a Nexon/Betöltött státuszok/Óraszám mezõk értékei nincsenek összhangban!") AS A_B, lk_Ellenõrzés_foglalkoztatás_01.A, lk_Ellenõrzés_foglalkoztatás_01.B, lk_Ellenõrzés_foglalkoztatás_01.C, lk_Ellenõrzés_foglalkoztatás_01.D
+FROM lk_Ellenõrzés_foglalkoztatás_01
+WHERE (((IIf([A]=[B],"-","Nexon/Foglalkozás/Foglalkozási viszony mezõ és a Nexon/Betöltött státuszok/Óraszám mezõk értékei nincsenek összhangban!"))<>"-"));

@@ -1,0 +1,12 @@
+SELECT Haviból.Adójel, Haviból.Név, Haviból.[Születési év], Haviból.[Járási Hivatal] AS Fõosztály, Haviból.Mezõ7 AS Osztály, Haviból.Foglalkoztatás, 1 AS Arány, Haviból.[Besorolási fokozat kód:], Haviból.[Besorolási fokozat megnevezése:], Haviból.[Álláshely azonosító], Haviból.Illetmény, Haviból.T, Haviból.TT_TTH, Haviból.[Heti munkaórák száma]
+FROM (SELECT Járási_állomány.Adóazonosító * 1 AS Adójel, Járási_állomány.Név, Járási_állomány.[Járási Hivatal], Járási_állomány.Mezõ7, right(Járási_állomány.[Foglalkoztatási forma teljes (T) / részmunkaidõs (R), nyugdíjas ],1) AS Foglalkoztatás, Járási_állomány.[Heti munkaórák száma], "Szervezeti alaplétszám" As [Státusz típusa], [ÁNYR SZERVEZETI EGYSÉG AZONOSÍTÓ], [Besorolási fokozat kód:], [Besorolási fokozat megnevezése:], [Álláshely azonosító], Mezõ18 as Illetmény, [Garantált bérminimumban részesül (GB) / tartós távollévõ nincs h] as TT_TTH,  "JÁ" as T, mezõ14 as BetöltésArány,  mezõ4 as [Születési év]
+FROM Járási_állomány
+WHERE Járási_állomány.Adóazonosító  <>""
+UNION
+SELECT Kormányhivatali_állomány.Adóazonosító * 1 AS Adójel, Kormányhivatali_állomány.Név, Kormányhivatali_állomány.Mezõ6, Kormányhivatali_állomány.Mezõ7, right(Kormányhivatali_állomány.[Foglalkoztatási forma teljes (T) / részmunkaidõs (R), nyugdíjas ],1),Kormányhivatali_állomány.[Heti munkaórák száma], "Szervezeti alaplétszám" As [Státusz típusa], [ÁNYR SZERVEZETI EGYSÉG AZONOSÍTÓ], [Besorolási fokozat kód:], [Besorolási fokozat megnevezése:], [Álláshely azonosító], Mezõ18, [Garantált bérminimumban részesül (GB) / tartós távollévõ nincs h], "KO" as T, mezõ14, mezõ4
+FROM  Kormányhivatali_állomány
+WHERE Kormányhivatali_állomány.Adóazonosító  <>""
+UNION SELECT Központosítottak.Adóazonosító * 1 AS Adójel, Központosítottak.Név, Központosítottak.Mezõ6, Központosítottak.Mezõ7, right(Központosítottak.[Foglalkoztatási forma teljes (T) / részmunkaidõs (R), nyugdíjas ],1), 0 As [Heti munkaórák száma],"Központosított állomány" As [Státusz típusa], [Nexon szótárelemnek megfelelõ szervezeti egység azonosító], [Besorolási fokozat kód:], [Besorolási fokozat megnevezése:], [Álláshely azonosító], Mezõ17, [Tartós távollévõ nincs helyettese (TT)/ tartós távollévõnek van ],  "KÖ" as T, mezõ13, mezõ4
+FROM   Központosítottak
+WHERE  Központosítottak.Adóazonosító <>"")  AS Haviból
+WHERE (((Haviból.[Járási Hivatal]) Like "Népeg*")) OR (((Haviból.Mezõ7) Like "Népeg*"));

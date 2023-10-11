@@ -1,0 +1,3 @@
+SELECT DISTINCT lkIlletményekÖsszevetésPénzüggyel01.Fõosztály, lkIlletményekÖsszevetésPénzüggyel01.Osztály, lkIlletményekÖsszevetésPénzüggyel01.Név, lkIlletményekÖsszevetésPénzüggyel01.[Adóazonosító jel], lkIlletményekÖsszevetésPénzüggyel01.PGF, lkSzemélyek.[KT: Kerekített 100 %-os illetmény (eltérített) + Helyettesítési ], lkIlletményekÖsszevetésPénzüggyel01.NEXON, lkIlletményekÖsszevetésPénzüggyel01.[Heti óra], lkIlletményekÖsszevetésPénzüggyel01.[Nexon 40 óra], lkIlletményekÖsszevetésPénzüggyel01.Link
+FROM lkIlletményekÖsszevetésPénzüggyel01 LEFT JOIN lkSzemélyek ON lkIlletményekÖsszevetésPénzüggyel01.[Adóazonosító jel] = lkSzemélyek.Adójel
+WHERE (((lkIlletményekÖsszevetésPénzüggyel01.NEXON)<>[PGF]));

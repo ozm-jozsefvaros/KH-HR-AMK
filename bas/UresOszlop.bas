@@ -1,19 +1,4 @@
-Sub UresOszlopokTorlese(lap As Worksheet)
- Dim iCol As Long
- Dim ehj As New ehjoszt
- 'Dim lap As Worksheet
- 
- 'Set lap = Application.ActiveSheet
-    
-    With lap.UsedRange
-        ehj.Ini (100)
-        ehj.OszlopSzam = .Columns.Count
-        For iCol = .Columns.Count To 1 Step -1
-            If WorksheetFunction.CountA(.Columns(iCol)) = 1 Then .Columns(iCol).EntireColumn.Delete
-            ehj.Novel
-        Next
-    End With
-End Sub
+
 
 Sub Status(pstrStatus As String)
     

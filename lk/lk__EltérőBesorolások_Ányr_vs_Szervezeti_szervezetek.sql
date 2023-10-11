@@ -1,0 +1,4 @@
+SELECT DISTINCT lk__EltérõBesorolások_Ányr_vs_Szervezeti.Fõosztály, Count(lk__EltérõBesorolások_Ányr_vs_Szervezeti.Álláshely) AS [Javítandó adatok száma]
+FROM lk__EltérõBesorolások_Ányr_vs_Szervezeti
+GROUP BY lk__EltérõBesorolások_Ányr_vs_Szervezeti.Fõosztály
+ORDER BY Count(lk__EltérõBesorolások_Ányr_vs_Szervezeti.Álláshely) DESC;

@@ -1,0 +1,2 @@
+SELECT Határozottak.[Tartós távollévõ álláshelyén határozott idõre foglalkoztatott ne], Határozottak.Mezõ17, Határozottak.Mezõ18, Határozottak.Mezõ19, Határozottak.Mezõ20, Határozottak.Mezõ21, Határozottak.Mezõ22, Határozottak.Mezõ23, Határozottak.Mezõ24, Határozottak.Mezõ25, Határozottak.[Tartós távollévõ státuszán foglalkoztatott határozott idejû jogv], Határozottak.Mezõ27, Határozottak.[Tartós távollévõ státuszán foglalkoztatott illetményének teljes ], "" AS Üres
+FROM Határozottak;

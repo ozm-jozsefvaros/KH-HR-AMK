@@ -1,0 +1,2 @@
+UPDATE tReferensek, lkSzemélyek SET tReferensek.[Szint 4 szervezeti egység név] = lkSzemélyek.[Szint 4 szervezeti egység név], tReferensek.[Szint 5 szervezeti egység név] = [lkSzemélyek].[Szint 5 szervezeti egység név], tReferensek.[Hivatali email] = [lkSzemélyek].[Hivatali email], tReferensek.[Hivatali telefon] = [lkSzemélyek].[Hivatali telefon]
+WHERE (((tReferensek.[Szint 4 szervezeti egység név]) Like "Humán*") And ((tReferensek.[Dolgozó teljes neve])=lkSzemélyek.[Dolgozó teljes neve]));

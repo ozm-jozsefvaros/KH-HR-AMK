@@ -41,7 +41,7 @@ Public Function Num2Num(varNum As Variant, From_Type As nnType, To_Type As nnTyp
     
     Dim strType As String
     If From_Type = To_Type Then Num2Num = "": Exit Function
-    varNum = Trim(varNum) 'Úgy tûnik a szóközök, gondot okoznak...
+    varNum = Trim(varNum) '?gy t?nik a sz?k?z?k, gondot okoznak...
     strType = CStr(From_Type) & CStr(To_Type)
     Select Case strType
         Case "299" 'Bin2Roman

@@ -1,0 +1,2 @@
+SELECT tFõosztályokOsztályokSorszámmal.bfkh AS bfkhkód, tFõosztályokOsztályokSorszámmal.Fõosztály, tFõosztályokOsztályokSorszámmal.Osztály, tFõosztályokOsztályokSorszámmal.Sorszám AS Sorsz
+FROM tFõosztályokOsztályokSorszámmal;

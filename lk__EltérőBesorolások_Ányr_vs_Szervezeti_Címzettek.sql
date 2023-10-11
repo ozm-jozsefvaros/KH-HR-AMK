@@ -1,0 +1,3 @@
+SELECT DISTINCT lk__EltérõBesorolások_Ányr_vs_Szervezeti.Címzett
+FROM lk__EltérõBesorolások_Ányr_vs_Szervezeti
+GROUP BY lk__EltérõBesorolások_Ányr_vs_Szervezeti.Címzett, lk__EltérõBesorolások_Ányr_vs_Szervezeti.Fõosztály;

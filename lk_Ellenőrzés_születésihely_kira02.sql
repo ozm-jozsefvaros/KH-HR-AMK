@@ -1,0 +1,2 @@
+SELECT lk_Ellenõrzés_születésihely_kira01.bfkh, lk_Ellenõrzés_születésihely_kira01.Fõoszt, lk_Ellenõrzés_születésihely_kira01.Osztály, lk_Ellenõrzés_születésihely_kira01.Adójel, lk_Ellenõrzés_születésihely_kira01.[Dolgozó teljes neve], lk_Ellenõrzés_születésihely_kira01.Hiba, lk_Ellenõrzés_születésihely_kira01.[Születés helye] AS [Születési hely], IIf([Javasolt] Like "*00*","-- nincs javaslat --",[Javasolt]) AS Javaslat, lk_Ellenõrzés_születésihely_kira01.NLink
+FROM lk_Ellenõrzés_születésihely_kira01;

@@ -1,0 +1,2 @@
+SELECT ideiglMobilModulKieg.[Dolgozó teljes neve], ideiglMobilModulKieg.[Hivatali email], lkSzemélyek.Fõosztály, lkSzemélyek.Osztály, kt_azNexon_Adójel02.azNexon
+FROM kt_azNexon_Adójel02 RIGHT JOIN (lkSzemélyek RIGHT JOIN ideiglMobilModulKieg ON lkSzemélyek.[Hivatali email] = ideiglMobilModulKieg.[Hivatali email] OR ideiglMobilModulKieg.[Dolgozó teljes neve]=lkSzemélyek.[Dolgozó teljes neve]) ON kt_azNexon_Adójel02.Adójel = lkSzemélyek.Adójel;

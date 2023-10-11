@@ -1,0 +1,2 @@
+SELECT tJav_mezõk.azJavítandó, tJav_mezõk.tTáblák_azonosító, tJav_táblák.Tábla, tJav_táblák.Ellenõrzéshez, tJav_mezõk.azNexonMezõk, tJav_mezõk.Eredeti, tNexonMezõk.[nexon mezõ megnevezése] AS Import, tJav_mezõk.TáblánBelüliSorszáma, tJav_mezõk.NemKötelezõ, tJav_mezõk.NemKötelezõÜresÁlláshelyEsetén, tJav_táblák.SzervezetKód_mezõ, tJav_mezõk.Szöveg, tNexonMezõk.Megjegyzés AS Elérés, tJav_táblák.ÜresÁlláshelyMezõk
+FROM tJav_táblák INNER JOIN (tJav_mezõk LEFT JOIN tNexonMezõk ON tJav_mezõk.azNexonMezõk=tNexonMezõk.azNexonMezõ) ON tJav_táblák.kód=tJav_mezõk.tTáblák_azonosító;

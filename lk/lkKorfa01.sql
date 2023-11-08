@@ -10,6 +10,6 @@ Year(Now())-Year([lkSzemélyek].[Születési idő])>=56 AND Year(Now())-Year([lk
 Year(Now())-Year([lkSzemélyek].[Születési idő])>=61 AND Year(Now())-Year([lkSzemélyek].[Születési idő])<=65,"61-65 évek között:",
 Year(Now())-Year([lkSzemélyek].[Születési idő])>=66 AND Year(Now())-Year([lkSzemélyek].[Születési idő])<=70,"66-70 évek között:",
 Year(Now())-Year([lkSzemélyek].[Születési idő])>=71 AND Year(Now())-Year([lkSzemélyek].[Születési idő])<=200,"70 év fölött:",
-) AS Korcsoport, lkSzemélyek.Adójel AS adó,switch(lkSzemélyek.Neme="férfi",-1,1) as to, lkSzemélyek.Neme
+) AS Korcsoport, lkSzemélyek.Adójel AS adó,switch(lkSzemélyek.Neme="férfi",-1,1) as Fő, lkSzemélyek.Neme
 FROM lkSzemélyek
 WHERE tSzemélyek.[Státusz neve]="Álláshely";

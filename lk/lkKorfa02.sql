@@ -1,3 +1,3 @@
-SELECT Korcsoport, Count(lkKorfa01.Adó) AS CountOfAdójel, Neme
+SELECT Korcsoport, sum([FÅ‘]) as  CountOfAdÃ³jel, Neme
 FROM lkKorfa01
 GROUP BY Korcsoport, Neme;

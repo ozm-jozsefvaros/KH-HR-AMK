@@ -1,6 +1,5 @@
-SELECT Unió.Korcsoport, Unió.SumOfFérfi AS Férfi, Unió.SumOfNõ AS Nõ, *
-FROM (SELECT *
-FROM lkKorfa04
-UNION
-SELECT *
-FROM lkKorfa05)  AS Unió;
+SELECT lkKorfa04.Korcsoport AS Korcsoport,
+  lkKorfa04.FÃ©rfi AS FÃ©rfi,
+  lkKorfa04.NÅ‘ AS NÅ‘
+FROM lkKorfa04;
+

@@ -1,5 +1,10 @@
-SELECT "Összesen:" AS Korcsoport, 
-  Sum(lkKorfa02.Férfiak) AS Férfiak, 
-  Sum(lkKorfa02.Nők) AS Nők
-FROM lkKorfa02
-GROUP BY "Összesen:";
+SELECT Unió.Korcsoport, 
+  Unió.Férfiak AS Férfi, 
+  Unió.Nők AS Nő
+FROM (
+  SELECT *
+  FROM lkKorfa02
+  UNION
+  SELECT *
+  FROM lkKorfa03
+  )  AS Unió;

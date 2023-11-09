@@ -12,7 +12,7 @@ Year(Now())-Year([lkSzemélyek].[Születési idő])>=66 AND Year(Now())-Year([lk
 Year(Now())-Year([lkSzemélyek].[Születési idő])>=71 AND Year(Now())-Year([lkSzemélyek].[Születési idő])<=200,"70 év fölött:",
 ) AS Korcsoport, 
   lkSzemélyek.Adójel AS adó,
-  switch(lkSzemélyek.Neme="férfi",-1,0) as Férfi,
-  switch(lkSzemélyek.Neme<>"férfi",1,0) as Nő
+  IIf(lkSzemélyek.Neme="férfi",-1,0) as Férfi,
+  IIF(lkSzemélyek.Neme<>"férfi",1,0) as Nő
 FROM lkSzemélyek
 WHERE tSzemélyek.[Státusz neve]="Álláshely";

@@ -1,2 +1,5 @@
-SELECT lkkorfa02.Korcsoport, IIf([Neme]="férfi",[CountofAdójel],0) AS Férfi, IIf([Neme]="férfi",0,[CountofAdójel]) AS Nõ
-FROM lkkorfa02;
+SELECT "Ã–sszesen:" AS Korcsoport, 
+  Sum(lkKorfa02.FÃ©rfiak) AS FÃ©rfiak, 
+  Sum(lkKorfa02.NÅ‘k) AS NÅ‘k
+FROM lkKorfa02
+GROUP BY "Ã–sszesen:";

@@ -1,2 +1,3 @@
-SELECT lk_Ellenõrzés_születésihely_kira01.bfkh, lk_Ellenõrzés_születésihely_kira01.Fõoszt, lk_Ellenõrzés_születésihely_kira01.Osztály, lk_Ellenõrzés_születésihely_kira01.Adójel, lk_Ellenõrzés_születésihely_kira01.[Dolgozó teljes neve], lk_Ellenõrzés_születésihely_kira01.Hiba, lk_Ellenõrzés_születésihely_kira01.[Születés helye] AS [Születési hely], IIf([Javasolt] Like "*00*","-- nincs javaslat --",[Javasolt]) AS Javaslat, lk_Ellenõrzés_születésihely_kira01.NLink
-FROM lk_Ellenõrzés_születésihely_kira01;
+SELECT lk_Ellenõrzés_születésihely_kira01.Fõoszt AS Fõosztály, lk_Ellenõrzés_születésihely_kira01.Osztály AS Osztály, lk_Ellenõrzés_születésihely_kira01.[Dolgozó teljes neve] AS Név, lk_Ellenõrzés_születésihely_kira01.Hiba, lk_Ellenõrzés_születésihely_kira01.[Születés helye] AS [Születési hely], IIf([Javasolt] Like "*00*","-- nincs javaslat --",[Javasolt]) AS Javaslat, lk_Ellenõrzés_születésihely_kira01.NLink AS NLink
+FROM lk_Ellenõrzés_születésihely_kira01
+ORDER BY lk_Ellenõrzés_születésihely_kira01.bfkh;

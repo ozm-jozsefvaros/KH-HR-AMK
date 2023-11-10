@@ -1,4 +1,4 @@
-SELECT tTelephelyek.MezÅ‘1 AS FÅ‘osztÃ¡ly, tTelephelyek.[Szervezeti egysÃ©g], lkSzemÃ©lyek.[Szint 5 szervezeti egysÃ©g nÃ©v], lkSzemÃ©lyek.[DolgozÃ³ teljes neve], tTelephelyek.CÃ­m, lkSzemÃ©lyek.[MunkavÃ©gzÃ©s helye - cÃ­m], Left([CÃ­m],4), Left([MunkavÃ©gzÃ©s helye - cÃ­m],4) AS Kif1
-FROM lkSzemÃ©lyek LEFT JOIN tTelephelyek ON lkSzemÃ©lyek.[Szervezeti egysÃ©g kÃ³dja]=tTelephelyek.SzervezetKÃ³d
-WHERE (((lkSzemÃ©lyek.[Szervezeti egysÃ©g kÃ³dja]) Is Not Null))
-ORDER BY tTelephelyek.[Szervezeti egysÃ©g];
+SELECT tTelephelyek.Mezõ1 AS Fõosztály, tTelephelyek.[Szervezeti egység], lkSzemélyek.[Szint 5 szervezeti egység név], lkSzemélyek.[Dolgozó teljes neve], tTelephelyek.Cím, lkSzemélyek.[Munkavégzés helye - cím], Left([Cím],4) AS Kif1, Left([Munkavégzés helye - cím],4) AS Kif1
+FROM lkSzemélyek LEFT JOIN tTelephelyek ON lkSzemélyek.[Szervezeti egység kódja] = tTelephelyek.SzervezetKód
+WHERE (((lkSzemélyek.[Szervezeti egység kódja]) Is Not Null))
+ORDER BY tTelephelyek.[Szervezeti egység];

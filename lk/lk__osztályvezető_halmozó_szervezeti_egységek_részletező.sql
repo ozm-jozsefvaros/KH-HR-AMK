@@ -1,3 +1,3 @@
 SELECT lk__osztályvezetõ_halmozó_szervezeti_egységek.[3 szint], lk__osztályvezetõ_halmozó_szervezeti_egységek.[4 szint], lk__osztályvezetõ_halmozó_szervezeti_egységek.[5 szint], Álláshelyek.[Álláshely azonosító], 1 AS sor
-FROM Álláshelyek RIGHT JOIN lk__osztályvezetõ_halmozó_szervezeti_egységek ON (Álláshelyek.[3 szint]=lk__osztályvezetõ_halmozó_szervezeti_egységek.[3 szint]) AND (Álláshelyek.[4 szint]=lk__osztályvezetõ_halmozó_szervezeti_egységek.[4 szint]) AND (Álláshelyek.[5 szint]=lk__osztályvezetõ_halmozó_szervezeti_egységek.[5 szint])
+FROM Álláshelyek RIGHT JOIN lk__osztályvezetõ_halmozó_szervezeti_egységek ON (Álláshelyek.[3 szint] = lk__osztályvezetõ_halmozó_szervezeti_egységek.[3 szint]) AND (Álláshelyek.[4 szint] = lk__osztályvezetõ_halmozó_szervezeti_egységek.[4 szint]) AND (Álláshelyek.[5 szint] = lk__osztályvezetõ_halmozó_szervezeti_egységek.[5 szint])
 WHERE (((Álláshelyek.[Álláshely besorolási kategóriája])="osztályvezetõ"));

@@ -1,5 +1,3 @@
-SELECT DISTINCT Álláshelyek.[4 szint], Álláshelyek.[5 szint]
-FROM Álláshelyek
-WHERE (((Álláshelyek.[5 szint]) Not In (SELECT DISTINCT Álláshelyek.[5 szint]
-FROM Álláshelyek
-WHERE (((Álláshelyek.[Álláshely besorolási kategóriája]) = "osztályvezetõ")))));
+SELECT MindenSzervezetiEgység.Szervezet, SzervezetekOsztályvezetõvel.Szervezet, *
+FROM (SELECT DISTINCT IIf([4 szint]="" Or [4 szint] Is Null,[3 szint],[4 szint]) & " - " & [5 szint] AS Szervezet FROM Álláshelyek WHERE [5 szint]<>"")  AS MindenSzervezetiEgység LEFT JOIN (SELECT DISTINCT IIf([4 szint]="" Or [4 szint] Is Null,[3 szint],[4 szint]) & " - " & [5 szint] AS Szervezet FROM Álláshelyek WHERE Álláshelyek.[Álláshely besorolási kategóriája]="osztályvezetõ")  AS SzervezetekOsztályvezetõvel ON MindenSzervezetiEgység.Szervezet=SzervezetekOsztályvezetõvel.Szervezet
+WHERE (((SzervezetekOsztályvezetõvel.Szervezet) Is Null));

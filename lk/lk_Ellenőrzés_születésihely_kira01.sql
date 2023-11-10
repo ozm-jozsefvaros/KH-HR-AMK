@@ -1,4 +1,4 @@
 SELECT bfkh(Nz([Szervezeti egység kódja],0)) AS bfkh, IIf(Nz([Fõosztály],"")="","_Kilépett",[Fõosztály]) AS Fõoszt, lkSzemélyek.Osztály, lkSzemélyek.Adójel, lkSzemélyek.[Dolgozó teljes neve], "A születési hely nem a KIRA szabványos cím, azaz: 'Budapest' + szóköz + két számjegy a kerületnek :(" AS Hiba, Nz([Születési hely],"") AS [Születés helye], "Budapest " & Right("0" & num2num(Replace(Replace(Trim(Replace([Születési hely],"Budapest","")),"ker",""),".",""),99,10),2) AS Javasolt, kt_azNexon_Adójel02.NLink
-FROM lkSzemélyek LEFT JOIN kt_azNexon_Adójel02 ON lkSzemélyek.Adójel = kt_azNexon_Adójel02.Adójel
+FROM lkSzemélyek LEFT JOIN kt_azNexon_Adójel02 ON lkSzemélyek.Adójel=kt_azNexon_Adójel02.Adójel
 WHERE (((Nz([Születési hely],"")) Not Like "Budapest ##*") AND ((InStr(1,Nz([Születési hely],""),"Budapest"))>0) AND ((InStr(1,[Születési hely],"Budapest"))>0) AND ((lkSzemélyek.[Státusz neve])="Álláshely"))
 ORDER BY bfkh(Nz([Szervezeti egység kódja],0)), IIf(Nz([Fõosztály],"")="","_Kilépett",[Fõosztály]), lkSzemélyek.[Dolgozó teljes neve];

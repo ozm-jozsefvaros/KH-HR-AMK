@@ -1,3 +1,4 @@
-SELECT tSzemélyek.[Szervezeti egység kódja], tSzemélyek.[Dolgozó teljes neve], tSzemélyek.[Szint 2 szervezeti egység név], tSzemélyek.[Szint 3 szervezeti egység név], tSzemélyek.[Szint 4 szervezeti egység név], tSzemélyek.[KIRA jogviszony jelleg] AS Kira, IIf([Jogviszony típusa / jogviszony típus]="Kormányzati szolgálati jogviszony",[Jogviszony típusa / jogviszony típus] & " (KIT)",[Jogviszony típusa / jogviszony típus]) AS Nexon, IIf([KIRA]<>[NEXON],1,0) AS hiba
-FROM tSzemélyek
-WHERE (((tSzemélyek.[Szervezeti egység kódja]) Is Not Null And (tSzemélyek.[Szervezeti egység kódja])<>"BFKH-MEGB") AND ((tSzemélyek.[Státusz típusa]) Is Not Null));
+SELECT lkSzemélyek.BFKH, lkSzemélyek.Fõosztály, lkSzemélyek.Osztály, lkSzemélyek.[Dolgozó teljes neve], IIf([KIRA jogviszony jelleg]="Politikai jogviszony","Politikai szolgálati jogviszony",[KIRA jogviszony jelleg]) AS Kira, IIf([Jogviszony típusa / jogviszony típus]="Kormányzati szolgálati jogviszony",[Jogviszony típusa / jogviszony típus] & " (KIT)",[Jogviszony típusa / jogviszony típus]) AS Nexon, IIf([KIRA]<>[NEXON],1,0) AS hiba, kt_azNexon_Adójel02.NLink
+FROM kt_azNexon_Adójel02 RIGHT JOIN lkSzemélyek ON kt_azNexon_Adójel02.Adójel=lkSzemélyek.Adójel
+WHERE (((lkSzemélyek.[Státusz neve])="Álláshely"))
+ORDER BY lkSzemélyek.[Dolgozó teljes neve];

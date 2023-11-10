@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ImportExportSpecification         Path="L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Személy\Személytörzs (15).xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+<ImportExportSpecification                        Path="L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Személy\Személytörzs (30).xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
 	<ImportExcel FirstRowHasNames="true" AppendToTable="tNexonAzonosítók" Range="Sheet1$">
 		<Columns PrimaryKey="{Auto}">
 			<Column Name="Col1" FieldName="Személy azonosító" Indexed="NO" SkipColumn="false" DataType="Double"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ImportExportSpecification                Path="L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Elbírálatlan igények (Adatváltozások)\Adatváltozási igények (13).xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+<ImportExportSpecification                               Path="L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Elbírálatlan igények (Adatváltozások)\Adatváltozási igények (26).xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
     <ImportExcel FirstRowHasNames="true" Destination="tAdatváltoztatásiIgények" Range="Sheet1$">
         <Columns PrimaryKey="{Auto}">
            <Column Name="Col1" FieldName="Dolgozó neve" Indexed="NO" SkipColumn="false" DataType="Text"/>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ImportExportSpecification Path = "L:\Ugyintezok\Adatszolgáltatók\Alapadatok\1-Szolgálati_idõ_elismerés-202310251239.xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+     <ImportExcel FirstRowHasNames="true" Destination="tSzolgálatiIdõElsimerés" Range="tSzolgálatiIdõElsimerés" >
+            <Columns PrimaryKey="{Auto}">
+                  <Column Name="Col1" FieldName="Szervezeti egység kód" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col2" FieldName="Szervezeti egység" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col3" FieldName="Jogviszony típus" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col4" FieldName="Név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col5" FieldName="Azonosító" Indexed="YESDUPLICATES" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col6" FieldName="Szerzõdés/kinevezéses munkakör" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col7" FieldName="Mezõ7" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col8" FieldName="Szolgálati elismerésre jogosultság / Jubileumi jutalom kezdõ dát" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col9" FieldName="Tervezett esedékesség 20 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col10" FieldName="Jogosító hónapok száma 20 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col11" FieldName="Tervezett összeg 20 éves  (Ft)" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col12" FieldName="Mezõ12" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col13" FieldName="Jogosító hónapok száma 25 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col14" FieldName="Mezõ14" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col15" FieldName="Mezõ15" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col16" FieldName="Jogosító hónapok száma 30 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col17" FieldName="Mezõ17" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col18" FieldName="Mezõ18" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col19" FieldName="Jogosító hónapok száma 35 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col20" FieldName="Mezõ20" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col21" FieldName="Mezõ21" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col22" FieldName="Jogosító hónapok száma 40 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col23" FieldName="Mezõ23" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col24" FieldName="Tervezett esedékesség 45 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col25" FieldName="Jogosító hónapok száma 45 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col26" FieldName="Tervezett összeg 45 éves (Ft)" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col27" FieldName="Tervezett esedékesség 50 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col28" FieldName="Jogosító hónapok száma 50 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col29" FieldName="Tervezett összeg 50 éves (Ft)" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col30" FieldName="Tervezett esedékesség 55 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col31" FieldName="Jogosító hónapok száma 55 éves" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col32" FieldName="Tervezett összeg 55 éves (Ft)" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col33" FieldName="Mezõ33" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col34" FieldName="Mezõ34" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col35" FieldName="Mezõ35" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col36" FieldName="Mezõ36" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col37" FieldName="Mezõ37" Indexed="NO" SkipColumn="false" DataType="Double" />
+             </Columns>
+        </ImportExcel>
+</ImportExportSpecification>

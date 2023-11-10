@@ -1,4 +1,4 @@
 SELECT IIf([Jogviszony típusa / jogviszony típus]="Munkaviszony","Munkaviszony",[Besorolási  fokozat (KT)]) AS Besorolás, Sum([Illetmény összesen kerekítés nélkül (eltérített)]/[Elméleti (szerzõdés/kinevezés szerinti) ledolgozandó heti óraker]*40) AS Összilletmény, Count(lkSzemélyek.[Adóazonosító jel]) AS Fõ, Round(Avg([Kerekített 100 %-os illetmény (eltérített)]/[Elméleti (szerzõdés/kinevezés szerinti) ledolgozandó heti óraker]*40)/100,0)*100 AS Átlag, Round(StDev([Illetmény összesen kerekítés nélkül (eltérített)]/[Elméleti (szerzõdés/kinevezés szerinti) ledolgozandó heti óraker]*40)/100,0)*100 AS [Átlagtól való eltérés (StDev)]
-FROM Álláshelyek LEFT JOIN lkSzemélyek ON Álláshelyek.[Álláshely azonosító]=lkSzemélyek.[Státusz kódja]
+FROM Álláshelyek LEFT JOIN lkSzemélyek ON Álláshelyek.[Álláshely azonosító] = lkSzemélyek.[Státusz kódja]
 WHERE (((lkSzemélyek.[Szervezeti egység kódja]) Is Not Null) AND ((lkSzemélyek.[Státusz neve])="Álláshely"))
 GROUP BY IIf([Jogviszony típusa / jogviszony típus]="Munkaviszony","Munkaviszony",[Besorolási  fokozat (KT)]);

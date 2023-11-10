@@ -1,9 +1,3 @@
-SELECT 1 as sor, lkSzemélyek.Fõosztály, Count(lkSzemélyek.Adójel) AS FõosztályiLétszám
-FROM lkSzemélyek
-WHERE (((lkSzemélyek.[Státusz neve])="Álláshely"))
-GROUP BY lkSzemélyek.Fõosztály, lkSzemélyek.[Státusz neve]
-
-UNION SELECT 2 as sor, "Összesen:" as Fõosztály, Count(lkSzemélyek.Adójel) AS CountOfAdójel
-FROM lkSzemélyek
-WHERE (((lkSzemélyek.[Státusz neve])="Álláshely"))
-GROUP BY lkSzemélyek.[Státusz neve];
+SELECT lkSzemélyekFõosztÉsÖsszesenUnió.Fõosztály AS Fõosztály, lkSzemélyekFõosztÉsÖsszesenUnió.FõosztályiLétszám AS FõosztályiLétszám, [lk_TT-sekFõosztályonként].[Tartósan távollévõk] AS [Tartósan távollévõk], [Tartósan távollévõk]/[FõosztályiLétszám] AS [TT-sek aránya]
+FROM (SELECT 1 as sor, lkSzemélyek.Fõosztály, Count(lkSzemélyek.Adójel) AS FõosztályiLétszám FROM lkSzemélyek WHERE (((lkSzemélyek.[Státusz neve])="Álláshely")) GROUP BY lkSzemélyek.Fõosztály, lkSzemélyek.[Státusz neve]  UNION SELECT 2 as sor, "Összesen:" as Fõosztály, Count(lkSzemélyek.Adójel) AS CountOfAdójel FROM lkSzemélyek WHERE (((lkSzemélyek.[Státusz neve])="Álláshely")) GROUP BY lkSzemélyek.[Státusz neve] )  AS lkSzemélyekFõosztÉsÖsszesenUnió INNER JOIN [lk_TT-sekFõosztályonként] ON lkSzemélyekFõosztÉsÖsszesenUnió.Fõosztály = [lk_TT-sekFõosztályonként].Fõosztály
+ORDER BY [lkSzemélyekFõosztÉsÖsszesenUnió].[Sor] & ".", [lk_TT-sekFõosztályonként].SzSz;

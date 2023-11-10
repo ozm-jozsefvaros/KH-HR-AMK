@@ -1,3 +1,3 @@
-SELECT lkEltérõBesorolásokÚj01.Név, lkEltérõBesorolásokÚj01.Fõosztály, lkEltérõBesorolásokÚj01.Osztály, lkEltérõBesorolásokÚj01.[Álláshely azonosító], lkEltérõBesorolásokÚj01.[Szervezeti struktúra], lkEltérõBesorolásokÚj01.[Személyi karton], lkEltérõBesorolásokÚj01.[Jogviszony típusa / jogviszony típus], lkEltérõBesorolásokÚj01.[Tartós távollét típusa]
+SELECT lkEltérõBesorolásokÚj01.Fõosztály AS Fõosztály, lkEltérõBesorolásokÚj01.Osztály AS Osztály, lkEltérõBesorolásokÚj01.Név AS Név, lkEltérõBesorolásokÚj01.[Álláshely azonosító] AS [Státusz kód], lkEltérõBesorolásokÚj01.[Szervezeti struktúra] AS [Szervezeti struktúrában], lkEltérõBesorolásokÚj01.[Személyi karton] AS [Személyi kartonon], lkEltérõBesorolásokÚj01.[Jogviszony típusa / jogviszony típus] AS [Jogviszony típusa], lkEltérõBesorolásokÚj01.[Tartós távollét típusa] AS [Tartós távollét típusa], lkEltérõBesorolásokÚj01.NLink AS NLink
 FROM lkEltérõBesorolásokÚj01
-WHERE (((lkEltérõBesorolásokÚj01.[Szervezeti struktúra])<>[Személyi karton]));
+ORDER BY lkEltérõBesorolásokÚj01.BFKH;

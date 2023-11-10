@@ -1,3 +1,2 @@
-SELECT tEllenõrzõLekérdezések.azEllenõrzõ, tEllenõrzõLekérdezések.EllenõrzõLekérdezés, tEllenõrzõLekérdezések.azETípus
-FROM tEllenõrzõLekérdezések
-WHERE (((tEllenõrzõLekérdezések.Kimenet)=False));
+SELECT tEllenõrzõLekérdezések.azEllenõrzõ, tEllenõrzõLekérdezések.EllenõrzõLekérdezés, tEllenõrzõLekérdezések.azETípus, tLekérdezésTípusok.TípusNeve, tEllenõrzõLekérdezések.Kimenet
+FROM tLekérdezésTípusok INNER JOIN tEllenõrzõLekérdezések ON tLekérdezésTípusok.azETípus = tEllenõrzõLekérdezések.azETípus;

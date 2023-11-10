@@ -72,7 +72,7 @@ Private Sub NexonAzonosító_Click()
     Dim fájl As String
     fájl = Nz(Me.FileNexonAzonosító, "")
     
-    FájlVálasztó Me.FileNexonAzonosító, "Az elbírálatlan igények jegyzék kiválasztása", "L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Személy", "Adatváltozási igények"
+    FájlVálasztó Me.FileNexonAzonosító, "A Nexon azonosítót tartalmazó Személytörzs kiválasztása", "L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Személy", "Személytörzs (*"
     
     If Me.FileNexonAzonosító = fájl Then
         Me.FileNexonAzonosítóPipa.Visible = False
@@ -83,12 +83,11 @@ Private Sub Kimenet_Click()
     fájl = Nz(Me.FileKimenet, "")
     
     MappaVálasztó Me.FileKimenet, "A kimenet helyének kiválasztása", "\\Teve1-jkf-hrf2-oes\vol1\Human\HRF\Ugyintezok\Oláh Zoltán\HRELL"
-    If Me.FileKimenet = fájl Then
-        Me.FileSzemélyPipa.Visible = False
-    End If
+
 End Sub
 Private Sub Eredmény_Click()
     Dim V As Integer
+    Dim válasz As Boolean
     V = 0
     Me.Folyamat.RowSource = "Tábla ill. lekérdezés; Sor ill. esemény; Idõpont "
     Me.FilePipa.Visible = False
@@ -110,7 +109,8 @@ End If
     '## Beolvasás
         If Me.Beolvasás Then
             If Me.File.Value <> "" Then
-                If fvHaviTáblaImport(Me.File.Value, Me) Then
+                válasz = fvHaviTáblaImport(Me.File.Value, Me)
+                If válasz Then
                     V = V + 1
                     Me.FilePipa.Visible = True
                                     sFoly Me, "A havi létszámjelentés:; beolvastatott."
@@ -181,19 +181,19 @@ End If
         End If
     '## Beolvasás vége
     '## Kimutatás _és_ _vagy_ ellenõrzés folytatása!!
-        If IsNull(Me.FileKimenet) Or Len(Me.FileKimenet) > 0 Then
+'        If Not IsNull(Me.FileKimenet) Or Len(Me.FileKimenet) > 0 Then
             ExportQueryResultsToHTMLWithClassNames Me, Me.Kimutatás, Me.Ellenõrzés
-        Else
-            If Me.Kimutatás Then
-                                        sFoly Me, "A kimutatások készítése:; kezdõdik."
-                    Call Ellenõrzés2(Me, True)
-                                        sFoly Me, "A kimutatások készítése:; véget ért."
-            ElseIf Me.Ellenõrzés Then
-                                        sFoly Me, "Az egyéb ellenõrzések készítése:; kezdõdik."
-                    Call Ellenõrzés2(Me, False)
-                                        sFoly Me, "Az egyéb ellenõrzések készítése:; véget ért."
-            End If
-        End If
+'        Else
+'            If Me.Kimutatás Then
+'                                        sFoly Me, "A kimutatások készítése:; kezdõdik."
+'                    Call Ellenõrzés2(Me, True)
+'                                        sFoly Me, "A kimutatások készítése:; véget ért."
+'            ElseIf Me.Ellenõrzés Then
+'                                        sFoly Me, "Az egyéb ellenõrzések készítése:; kezdõdik."
+'                    Call Ellenõrzés2(Me, False)
+'                                        sFoly Me, "Az egyéb ellenõrzések készítése:; véget ért."
+'            End If
+'        End If
                                     sFoly Me, "##########################;########", False
                                     
     End If

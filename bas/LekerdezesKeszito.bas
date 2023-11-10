@@ -35,6 +35,7 @@ Option Compare Database
 '    Set GetTable = recT
 '
 'End Function
+
 Sub Ellenõrzés1(ByVal Ûrlapnév As String)
 ' Ez a fv. az adathiány lekérdezéseket futtatja (azETípus=1 vagyis Hiba)
 ' és a tEll változóban tárolt nevû táblába írja az eredményt,
@@ -49,7 +50,7 @@ Sub Ellenõrzés1(ByVal Ûrlapnév As String)
 '    Dim lkEredm             As String       'Az eredmény lekérdezés neve
     Dim ûrl                 As Form
     Set ûrl = Application.Forms(Ûrlap)
-    lkEllLek = "SELECT * FROM lkEllenõrzõLekérdezések WHERE azETípus = 1;"    'Ez a lekérdezés sorolja fel azokat a lekérdezéseket, amelyeket le kell futtatnunk.
+    lkEllLek = "SELECT * FROM lkEllenõrzõLekérdezések WHERE azETípus = 1 AND Kimenet = False;"    'Ez a lekérdezés sorolja fel azokat a lekérdezéseket, amelyeket le kell futtatnunk.
     tEll = "t__Ellenõrzés_02"
 '    lkEredm = "lk_Ellenõrzés_03"
 sFoly ûrl, "Betöltés:; Adathiány ellenõrzés elõkészítése"

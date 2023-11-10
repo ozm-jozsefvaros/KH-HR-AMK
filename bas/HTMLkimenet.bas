@@ -6,19 +6,25 @@ Sub ExportQueryResultsToHTMLWithClassNames(oÛrl As Object, Optional ByVal Kimuta
     Dim db As Database
     Dim lkEll As Recordset ' A soron következõ ellenõrzõ lekérdezés
     Dim hfNév As String
-    Dim hF As Object
+    Dim hf As Object
     Dim queryName As String
     Dim oldalCím As String
     Dim fejezetCím As String
     Dim táblaCím As String
     Dim TáblaSzám As Integer
     Dim megj As String
+    Dim strÜresTábla As String 'ClassName az üres táblák esetén
     Dim sqlA, sqlB As String
     Dim qWhere As String
+    Dim intSorokSzáma As Integer 'a rekordok száma
+    Dim intOszlopokSzáma As Integer 'az mezõk száma
     Dim rowIndex As Integer ' Track the current row index
     Dim columnIndex As Integer ' Track the current column index
     Dim vaneGraf As Boolean
     Dim mezTip As Variant
+    Dim válasz As Integer
+    Dim maxsor As Integer 'A táblázat, ha több sorból áll, akkor nem írjuk ki.
+    maxsor = 1000
     
     
     Select Case True
@@ -41,10 +47,12 @@ Sub ExportQueryResultsToHTMLWithClassNames(oÛrl As Object, Optional ByVal Kimuta
     
     Set db = CurrentDb()
     '### Ha nincs Kimenet megadva, akkor kilépünk, de elõtte üzenünk
-    If Len(oÛrl.FileKimenet) = 0 Or IsNull(oÛrl.FileKimenet) Then
-        MsgBox "Nincs megadva kimenet!", vbOKOnly, "Nincs kimenet..."
-        Exit Sub
-    End If
+    
+    Do While Len(oÛrl.FileKimenet) = 0 Or IsNull(oÛrl.FileKimenet) Or válasz = 0
+        MappaVálasztó oÛrl.FileKimenet, "A kimenet helyének kiválasztása", "\\Teve1-jkf-hrf2-oes\vol1\Human\HRF\Ugyintezok\Oláh Zoltán\HRELL"
+        válasz = válasz + 1
+    Loop
+    If válasz > 1 Then Exit Sub
     
     '### A lefuttatandó lekérdezések tulajdonságainak beszerzése -----------
     Set lkEll = db.OpenRecordset("SELECT * FROM lkEllenõrzõLekérdezések2 WHERE " & qWhere & " ORDER BY [LapNév] ASC, [TáblaCím] ASC")
@@ -58,41 +66,51 @@ Sub ExportQueryResultsToHTMLWithClassNames(oÛrl As Object, Optional ByVal Kimuta
     hfNév = hfNév & Format(Now(), "yyyy-mm-dd_hh-nn-ss") & ".html"
     
     '### A html fájl megnyitása --------------------------------------------
-    Set hF = CreateObject("Scripting.FileSystemObject").CreateTextFile(hfNév, True)
+    Set hf = CreateObject("Scripting.FileSystemObject").CreateTextFile(hfNév, True)
     
     '### A html fejrész megírása -------------------------------------------
-    With hF
-        .WriteLine "<!DOCTYPE html>"
-        .WriteLine "<html>"
-        .WriteLine "<head>"
-        .WriteLine "<title>" & oldalCím & "</title>"
-        .WriteLine "<link rel=""stylesheet"" href=""./css/hrell.css"">"
-        .WriteLine "<script src=""./js/hrell.js""></script>"
-        .WriteLine "</head>"
-        .WriteLine "<body>"
-        .WriteLine "<div class=""fokeret"">" 'fõkeret
-        TáblaSzám = 0
+    With hf
+        .writeline "<!DOCTYPE html>"
+        .writeline "<html>"
+        .writeline "<head>"
+        .writeline "<title>" & oldalCím & "</title>"
+        .writeline "<link rel=""stylesheet"" href=""./css/hrell.css"">"
+        .writeline "<script src=""./js/hrell.js""></script>"
+        .writeline "</head>"
+        .writeline "<body>"
+        .writeline "<div class=""fokeret"">" 'fõkeret
+        
     End With
-    '### Oldalpanel felépítése
+    '#############################
+    '### Oldalpanel felépítése ###
+    '#############################
     'lkell.MoveLast
     lkEll.MoveFirst
-    With hF
-        .WriteLine "<div id=""oldalpanel"" class=""oldalpanel"">"
-        .WriteLine "<h2>Táblák</h2>"
-        .WriteLine "<ul class=""table-list"">"
+    TáblaSzám = 0
+    With hf
+        .writeline "<div id=""oldalpanel"" class=""oldalpanel"">"
+        .writeline "<h2>Táblák</h2>"
+        .writeline "<ul class=""table-list"">"
         Do Until lkEll.EOF
+            TáblaSzám = TáblaSzám + 1
             táblaCím = lkEll("Táblacím")
-            .WriteLine "<li class=""table-list-item""><a href=#" & RIC(táblaCím) & " class=""table-link"">" & táblaCím & "</a></li>"
+            megj = lkEll("Megjegyzés")
+            .writeline "<li class=""table-list-item"" title=""" & megj & """><a href=#table" & TáblaSzám & " class=""table-link"">" & táblaCím & "</a></li>"
             lkEll.MoveNext
         Loop
-        .WriteLine "</ul></div>"
-        .WriteLine "<div class=""fotartalom"">"
-        .WriteLine "<h1 class=""oldal"">" & oldalCím & " (" & Date & ")</h1>"
+        .writeline "</ul></div>"
+        .writeline "<div class=""fotartalom"">"
+        .writeline "<h1 class=""oldal"">" & oldalCím & " (" & Date & ")</h1>"
+        .writeline "<div id=""kereso""><input id=""pageSearch"" type=""text"" placeholder=""Az összes táblában keresendõ szöveg (pl.: Fõosztály neve)""></div>"
     End With
     táblaCím = ""
-    '### A lekérdezésenkénti táblák felépítése
+    megj = ""
+    '##############################################
+    '### A lekérdezésenkénti táblák felépítése ####
+    '##############################################
 lkEll.MoveFirst
-Do Until lkEll.EOF 'Külsõ loop kezdete
+TáblaSzám = 0
+Do Until lkEll.EOF 'Külsõ, tábla szintû loop kezdete
         TáblaSzám = TáblaSzám + 1
         queryName = lkEll("EllenõrzõLekérdezés")
         táblaCím = lkEll("Táblacím")
@@ -103,52 +121,57 @@ Do Until lkEll.EOF 'Külsõ loop kezdete
         sFoly oÛrl, névelõvel(táblaCím, , , True) & ":; összeállítása indul..."
         sqlA = "SELECT * FROM " & queryName & ";"
         'A mezTip tömbben eltároljuk a mezõneveket és a hozzájuk tartozó kimeneti típust (hogy mire kell formázni)
-        mezTip = vFldTípus("SELECT [MezõNeve],[MezõTípusa] FROM tLekérdezésMezõTípusok WHERE [LekrédezésNeve]='" & queryName & "';")
+        mezTip = vFldTípus("SELECT [MezõNeve],[MezõTípusa] FROM tLekérdezésMezõTípusok WHERE [LekérdezésNeve]='" & queryName & "';")
         Debug.Print queryName & " : "; LBound(mezTip) & vbTab & UBound(mezTip)
         
         ' Execute the query
         Dim rs As DAO.Recordset
         Set rs = db.OpenRecordset(sqlA)
-        rs.MoveLast
-        rs.MoveFirst
-        
-        sFoly oÛrl, névelõvel(táblaCím, , , True) & ":;" & rs.RecordCount & " sor."
+
+        intSorokSzáma = rs.RecordCount
+        If intSorokSzáma = 0 Then
+            strÜresTábla = "uresTabla"
+        Else
+            strÜresTábla = ""
+        End If
+
+        sFoly oÛrl, névelõvel(táblaCím, , , True) & ":;" & intSorokSzáma & " sor."
+
         ' Initialize row and column indices
         rowIndex = 1
         columnIndex = 1
-        
+        intOszlopokSzáma = rs.Fields.Count
         ' Write the table header
-        With hF
-            .WriteLine "<div class=""tablediv "">"
-            If vaneGraf Then
-                ' Megszületik a canvas! A TáblaSzám változó beszámozza a canvdivtable id-t
-                .WriteLine "<div class=""canvdiv"" id=""canvdivtable" & TáblaSzám & """>" & _
-                           "    <canvas style=""display: block; box-sizing: border-box; height: 178px; width: 356px;"" width=""356"" height=""178"">" & _
-                           "    </canvas>" & _
-                           "</div>"
-            End If
-            
-            .WriteLine "<table id=""table" & TáblaSzám & """ class=""collapsible-table "">"
-            .WriteLine "<thead class=""collapsible-header tablehead""> "
+        
+        With hf
+            .writeline "<div class=""tablediv "">"
+            .writeline "<table id=""table" & TáblaSzám & """ class=""collapsible-table " & strÜresTábla & " "">"
+            .writeline "<thead class=""collapsible-header tablehead " & strÜresTábla & " ""> "
             '## A tábla fejléce .........................................................
-            .WriteLine "<tr>"
-            If rs.Fields.Count < 3 Then
-            'Ha a tábla egy vagy két oszlopos, akkor a keresõ a következõ sorba kerül.
-                .WriteLine "<th colspan""" & rs.Fields.Count & """>" & táblaCím & "</th>" '
-                .WriteLine "</tr><tr>"
-                'A tábla is kap egy sorszámot
-                .WriteLine "<th colspan="" & rs.Fields.Count & ""> <input type=""text"" id=""filterInputtable" & TáblaSzám & """ placeholder=""Keresendõ szöveg""></th>"
-            Else
-            'Ha a tábla több oszlopos, akkor az utolsó két oszlopot fenntartjuk a kersõnek.
-                .WriteLine "<th colspan=""" & rs.Fields.Count - 2 & """>" & táblaCím & "</th>"
-                'A tábla is kap egy sorszámot
-                .WriteLine "<th colspan="" 2""> <input type=""text"" id=""filterInputtable" & TáblaSzám & """ placeholder=""Keresendõ szöveg""></th>"
-            End If
-            .WriteLine "</tr>"
+            .writeline "<tr>"
+            Select Case intOszlopokSzáma
+                Case 1
+                    'Ha a tábla egy oszlopos, akkor a keresõ a következõ sorba kerül.
+                    .writeline "<th class=""" & strÜresTábla & """>" & táblaCím & " </th>"  '
+                    .writeline "</tr><tr>"
+                    'A tábla is kap egy sorszámot
+                    .writeline "<th " & intOszlopokSzáma & "> <input type=""text"" id=""filterInputtable" & TáblaSzám & """ placeholder=""Keresendõ szöveg""></th>"
+                Case 2
+                    'Ha a tábla 2 oszlopos, akkor az egyik oszlop a címé, a másik a keresõé.
+                    .writeline "<th class=""" & strÜresTábla & """>" & táblaCím & " </th>"
+                    'A tábla is kap egy sorszámot
+                    .writeline "<th > <input type=""text"" id=""filterInputtable" & TáblaSzám & """ placeholder=""Keresendõ szöveg""></th>"
+                Case Else
+                    'Ha a tábla több oszlopos, akkor az utolsó két oszlopot fenntartjuk a kersõnek.
+                    .writeline "<th colspan=""" & intOszlopokSzáma - 2 & """ class = """ & strÜresTábla & """>" & táblaCím & " </th>"
+                    'A tábla is kap egy sorszámot
+                    .writeline "<th colspan="" 2""> <input type=""text"" id=""filterInputtable" & TáblaSzám & """ placeholder=""Keresendõ szöveg""></th>"
+            End Select
+            .writeline "</tr>"
             '## A tábla fejlécének elsõ sora véget ért.
         
             '## A tábla feljécének második vagy harmadik sora készül -- az oszlopnevekkel
-            .WriteLine "<tr class=""collapsible-header elsosor "">"
+            .writeline "<tr class=""collapsible-header elsosor " & strÜresTábla & " "">"
         End With
         For Each fld In rs.Fields
         
@@ -159,22 +182,38 @@ Do Until lkEll.EOF 'Külsõ loop kezdete
             Else
                 headerClassName = "ptlo" ' Odd column
             End If
+            If strÜresTábla <> "" Then
+                headerClassName = strÜresTábla
+            End If
             ' CSS osztály név a fentiek szerint
-            hF.WriteLine "<th class='" & headerClassName & "'>" & fld.Name & "</th>"
+            hf.writeline "<th class='" & headerClassName & "'>" & fld.Name & "</th>"
             
             ' Oszlopszám növelése
             columnIndex = columnIndex + 1
         Next fld
-                hF.WriteLine "</tr>"
+                hf.writeline "</tr>"
                     '## Elkészült a fejléc második sora
-                hF.WriteLine "</thead>"
+                hf.writeline "</thead>"
                     '## Lezárva a fejléc ................................................
                     
                     '## Kezdõdik a táblatest ............................................
-                hF.WriteLine "<tbody>"
+                hf.writeline "<tbody>"
                 ' Loop through the recordset and write rows and columns
-        Do Until rs.EOF 'Belsõ loop
-            hF.WriteLine "<tr class=""collapsible-content collapsed"">"
+                If intSorokSzáma = 0 Then
+                    hf.writeline "<tr class=""collapsible-content  " & strÜresTábla & """ >"
+                    hf.writeline "<td colspan=""" & intOszlopokSzáma & """> Ez a tábla nem tartalmaz adatot. </td>"
+                    hf.writeline "</tr>"
+                End If
+                
+                If intSorokSzáma > maxsor Then
+                    sFoly oÛrl, névelõvel(táblaCím, , , True) & ":; A sorok száma több, mint " & maxsor & ", ezért átugorjuk."
+                    hf.writeline "<tr class=""collapsible-content  " & strÜresTábla & """ >"
+                    hf.writeline "<td colspan=""" & intOszlopokSzáma & """> Ez a tábla több, mint " & maxsor & " sort tartalmazna, ezért inkább egyet sem... </td>"
+                    hf.writeline "</tr>"
+                    GoTo Tovalép
+                End If
+        Do Until rs.EOF 'Belsõ, sor szintû loop
+            hf.writeline "<tr class=""collapsible-content "">"
             
             ' Reset the column index for each row
             columnIndex = 1
@@ -196,7 +235,9 @@ Do Until lkEll.EOF 'Külsõ loop kezdete
                         className = "ptlo" ' Odd row and odd column
                     End If
                 End If
-                
+                If strÜresTábla <> "" Then
+                    className = strÜresTábla
+                End If
                 ' Write the table cell with the determined class name
                 If columnIndex = 1 Then
                     className = "elsooszlop " & className
@@ -204,50 +245,52 @@ Do Until lkEll.EOF 'Külsõ loop kezdete
                 If columnIndex = rs.Fields.Count Then
                     className = "utolsooszlop " & className
                 End If
-                ' Debug.Print mezTip, fld.Name, fld.Value, className
+                'Debug.Print mezTip(columnIndex, 1), fld.Name, fld.Value, className
                 formáz = formazo(párkeresõ(mezTip, fld.Name), fld.Value, className)
-                hF.WriteLine formáz
+                hf.writeline formáz
                 ' Debug.Print
                 columnIndex = columnIndex + 1
             Next fld
             
-            hF.WriteLine "</tr>"
+            hf.writeline "</tr>"
             
             ' Increment the row index
             rowIndex = rowIndex + 1
             
             rs.MoveNext
         Loop ' Belsõ loop vége
-        With hF
-            .WriteLine "</table>"
-            .WriteLine "<script>"
+Tovalép:
+        With hf
+            .writeline "</table>"
+            .writeline "<script>"
             If vaneGraf Then
-                .WriteLine " generateLineChart('table" & TáblaSzám & "');"
+                .writeline " generateLineChart('table" & TáblaSzám & "');"
             End If
-            .WriteLine " handleFilter('table" & TáblaSzám & "');"
-            .WriteLine "</script>"
-            .WriteLine "<span class=""megjegyzes"">" & megj & "</span>"
-            .WriteLine "</div>"
-            .WriteLine "<br/>"
+            .writeline " handleFilter('table" & TáblaSzám & "');"
+            .writeline "</script>"
+            .writeline "<span class=""megjegyzes"">" & megj & "</span>"
+            .writeline "</div>"
+            .writeline "<br/>"
         End With
         sFoly oÛrl, névelõvel(táblaCím, , , True) & ":; elkészült."
         ' Close the recordset
         rs.Close
-        
+
         ' Move to the next query
         lkEll.MoveNext
 Loop
 'Külsõ loop
+    hf.writeline "<button id=""tetejereGomb"">Vissza a tetejére</button>"
     ' Behúzzuk a javascriptet
-    hF.WriteLine "<script src=""./js/hrellvég.js""></script>"
+    hf.writeline "<script src=""./js/hrellvég.js""></script>"
     ' Write the HTML file footer
-    hF.WriteLine "</div>" 'fõtartalom
-    hF.WriteLine "</div>" 'fõkeret
-    hF.WriteLine "</body>"
-    hF.WriteLine "</html>"
+    hf.writeline "</div>" 'fõtartalom
+    hf.writeline "</div>" 'fõkeret
+    hf.writeline "</body>"
+    hf.writeline "</html>"
     
     ' Close the HTML file
-    hF.Close
+    hf.Close
     
     ' Open the HTML file in the default web browser
     Shell "explorer.exe " & hfNév, vbNormalFocus
@@ -259,6 +302,8 @@ Err_Export:
 End Sub
 
 Function formazo(mezõTípus As Integer, érték As Variant, Optional className As String = "") As String
+    Dim hibakeres As Boolean
+    
     Select Case mezõTípus
         Case dbCurrency
         '5
@@ -279,6 +324,8 @@ Function formazo(mezõTípus As Integer, érték As Variant, Optional className As S
         Case Else
             formáz = Nz(érték, "") 'formázatlan
             className = className & " balrazart " '
+            hibakeres = True
     End Select
     formazo = "<td class='" & className & "'>" & formáz & "</td>"
+    'If hibakeres Then: Debug.Print formazo
 End Function

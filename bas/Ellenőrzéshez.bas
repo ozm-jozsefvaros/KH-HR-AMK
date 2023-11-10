@@ -89,7 +89,7 @@ Dim a As Boolean
     a = fvHaviTáblaImport(Fájlnév, Ûrlap)
 End Sub
 
-Public Function fvHaviTáblaImport(Fájlnév As String, Ûrlap As Object)
+Public Function fvHaviTáblaImport(ByVal Fájlnév As String, ByRef Ûrlap As Object) As Boolean
 'Licencia: MIT Oláh Zoltán 2022 (c)
     'Az Excel megnyitásához
     Dim objExcel        As Excel.Application
@@ -110,7 +110,7 @@ Public Function fvHaviTáblaImport(Fájlnév As String, Ûrlap As Object)
     
     'Az adatbázis megnyitásához
     Dim db              As DAO.Database     'Ez lesz az adatbázisunk
-    Dim háttérdb        As DAO.Database     'Ez a háttéradatbázis, ahol a táblák laknak
+    Dim strHáttérDb        As String     'Ez a háttéradatbázis, ahol a táblák laknak
     Dim rs              As DAO.Recordset    'A beolvasandó lapok és területek adatait tartalmazó táblának
     Dim rsCél           As DAO.Recordset    'Ahová másolunk
     Dim fájl            As String
@@ -125,6 +125,7 @@ Public Function fvHaviTáblaImport(Fájlnév As String, Ûrlap As Object)
     Dim sor, oszlop As Integer
     
     tábla = "tImportálandóTáblák"
+    strHáttérDb = "L:\Ugyintezok\Adatszolgáltatók\Adatbázisok\Háttértárak\Ellenõrzés_0.9.6_háttér_.mdb.accdb"
     intVégcella = 0
 'On Error GoTo hiba
     
@@ -170,10 +171,14 @@ Public Function fvHaviTáblaImport(Fájlnév As String, Ûrlap As Object)
         
         
         If DCount("[Name]", "MSysObjects", "[Name] = '" & xlTábla & "'") = 1 Then
-            DoCmd.Close acTable, xlTábla, acSaveYes
-            DoCmd.Rename xlTábla & RIC(Now()), acTable, xlTábla
+            CurrentDb.Execute "Delete * From " & xlTábla & ";", dbFailOnError
+'            DoCmd.Close acTable, xlTábla, acSaveYes
+'            DoCmd.Rename xlTábla & RIC(Now()), acTable, xlTábla
+        Else
+            CurrentDb.Execute "Delete * From " & xlTábla & "_tart;", dbFailOnError
+            DoCmd.CopyObject strHáttérDb, xlTábla, acTable, xlTábla & "_tart"
         End If
-        DoCmd.CopyObject , xlTábla, acTable, xlTábla & "_tart"
+'        DoCmd.CopyObject , xlTábla, acTable, xlTábla & "_tart"
 
         'Elkezdjük az adatok betöltését
         Set rsCél = db.OpenRecordset(xlTábla)
@@ -402,7 +407,7 @@ ErrorHandler:
     Debug.Print "Error: " & Err.Description
     Resume Kilépés
 End Sub
-Public Function tTáblaImport(strFájl As String, Ûrlap As Form, táblaNév As String)
+Public Function tTáblaImport(strFájl As String, Ûrlap As Form, táblanév As String)
     'On Error GoTo ErrorHandler
 
     Dim importSpecName As String
@@ -414,7 +419,7 @@ Public Function tTáblaImport(strFájl As String, Ûrlap As Form, táblaNév As Strin
     Dim Üzenet As String
     Dim válasz As Boolean
     
-    importSpecName = táblaNév '"tAdatváltoztatásiIgények"
+    importSpecName = táblanév '"tAdatváltoztatásiIgények"
 
     If strFájl <> "" Then
 
@@ -1234,29 +1239,31 @@ Sub TáblaMezõk()
     Dim mezõnév As String
     'Dim mezõnevek() As Variant
     
-    Dim táblaNév As String
+    Dim táblanév As String
     
     
-    sql = "SELECT Name FROM MSysObjects WHERE Flags=0 AND Type = 1 AND Name like 'tSzemélyek*' "
+    sql = "SELECT Name FROM MSysObjects WHERE (Flags=0 AND Type = 1 AND Name not like '~*') OR (Type = 6 AND Name not like '~*')"
     
     Set db = CurrentDb()
-    Set tbla = db.OpenRecordset("tTáblamezõk", dbOpenTable)
+    db.Execute ("Delete * from tTáblamezõk")
+    Set tbla = db.OpenRecordset("select * from tTáblamezõk")
         
     Set rs = db.OpenRecordset(sql)
         rs.MoveLast
         rs.MoveFirst
     
     Do Until rs.EOF
-        táblaNév = rs.Fields("Name")
-        sql2 = "SELECT TOP 1 * FROM [" & táblaNév & "];"
+        táblanév = rs.Fields("Name")
+        sql2 = "SELECT TOP 1 * FROM [" & táblanév & "];"
         Set rs2 = db.OpenRecordset(sql2)
         'Debug.Print táblanév, rs2.Fields.Count
         For mezõszám = 0 To rs2.Fields.Count - 1
             tbla.AddNew
-            tbla.Fields("táblanév") = táblaNév
+            tbla.Fields("táblanév") = táblanév
             mezõnév = rs2.Fields(mezõszám).Name
             tbla.Fields("mezõnév") = mezõnév
             tbla.Fields("sorszám") = mezõszám
+            tbla.Fields("típusa") = rs2.Fields(mezõszám).Type
             If InStr(1, mezõnév, "dátum") Then
                 'tbla.Fields = Date
             End If

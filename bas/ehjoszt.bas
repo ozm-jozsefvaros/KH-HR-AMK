@@ -7,13 +7,14 @@ Private piJelenlegiSzakasz As Integer 'a Szakaszok számlálója
 '###
 Public Sub Class_Initialize()
     piSzakaszSzám = 5
+    piJelenlegiSzakasz = 1
 End Sub
 Public Sub Ini(Optional Skála As Integer = 100)
         Dim xxx As String
         Dim i As Long
     xxx = ""
     piSkála = Skála
-    piJelenlegiSzakasz = 1
+    
     
     Status (xxx)
     For i = 1 To piSkála
@@ -58,6 +59,7 @@ Private Sub Frissit()
     Dim dblXszám As Double
     Dim n As Long
     Dim xxx As String
+    Dim dblÁllás As Double
     
     dblXszám = Round(piSkála * állás(), 0) ' Egész számra kerekítve a kiírandó X-ek száma
     xxx = ""
@@ -79,7 +81,7 @@ Private Sub Frissit()
     xxx = xxx & Round(állás() * 100, 0) & "%"
     'Application.StatusBar = xxx
     Status (xxx)
-    'Debug.Print dblÁllás
+    Debug.Print dblÁllás
     If dblXszám = piSkála Then Me.Torol
 End Sub
 Public Sub Torol()
@@ -93,7 +95,11 @@ Public Sub Torol()
 End Sub
 Private Function állás()
 'A jelenlegi állást adja vissza, kerekítés nélkül pl.:0,145789
-    állás = Me.Value / Me.OszlopSzam
+    If Me.OszlopSzam = 0 Then
+        állás = 0
+    Else
+        állás = Me.Value / Me.OszlopSzam
+    End If
 End Function
 Private Function SzakaszSzámláló() As Integer
     'a jelenlegi állás / (skála / szakszok száma) egész része

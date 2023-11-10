@@ -77,7 +77,7 @@ Public Function xmltisztító(ByVal szöveg As String) As String
     xmltisztító = szöveg
 End Function
 
-Function bfkh(kód As String) As String
+Function BFKH(kód As String) As String
 'Minden két pont között, ha csak egy karakter van, beszúr eléje egy 0-t. Pl.:BFKH.1.2. -> BKFH.01.02.
     Dim intN, i, intPoz As Integer
     Dim strÁtm, strElv As String
@@ -99,7 +99,7 @@ Function bfkh(kód As String) As String
         End Select
                 
     Next i
-    bfkh = strÁtm
+    BFKH = strÁtm
 End Function
 Public Function StrCount(ByVal szöveg As String, ByVal keresett As String) As Integer
 '------------------------------------------------------------------
@@ -363,28 +363,28 @@ Sub mezõTípusok(lek As String, hfNév As String)
     Dim db As DAO.Database
     Dim rk As Recordset
     'Dim hfnév As String
-    Dim hF As Object
+    Dim hf As Object
     
-    Set hF = CreateObject("Scripting.FileSystemObject").CreateTextFile(hfNév, True)
+    Set hf = CreateObject("Scripting.FileSystemObject").CreateTextFile(hfNév, True)
 
     Set db = CurrentDb
     Set rk = db.OpenRecordset(lek)
     rk.MoveFirst
-    hF.WriteLine "LekérdezésNeve;MezõNeve;MezõTénylegesTípusa"
+    hf.writeline "LekérdezésNeve;MezõNeve;MezõTénylegesTípusa"
     
     Do Until rk.EOF
         Dim rklek As Recordset
         Set rklek = db.OpenRecordset(rk("EllenõrzõLekérdezés"))
         Debug.Print rklek.Name
         For Each mezõ In rklek.Fields
-            hF.WriteLine rklek.Name & ";" & mezõ.Name & ";" & mezõ.Type
+            hf.writeline rklek.Name & ";" & mezõ.Name & ";" & mezõ.Type
             'Debug.Print rklek.Name; ";"; mezõ.Name; ";"; mezõ.Type
         Next mezõ
         rk.MoveNext
         Set rklek = Nothing
     Loop
-    hF.Close
-    Set hF = Nothing
+    hf.Close
+    Set hf = Nothing
     Debug.Print "----------------"
 End Sub
 Function vFldTípus(sql As String) As Variant
@@ -431,7 +431,7 @@ Function vFldTípus(sql As String) As Variant
     Set rs1 = Nothing
     Set db1 = Nothing
 End Function
-Function párkeresõ(tömb As Variant, keresett As Variant) As Variant
+Function párkeresõ(ByRef tömb As Variant, keresett As Variant) As Variant
 
     For i = 1 To UBound(tömb, 1)
         If tömb(i, 1) = keresett Then
@@ -442,5 +442,28 @@ Function párkeresõ(tömb As Variant, keresett As Variant) As Variant
         End If
     Next i
     'Ha nem találtunk üresen tér vissza
-    párkeresõ = ""
+    párkeresõ = 0
+End Function
+
+Function drhátra(név As String) As String
+'Megkeresi a név elején a "Dr. " szövegrészt és a végére teszi
+    Dim drv As Boolean
+    drv = False
+    
+    If LCase(Left(név, 3)) = "dr." Then
+        név = Trim(Right(név, Len(név) - 3)) & " dr."
+    End If
+    drhátra = név
+    név = ""
+End Function
+Function zárojeltelenítõ(ByVal név As Variant) As String
+    Dim zjh As String 'A zárójel helye
+    zjh = 0
+    név = Nz(név, "")
+    zjh = InStr(1, név, "(")
+    If zjh > 0 Then
+           zárojeltelenítõ = Trim(Left(név, zjh - 1))
+    Else
+        zárojeltelenítõ = név
+    End If
 End Function

@@ -1,4 +1,17 @@
-
+Sub egy()
+    Dim ehj             As New ehjoszt
+    ehj.Ini
+    ehj.OszlopSzam = 14
+    ehj.SzakaszSzám = 5
+    Debug.Print "sor", "JelSzak", "SzakaszSzám", "Érték", "Skála", "Oszlopszám"
+    For n = 0 To ehj.OszlopSzam
+        
+        Debug.Print n, ehj.JelenlegiSzakasz, ehj.SzakaszSzám, ehj.Value, ehj.Skála, ehj.OszlopSzam
+        ehj.Novel
+    Next n
+    ehj.Torol
+    
+End Sub
 
 Sub Status(pstrStatus As String)
     

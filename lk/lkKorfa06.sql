@@ -1,5 +1,2 @@
-SELECT lkKorfa04.Korcsoport AS Korcsoport,
-  lkKorfa04.FÃ©rfi AS FÃ©rfi,
-  lkKorfa04.NÅ‘ AS NÅ‘
+SELECT lkKorfa04.Korcsoport AS Korcsoport, lkKorfa04.Férfi AS Férfi, lkKorfa04.Nõ AS Nõ
 FROM lkKorfa04;
-

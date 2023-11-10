@@ -1,18 +1,15 @@
-SELECT Switch(Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=0 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=20,"20 Ã©v alatt:",
-Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=21 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=25,"21-25 Ã©vek kÃ¶zÃ¶tt:",
-Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=26 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=30,"26-30 Ã©vek kÃ¶zÃ¶tt:",
-Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=31 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=35,"31-35 Ã©vek kÃ¶zÃ¶tt:",
-Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=36 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=40,"36-40 Ã©vek kÃ¶zÃ¶tt:",
-Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=41 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=45,"41-45 Ã©vek kÃ¶zÃ¶tt:",
-Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=46 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=50,"46-50 Ã©vek kÃ¶zÃ¶tt:",
-Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=51 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=55,"51-55 Ã©vek kÃ¶zÃ¶tt:",
-Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=56 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=60,"56-60 Ã©vek kÃ¶zÃ¶tt:",
-Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=61 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=65,"61-65 Ã©vek kÃ¶zÃ¶tt:",
-Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=66 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=70,"66-70 Ã©vek kÃ¶zÃ¶tt:",
-Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])>=71 AND Year(Now())-Year([lkSzemÃ©lyek].[SzÃ¼letÃ©si idÅ‘])<=200,"70 Ã©v fÃ¶lÃ¶tt:",
-) AS Korcsoport, 
-  lkSzemÃ©lyek.AdÃ³jel AS adÃ³,
-  IIf(lkSzemÃ©lyek.Neme="fÃ©rfi",-1,0) as FÃ©rfi,
-  IIF(lkSzemÃ©lyek.Neme<>"fÃ©rfi",1,0) as NÅ‘
-FROM lkSzemÃ©lyek
-WHERE tSzemÃ©lyek.[StÃ¡tusz neve]="ÃllÃ¡shely";
+SELECT Switch(Year(Now())-Year([lkSzemélyek].[Születési idõ])>=0 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=20,"20 év alatt:",
+Year(Now())-Year([lkSzemélyek].[Születési idõ])>=21 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=25,"21-25 évek között:",
+Year(Now())-Year([lkSzemélyek].[Születési idõ])>=26 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=30,"26-30 évek között:",
+Year(Now())-Year([lkSzemélyek].[Születési idõ])>=31 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=35,"31-35 évek között:",
+Year(Now())-Year([lkSzemélyek].[Születési idõ])>=36 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=40,"36-40 évek között:",
+Year(Now())-Year([lkSzemélyek].[Születési idõ])>=41 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=45,"41-45 évek között:",
+Year(Now())-Year([lkSzemélyek].[Születési idõ])>=46 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=50,"46-50 évek között:",
+Year(Now())-Year([lkSzemélyek].[Születési idõ])>=51 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=55,"51-55 évek között:",
+Year(Now())-Year([lkSzemélyek].[Születési idõ])>=56 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=60,"56-60 évek között:",
+Year(Now())-Year([lkSzemélyek].[Születési idõ])>=61 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=65,"61-65 évek között:",
+Year(Now())-Year([lkSzemélyek].[Születési idõ])>=66 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=70,"66-70 évek között:",
+Year(Now())-Year([lkSzemélyek].[Születési idõ])>=71 AND Year(Now())-Year([lkSzemélyek].[Születési idõ])<=200,"70 év fölött:",
+) AS Korcsoport, lkSzemélyek.Adójel AS adó, IIf(lkSzemélyek.Neme="férfi",-1,0) AS Férfi, IIf(lkSzemélyek.Neme<>"férfi",1,0) AS Nõ
+FROM lkSzemélyek
+WHERE tSzemélyek.[Státusz neve]="Álláshely";

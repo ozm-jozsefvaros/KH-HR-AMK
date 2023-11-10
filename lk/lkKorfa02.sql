@@ -1,5 +1,3 @@
-SELECT Korcsoport, 
-  sum([FÃ©rfi]) as  FÃ©rfiak,
-  sum([NÅ‘]) as NÅ‘k
+SELECT Korcsoport, sum([Férfi]) AS Férfiak, sum([Nõ]) AS Nõk
 FROM lkKorfa01
 GROUP BY Korcsoport;

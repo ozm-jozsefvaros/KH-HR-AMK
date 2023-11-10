@@ -1,5 +1,3 @@
-SELECT "Ã–sszesen:" AS Korcsoport, 
-  Sum(lkKorfa02.FÃ©rfiak) AS FÃ©rfiak, 
-  Sum(lkKorfa02.NÅ‘k) AS NÅ‘k
+SELECT "Összesen:" AS Korcsoport, Sum(lkKorfa02.Férfiak) AS Férfiak, Sum(lkKorfa02.Nõk) AS Nõk
 FROM lkKorfa02
-GROUP BY "Ã–sszesen:";
+GROUP BY "Összesen:";

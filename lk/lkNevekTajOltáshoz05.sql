@@ -1,0 +1,3 @@
+SELECT lkSzemélyek.Fõosztály, lkSzemélyek.Osztály, lkSzemélyek.[dolgozó teljes neve] AS DolgTeljNév, lkSzemélyek.[TAJ szám], [Születési hely] & ", " & [Születési idõ] AS [szül hely \ idõ], lkSzemélyek.[Anyja neve], lkSzemélyek.[Állandó lakcím], lkNevekTajOltáshoz04.Oltandók, lkSzemélyek.[Hivatali email]
+FROM lkSzemélyek RIGHT JOIN lkNevekTajOltáshoz04 ON (lkSzemélyek.Fõosztály=lkNevekTajOltáshoz04.Fõosztály_) AND (lkSzemélyek.Osztály=lkNevekTajOltáshoz04.Osztály_)
+WHERE (((lkSzemélyek.[dolgozó teljes neve]) Like "*" & [Név] & "*" Or (lkSzemélyek.[dolgozó teljes neve]) Like "*" & [Oltandók] & "*"));

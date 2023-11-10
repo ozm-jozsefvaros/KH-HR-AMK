@@ -1,24 +1,4 @@
-SELECT tSzemÃ©lyek.*,
- Replace(Nz(
-    IIf(IsNull([tSzemÃ©lyek].[Szint 4 szervezeti egysÃ©g nÃ©v]),
-            IIf(IsNull([tSzemÃ©lyek].[Szint 3 szervezeti egysÃ©g nÃ©v]),
-                [tSzemÃ©lyek].[Szint 2 szervezeti egysÃ©g nÃ©v] & "",
-                [tSzemÃ©lyek].[Szint 3 szervezeti Ã© nÃ©v] & ""),
-            [tSzemÃ©lyek].[Szint 4 szervezeti Ã© nÃ©v] & ""),
-        ""),
-    "Budapest Fï¿½vï¿½ros Kormï¿½nyhivatala ",
-    "BFKH ") AS Fï¿½osztï¿½ly, 
-Replace(Nz(IIf(IsNull(tSzemÃ©lyek.[Szint 4 szervezeti Ã© kï¿½d]),IIf(IsNull(tSzemÃ©lyek.[Szint 3 szervezeti Ã© kï¿½d]),tSzemÃ©lyek.[Szint 2 szervezeti Ã© kï¿½d] & "",tSzemÃ©lyek.[Szint 3 szervezeti Ã© kï¿½d] & ""),tSzemÃ©lyek.[Szint 4 szervezeti Ã© kï¿½d] & ""),""),"Budapest Fï¿½vï¿½ros Kormï¿½nyhivatala ","BFKH ") AS Fï¿½osztï¿½lyKï¿½d, tSzemÃ©lyek.[Szint 5 szervezeti Ã© nÃ©v] AS Osztï¿½ly, Replace(Nz([Munkavï¿½gzï¿½s helye - cï¿½m],"")," .",".") AS Munkavï¿½gzï¿½sCï¿½me, tSzemÃ©lyek.[besorolï¿½si  fokozat (KT)] AS Besorolï¿½s, Replace(Nz([Besorolï¿½si  fokozat (KT)],"/ "),"/ ","") AS Besorolï¿½s2, bfkh(Nz([szervezeti Ã© kï¿½dja],0)) AS BFKH
-FROM tSzemÃ©lyek
-WHERE (
-    (
-        (
-            (SELECT Max(Tmp.[Jogviszony sorszÃ¡ma]) AS [MaxOfJogviszony sorszÃ¡ma]         
-            FROM tSzemÃ©lyek as Tmp         
-            WHERE tSzemÃ©lyek.AdÃ³jel=Tmp.AdÃ³jel         
-            GROUP BY Tmp.AdÃ³jel     
-            )
-        )=[Jogviszony sorszÃ¡ma]
-    )
-)
-ORDER BY tSzemÃ©lyek.[DolgozÃ³ teljes neve];
+SELECT tSzemélyek.*, Replace(Nz(IIf(IsNull([tSzemélyek].[Szint 4 szervezeti egység név]),IIf(IsNull([tSzemélyek].[Szint 3 szervezeti egység név]),[tSzemélyek].[Szint 2 szervezeti egység név] & "",[tSzemélyek].[Szint 3 szervezeti egység név] & ""),[tSzemélyek].[Szint 4 szervezeti egység név] & ""),""),"Budapest Fõváros Kormányhivatala ","BFKH ") & "" AS Fõosztály, Replace(Nz(IIf(IsNull(tSzemélyek.[Szint 4 szervezeti egység kód]),IIf(IsNull(tSzemélyek.[Szint 3 szervezeti egység kód]),tSzemélyek.[Szint 2 szervezeti egység kód] & "",tSzemélyek.[Szint 3 szervezeti egység kód] & ""),tSzemélyek.[Szint 4 szervezeti egység kód] & ""),""),"Budapest Fõváros Kormányhivatala ","BFKH ") AS FõosztályKód, [Szint 5 szervezeti egység név] & "" AS Osztály, Replace(Nz([Munkavégzés helye - cím],"")," .",".") AS MunkavégzésCíme, tSzemélyek.[besorolási  fokozat (KT)] AS Besorolás, Replace(Nz([Besorolási  fokozat (KT)],"/ "),"/ ","") AS Besorolás2, bfkh(Nz([szervezeti egység kódja],0)) AS BFKH
+FROM tSzemélyek
+WHERE ((((SELECT Max(Tmp.[Jogviszony sorszáma]) AS [MaxOfJogviszony sorszáma]         FROM tSzemélyek as Tmp         WHERE tSzemélyek.Adójel=Tmp.Adójel         GROUP BY Tmp.Adójel     ))=[Jogviszony sorszáma]))
+ORDER BY tSzemélyek.[Dolgozó teljes neve];

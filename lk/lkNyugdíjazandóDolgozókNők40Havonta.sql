@@ -1,0 +1,3 @@
+SELECT Year(IIf([58_ életévét betölti]<Date(),Date(),[58_ életévét betölti])) & "." & IIf(Len(Month(IIf([58_ életévét betölti]<Date(),Date(),[58_ életévét betölti])))<2,0,"") & Month(IIf([58_ életévét betölti]<Date(),Date(),[58_ életévét betölti])) AS Hónapok, Count(lkNyugdíjazandóDolgozókNõk40.[Dolgozó teljes neve]) AS Létszám
+FROM lkNyugdíjazandóDolgozókNõk40
+GROUP BY Year(IIf([58_ életévét betölti]<Date(),Date(),[58_ életévét betölti])) & "." & IIf(Len(Month(IIf([58_ életévét betölti]<Date(),Date(),[58_ életévét betölti])))<2,0,"") & Month(IIf([58_ életévét betölti]<Date(),Date(),[58_ életévét betölti]));

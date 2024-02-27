@@ -41,7 +41,7 @@ Public Sub ExportQueriesAndProceduresToFiles()
     ' Loop through all modules (using Application.Modules collection)
     mappa = "bas\"
 
-    For i = 0 To Application.Modules.Count - 1 ' mdl In Application.Modules
+    For i = 0 To Application.Modules.count - 1 ' mdl In Application.Modules
         Set mdl = Application.Modules(i)
         If Not mdl.Name Like "msys*" Then ' Exclude system modules
             konyvtarzo strExportPath & mappa
@@ -55,7 +55,7 @@ Public Sub ExportQueriesAndProceduresToFiles()
     
     'Mentett ExportImport-ok kiíratása
     mappa = "XML\"
-    For i = 0 To CurrentProject.ImportExportSpecifications.Count - 1
+    For i = 0 To CurrentProject.ImportExportSpecifications.count - 1
         Set mentett = CurrentProject.ImportExportSpecifications.Item(i)
         With mentett
             konyvtarzo strExportPath & mappa
@@ -77,31 +77,45 @@ ErrorHandler:
     MsgBox "An error occurred: " & Err.Description, vbExclamation
     
 End Sub
+Function függõk(lekNév)
+Dim db As DAO.Database
+Set db = CurrentDb
+Dim qdf As QueryDef
+
+    For Each qdf In db.QueryDefs
+        If Not qdf.Name Like "~*" Then ' Exclude system queries
+            If InStr(1, qdf.sql, lekNév) Then
+                függõk = függõk & qdf.Name & ","
+            End If
+        End If
+    Next qdf
+    függõk = Left(függõk, Len(függõk) - 1)
+End Function
 Sub konyvtarzo(útvonal As String)
 'Ha a megadott könyvtár nem létezik, akkor létre hoz egyet.
     If Dir(útvonal, vbDirectory) = "" Then
         MkDir útvonal
     End If
 End Sub
-Sub próba02()
-    Dim sor, oszlop As Integer
-    Dim ehj As New ehjoszt
-    Dim ElõzõSzakasz As Integer
-    
-    ehj.Ini
-    ehj.OszlopSzam = 14
-    ehj.SzakaszSzám = 5
-    'Debug.Print ehj.SzakaszSzám, ehj.JelenlegiSzakasz
-    For i = 0 To ehj.OszlopSzam - 1
-        ehj.Novel
-        If ehj.JelenlegiSzakasz > ElõzõSzakasz Then
-            'Debug.Print Round(ehj.JelenlegiSzakasz / ehj.SzakaszSzám * 100, 0)
-            ElõzõSzakasz = ehj.JelenlegiSzakasz
-        End If
-        várakozás
-    Next i
-    ehj.Torol
-End Sub
+'Sub próba02()
+'    Dim sor, oszlop As Integer
+'    Dim ehj As New ehjoszt
+'    Dim ElõzõSzakasz As Integer
+'
+'    ehj.Ini
+'    ehj.OszlopSzam = 14
+'    'ehj.SzakaszSzám = 5
+'    'Debug.Print ehj.SzakaszSzám, ehj.JelenlegiSzakasz
+'    For i = 0 To ehj.OszlopSzam - 1
+'        ehj.Novel
+'        If ehj.JelenlegiSzakasz > ElõzõSzakasz Then
+'            'Debug.Print Round(ehj.JelenlegiSzakasz / ehj.SzakaszSzám * 100, 0)
+'            ElõzõSzakasz = ehj.JelenlegiSzakasz
+'        End If
+'        várakozás
+'    Next i
+'    ehj.Torol
+'End Sub
 Sub várakozás(Optional mp As Integer = 1)
 'Másodpercben megadott ideig várakozik
 Dim tMost As Variant

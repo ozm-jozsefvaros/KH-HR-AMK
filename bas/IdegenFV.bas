@@ -56,9 +56,9 @@ End Function
 'Code Courtesy of
 'Dev Ashish
 '
-Public Function Kerek( _
+Public Function Kerekít( _
     ByVal Number As Variant, _
-    NumDigits As Long, _
+    Optional NumDigits As Long = 0, _
     Optional UseBankersRounding As Boolean = False) As Double
 '
 ' ---------------------------------------------------
@@ -101,4 +101,49 @@ Public Function Kerek( _
   Kerek = intSgn * Int(varTemp) / dblPower
 End Function
 ' ********** Code End **************
+Public Function TableExists(ByVal strTableName As String, Optional ysnRefresh As Boolean, Optional db As DAO.Database) As Boolean
+    ' Originally Based on Tony Toews function in TempTables.MDB, http://www.granite.ab.ca/access/temptables.htm
+    ' Based on testing, when passed an existing database variable, this is the fastest
+    On Error GoTo errHandler
+      Dim tdf As DAO.TableDef
+    
+      If db Is Nothing Then Set db = CurrentDb()
+      If ysnRefresh Then db.TableDefs.Refresh
+      Set tdf = db(strTableName)
+      TableExists = True
+    
+exitRoutine:
+      Set tdf = Nothing
+      Exit Function
+    
+errHandler:
+      Select Case Err.Number
+        Case 3265
+          TableExists = False
+        Case Else
+          MsgBox Err.Number & ": " & Err.Description, vbCritical, "Error in mdlBackup.TableExists()"
+      End Select
+      Resume exitRoutine
+End Function
 
+Public Function SetNavPaneGroup(strObjName, strGroupName)
+'## © JBStovers (Apr 17, 2018 at 18:03)
+'## forrás: https://stackoverflow.com/questions/12863959/access-custom-group
+
+    Dim strSQL, idObj, idGrp, db
+    Set db = CurrentDb
+    idObj = DLookup("Id", "MSysNavPaneObjectIDs", "Name='" & strObjName & "'")
+    idGrp = DLookup("Id", "MSysNavPaneGroups", "Name='" & strGroupName & "'")
+
+    If DCount("*", "MSysNavPaneGroupToObjects", "GroupID = " & idGrp & " AND ObjectID = " & idObj) > 0 Then
+        strSQL = "UPDATE MSysNavPaneGroupToObjects SET GroupID = " & idGrp & ", Name='" & strObjName & "' WHERE ObjectID = " & idObj
+        db.Execute strSQL, dbFailOnError
+    Else
+        strSQL = "INSERT INTO MSysNavPaneGroupToObjects ( GroupID, ObjectID, Name ) " & vbCrLf & _
+        "VALUES (" & idGrp & "," & idObj & ",'" & strObjName & "');"
+        db.Execute strSQL, dbFailOnError
+    End If
+    RefreshDatabaseWindow
+    Set db = Nothing
+    
+End Function

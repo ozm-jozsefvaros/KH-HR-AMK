@@ -1,0 +1,3 @@
+SELECT lk_Garantált_bérminimum_Illetmények.[Dolgozó teljes neve], lk_Garantált_bérminimum_Illetmények.[Álláshely azonosító], lkSzemélyek.[Besorolási  fokozat (KT)]
+FROM lkSzemélyek INNER JOIN lk_Garantált_bérminimum_Illetmények ON lkSzemélyek.tSzemélyek.Adójel = lk_Garantált_bérminimum_Illetmények.Adójel
+WHERE (((lk_Garantált_bérminimum_Illetmények.[Álláshely azonosító]) In (SELECT lk_Garantált_bérminimum_Illetmények.[Álláshely azonosító] FROM lk_Garantált_bérminimum_Illetmények LEFT JOIN lkSzemélyek ON lk_Garantált_bérminimum_Illetmények.[Álláshely azonosító] = lkSzemélyek.[Státusz kódja] GROUP BY lk_Garantált_bérminimum_Illetmények.[Álláshely azonosító] HAVING (((Count(lkSzemélyek.[Státusz kódja]))>1)))));

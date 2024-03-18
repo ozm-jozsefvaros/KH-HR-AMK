@@ -1,0 +1,2 @@
+SELECT IIf(Nz([lkSzemélyek].[Fõosztály],"")="",[lkKilépõUnió].[Fõosztály],[lkSzemélyek].[Fõosztály]) AS Fõoszt, IIf(Nz([lkSzemélyek].[osztály],"")="",[lkKilépõUnió].[osztály],[lkSzemélyek].[osztály]) AS Oszt, tKSZDRhibák.Név, tKSZDRhibák.Adószám, tKSZDRhibák.[KSZDR hiányzó adat], tKSZDRhibák.Megoldások, lkSzemélyek.[Jogviszony vége (kilépés dátuma)]
+FROM lkKilépõUnió RIGHT JOIN (lkSzemélyek RIGHT JOIN tKSZDRhibák ON lkSzemélyek.Adójel = tKSZDRhibák.Adószám) ON lkKilépõUnió.Adójel = tKSZDRhibák.Adószám;

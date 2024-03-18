@@ -1,0 +1,2 @@
+SELECT lkJárásiKormányKözpontosítottUnió.[Álláshely azonosító], lkJárásiKormányKözpontosítottUnió.Kinevezés, IIf([Születési év \ üres állás]="üres állás",True,False) AS Üres, IIf([Kinevezés]<Date(),True,False) AS Korábbi, IIf([Kinevezés]>Date(),True,False) AS Késõbbi, [Kinevezés]=Date() AS Mai, Switch([Üres] And [Korábbi],"üres",[üres] And [késõbbi],"betöltött",[üres] And [mai],"üres",Not [üres] And [Mai],"betöltött",Not [üres] And [korábbi],"betöltött",Not [üres] And [késõbbi],"üres") AS Állapot
+FROM lkJárásiKormányKözpontosítottUnió;

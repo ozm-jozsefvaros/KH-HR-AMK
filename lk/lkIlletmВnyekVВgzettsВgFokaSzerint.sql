@@ -1,0 +1,4 @@
+SELECT lkSzemélyek.Fõosztály, lkLegmagasabbVégzettség05.FirstOfazFok, Avg([KT: Kerekített 100 %-os illetmény (eltérített) + Helyettesítési ]/[Elméleti (szerzõdés/kinevezés szerinti) ledolgozandó heti óraker]*40) AS Illetmény, tVégzFok.Végzettségek
+FROM tVégzFok INNER JOIN ((lkSzemélyek INNER JOIN lkLegmagasabbVégzettség05 ON lkSzemélyek.[Adóazonosító jel] = lkLegmagasabbVégzettség05.[Dolgozó azonosító]) LEFT JOIN lkMindenVezetõ ON lkSzemélyek.[Adóazonosító jel] = lkMindenVezetõ.[Adóazonosító jel]) ON tVégzFok.azFok = lkLegmagasabbVégzettség05.FirstOfazFok
+WHERE (((lkSzemélyek.Fõosztály) Like "Humán*") AND ((lkMindenVezetõ.[Adóazonosító jel]) Is Null) AND ((lkSzemélyek.[Tartós távollét típusa]) Is Null) AND (("###### Ez a lekérdezés kommentje ######")<>False))
+GROUP BY lkSzemélyek.Fõosztály, lkLegmagasabbVégzettség05.FirstOfazFok, tVégzFok.Végzettségek;

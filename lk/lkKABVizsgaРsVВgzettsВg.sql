@@ -1,0 +1,6 @@
+SELECT DISTINCT KABVizgaÉsKABVégzettségUnió.Adójel, KABVizgaÉsKABVégzettségUnió.BFKH, KABVizgaÉsKABVégzettségUnió.Fõosztály, KABVizgaÉsKABVégzettségUnió.Osztály, KABVizgaÉsKABVégzettségUnió.Név, KABVizgaÉsKABVégzettségUnió.Belépés
+FROM (SELECT Adójel, lkKABKormányablakVégzettségûek.BFKH, lkKABKormányablakVégzettségûek.Fõosztály, lkKABKormányablakVégzettségûek.Osztály, lkKABKormányablakVégzettségûek.Név, lkKABKormányablakVégzettségûek.Belépés
+FROM lkKABKormányablakVégzettségûek
+UNION
+SELECT Adójel, lkKABKormányablakVizsgávalRendelkezõk.BFKH, lkKABKormányablakVizsgávalRendelkezõk.Fõosztály, lkKABKormányablakVizsgávalRendelkezõk.Osztály, lkKABKormányablakVizsgávalRendelkezõk.Név, lkKABKormányablakVizsgávalRendelkezõk.Belépés
+FROM  lkKABKormányablakVizsgávalRendelkezõk)  AS KABVizgaÉsKABVégzettségUnió;

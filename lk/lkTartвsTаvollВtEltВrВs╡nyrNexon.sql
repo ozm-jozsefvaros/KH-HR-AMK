@@ -1,0 +1,4 @@
+SELECT lkSzemélyek.Fõosztály, lkSzemélyek.Osztály, lkSzemélyek.[Dolgozó teljes neve], lkSzemélyek.[Státusz kódja], lkSzemélyek.[Tartós távollét típusa], lkÁlláshelyek.[Álláshely státusza], kt_azNexon_Adójel02.NLink
+FROM kt_azNexon_Adójel02 RIGHT JOIN (lkSzemélyek LEFT JOIN lkÁlláshelyek ON lkSzemélyek.[Státusz kódja] = lkÁlláshelyek.[Álláshely azonosító]) ON kt_azNexon_Adójel02.Adójel = lkSzemélyek.Adójel
+WHERE (((lkSzemélyek.[Tartós távollét típusa]) Is Null) AND ((lkÁlláshelyek.[Álláshely státusza]) Not Like "*betöltött*" And (lkÁlláshelyek.[Álláshely státusza])<>"betöltetlen") AND ((lkSzemélyek.[Státusz neve])="álláshely")) OR (((lkSzemélyek.[Tartós távollét típusa]) Is Not Null And (lkSzemélyek.[Tartós távollét típusa])<>"CSED") AND ((lkÁlláshelyek.[Álláshely státusza]) Not Like "*tartós*") AND ((lkSzemélyek.[Státusz neve])="álláshely"))
+ORDER BY lkSzemélyek.BFKH;

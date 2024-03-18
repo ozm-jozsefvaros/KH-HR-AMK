@@ -1,0 +1,2 @@
+SELECT lkVárosKerületenkéntiFõosztályonkéntiLétszám01.Fõosztály, lkVárosKerületenkéntiFõosztályonkéntiLétszám01.Kerület, [Létszám]/[FõosztályiLétszám] AS Arány
+FROM lkVárosKerületenkéntiFõosztályonkéntiLétszám01 INNER JOIN lkFõosztályonkéntiBetöltöttLétszám ON lkVárosKerületenkéntiFõosztályonkéntiLétszám01.Fõosztály = lkFõosztályonkéntiBetöltöttLétszám.Fõosztály;

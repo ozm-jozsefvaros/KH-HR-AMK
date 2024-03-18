@@ -1,0 +1,2 @@
+SELECT DISTINCT lk¡ll·shelyek.[¡ll·shely azonosÌtÛ], lk¡ll·shelyek.[¡ll·shely besorol·si kategÛri·ja], lk¡ll·shelyek.jel2
+FROM lk¡ll·shelyek;

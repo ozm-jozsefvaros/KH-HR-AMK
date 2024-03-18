@@ -1,0 +1,3 @@
+SELECT lkSzemélyek.[Dolgozó teljes neve], lkSzemélyek.[Dolgozó születési neve], lkSzemélyek.[Anyja neve], lkSzemélyek.[Születési idõ], lkSzemélyek.[Hivatali email], lkSzemélyek.[Jogviszony kezdete (belépés dátuma)]
+FROM lkSzemélyek
+WHERE (((lkSzemélyek.[Jogviszony kezdete (belépés dátuma)]) Between #1/5/2020# And #4/30/2022#) AND ((lkSzemélyek.[Státusz neve])="Álláshely") AND ((lkSzemélyek.[Tartós távollét típusa]) Is Null) AND ((lkSzemélyek.[Jogviszony típusa / jogviszony típus]) Like "Kormány*") AND ((lkSzemélyek.[Besorolási  fokozat (KT)]) Not Like "*osztály*" And (lkSzemélyek.[Besorolási  fokozat (KT)]) Not Like "*járás*" And (lkSzemélyek.[Besorolási  fokozat (KT)]) Not Like "*igazg*" And (lkSzemélyek.[Besorolási  fokozat (KT)])<>"fõispán"));

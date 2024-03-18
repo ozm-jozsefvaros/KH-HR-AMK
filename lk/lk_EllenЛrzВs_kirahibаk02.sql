@@ -1,0 +1,2 @@
+SELECT lk_Ellenõrzés_kirahibák01.BFKH, lk_Ellenõrzés_kirahibák01.Fõosztály, lk_Ellenõrzés_kirahibák01.Osztály, lk_Ellenõrzés_kirahibák01.Adójel, lk_Ellenõrzés_kirahibák01.Név, lk_Ellenõrzés_kirahibák01.Hiba, lk_Ellenõrzés_kirahibák01.Magyarázat, kt_azNexon_Adójel02.NLink
+FROM kt_azNexon_Adójel02 RIGHT JOIN lk_Ellenõrzés_kirahibák01 ON kt_azNexon_Adójel02.Adójel = lk_Ellenõrzés_kirahibák01.Adójel;

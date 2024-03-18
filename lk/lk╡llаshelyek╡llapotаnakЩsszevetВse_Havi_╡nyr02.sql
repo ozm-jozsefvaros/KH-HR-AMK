@@ -1,0 +1,4 @@
+SELECT lk_Fõosztály_Osztály_tSzervezet.Fõosztály AS Fõosztály, lk_Fõosztály_Osztály_tSzervezet.Osztály AS Osztály, lkSzemélyek.[Dolgozó teljes neve] AS Név, lkÁlláshelyekÁllapotánakÖsszevetése_Havi_Ányr01.[Álláshely azonosító] AS [Státusz kód], lkÁlláshelyekÁllapotánakÖsszevetése_Havi_Ányr01.Ányr AS Ányr, lkÁlláshelyekÁllapotánakÖsszevetése_Havi_Ányr01.Nexon AS Nexon, kt_azNexon_Adójel02.NLink AS NLink
+FROM (lk_Fõosztály_Osztály_tSzervezet RIGHT JOIN (lkSzemélyek RIGHT JOIN lkÁlláshelyekÁllapotánakÖsszevetése_Havi_Ányr01 ON lkSzemélyek.[Státusz kódja] = lkÁlláshelyekÁllapotánakÖsszevetése_Havi_Ányr01.[Álláshely azonosító]) ON lk_Fõosztály_Osztály_tSzervezet.[Szervezetmenedzsment kód] = lkÁlláshelyekÁllapotánakÖsszevetése_Havi_Ányr01.BFKHkód) LEFT JOIN kt_azNexon_Adójel02 ON lkSzemélyek.Adójel = kt_azNexon_Adójel02.Adójel
+WHERE (((IIf([Ányr]<>[Nexon],1,0))<>0))
+ORDER BY lk_Fõosztály_Osztály_tSzervezet.bfkhkód, lkSzemélyek.[Dolgozó teljes neve];

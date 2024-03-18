@@ -1,0 +1,2 @@
+SELECT Álláshelyek.[Álláshely azonosító], Álláshelyek.[Álláshely típusa], IIf([Álláshely státusza] Like "*tartósan távollévõ*","betöltött",[Álláshely státusza]) AS Ányr, IIf([Állapot]="üres","betöltetlen",[Állapot]) AS Nexon, lkÁlláshelyek_Alaplétszám.[ÁNYR SZERVEZETI EGYSÉG AZONOSÍTÓ] AS BFKHkód
+FROM lkÁlláshelyek_Alaplétszám RIGHT JOIN Álláshelyek ON lkÁlláshelyek_Alaplétszám.[Álláshely azonosító]=Álláshelyek.[Álláshely azonosító];

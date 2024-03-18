@@ -1,0 +1,2 @@
+SELECT lkÁlláshelyek.Fõosztály, lkÁlláshelyek.[Álláshely státusza] AS [Állapot ÁNYR], tBesorolás_átalakító.Üres, lkÁlláshelyek.[Álláshely azonosító]
+FROM (lkÁlláshelyek LEFT JOIN lkÁlláshelyekHaviból ON lkÁlláshelyek.[Álláshely azonosító]=lkÁlláshelyekHaviból.[Álláshely azonosító]) LEFT JOIN tBesorolás_átalakító ON lkÁlláshelyekHaviból.[Besorolási fokozat kód:]=tBesorolás_átalakító.[Az álláshely jelölése];

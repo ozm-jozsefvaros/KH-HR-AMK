@@ -1,0 +1,3 @@
+SELECT lkSzemélyek.[TAJ szám], lkSzemélyek.[Jogviszony kezdete (belépés dátuma)], lkSzemélyek.[Jogviszony vége (kilépés dátuma)], lkSzemélyek.[Jogviszony típusa / jogviszony típus]
+FROM lkSzemélyek
+WHERE (((lkSzemélyek.[Jogviszony vége (kilépés dátuma)]) Is Null Or (lkSzemélyek.[Jogviszony vége (kilépés dátuma)])>=#1/1/2023#) AND ((lkSzemélyek.[Jogviszony típusa / jogviszony típus])="Kormányzati szolgálati jogviszony")) OR (((lkSzemélyek.[Jogviszony vége (kilépés dátuma)]) Is Null Or (lkSzemélyek.[Jogviszony vége (kilépés dátuma)])>=#1/1/2023#) AND ((lkSzemélyek.[Jogviszony típusa / jogviszony típus])="Munkaviszony"));

@@ -1,0 +1,5 @@
+SELECT Trim(Replace(Replace(Replace([lkKilépõUnió].[Fõosztály],"Budapest Fõváros Kormányhivatala","BFKH")," 20200229-ig",""),"Budapest FõvárosKormányhivatala","BFKH")) AS Fõosztály, Replace([lkKilépõUnió].[Osztály]," 20200229-ig","") AS Osztály, Year([JogviszonyVége]) AS Év, Month([JogviszonyVége]) AS Hó, Count(lkSzemélyekMind.Azonosító) AS [Kilépõk száma]
+FROM lkSzemélyekMind RIGHT JOIN lkKilépõUnió ON (lkSzemélyekMind.[Adóazonosító jel] = lkKilépõUnió.Adóazonosító) AND (lkSzemélyekMind.JogviszonyVége = lkKilépõUnió.[Jogviszony megszûnésének, megszüntetésének idõpontja])
+WHERE (((lkSzemélyekMind.[KIRA jogviszony jelleg]) Like "Kormányzati*" Or (lkSzemélyekMind.[KIRA jogviszony jelleg])="Munkaviszony") AND ((lkSzemélyekMind.JogviszonyVége)<>0) AND ((Year([JogviszonyVége]))>=2019 And (Year([JogviszonyVége]))<=Year(Now())+1))
+GROUP BY Trim(Replace(Replace(Replace([lkKilépõUnió].[Fõosztály],"Budapest Fõváros Kormányhivatala","BFKH")," 20200229-ig",""),"Budapest FõvárosKormányhivatala","BFKH")), Replace([lkKilépõUnió].[Osztály]," 20200229-ig",""), Year([JogviszonyVége]), Month([JogviszonyVége])
+ORDER BY Year([JogviszonyVége]), Month([JogviszonyVége]);

@@ -1,0 +1,3 @@
+SELECT lkEllenõrzõLekérdezések2.EllenõrzõLekérdezés, Count(tLekérdezésMezõTípusok.MezõNeve) AS CountOfMezõNeve
+FROM lkEllenõrzõLekérdezések2 LEFT JOIN tLekérdezésMezõTípusok ON lkEllenõrzõLekérdezések2.EllenõrzõLekérdezés = tLekérdezésMezõTípusok.LekérdezésNeve
+GROUP BY lkEllenõrzõLekérdezések2.EllenõrzõLekérdezés;

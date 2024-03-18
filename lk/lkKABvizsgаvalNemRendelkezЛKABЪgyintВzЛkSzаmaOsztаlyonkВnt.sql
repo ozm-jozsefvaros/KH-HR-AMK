@@ -1,0 +1,4 @@
+SELECT lkKABvizsgávalNemRendelkezõKABÜgyintézõk.Kormányhivatal, lkKABvizsgávalNemRendelkezõKABÜgyintézõk.Hivatal, lkKABvizsgávalNemRendelkezõKABÜgyintézõk.Osztály, Count(lkKABvizsgávalNemRendelkezõKABÜgyintézõk.Adójel) AS CountOfAdójel
+FROM lkKABvizsgávalNemRendelkezõKABÜgyintézõk
+WHERE (((lkKABvizsgávalNemRendelkezõKABÜgyintézõk.Távollévõ)="Nem"))
+GROUP BY lkKABvizsgávalNemRendelkezõKABÜgyintézõk.Kormányhivatal, lkKABvizsgávalNemRendelkezõKABÜgyintézõk.Hivatal, lkKABvizsgávalNemRendelkezõKABÜgyintézõk.Osztály;

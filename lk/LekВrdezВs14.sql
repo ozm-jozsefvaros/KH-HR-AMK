@@ -1,0 +1,3 @@
+SELECT lkFõosztályonkéntiOsztályonkéntiLétszám_részösszegekkel.Fõosztály, lkFõosztályonkéntiOsztályonkéntiLétszám_részösszegekkel.Osztály, lkFõosztályonkéntiOsztályonkéntiLétszám_részösszegekkel.Létszám
+FROM lkFõosztályonkéntiOsztályonkéntiLétszám_részösszegekkel
+WHERE (((lkFõosztályonkéntiOsztályonkéntiLétszám_részösszegekkel.Osztály) Is Null));

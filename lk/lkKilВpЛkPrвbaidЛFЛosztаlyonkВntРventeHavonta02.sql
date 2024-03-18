@@ -1,0 +1,2 @@
+SELECT lkKilépõkPróbaidõFõosztályonkéntÉventeHavonta01.Fõosztály, lkKilépõkPróbaidõFõosztályonkéntÉventeHavonta01.Év, lkKilépõkPróbaidõFõosztályonkéntÉventeHavonta01.fõ, IIf([Hó]=1,[fõ],0) AS 1, IIf([Hó]=2,[fõ],0) AS 2, IIf([Hó]=3,[fõ],0) AS 3, IIf([Hó]=4,[fõ],0) AS 4, IIf([Hó]=5,[fõ],0) AS 5, IIf([Hó]=6,[fõ],0) AS 6, IIf([Hó]=7,[fõ],0) AS 7, IIf([Hó]=8,[fõ],0) AS 8, IIf([Hó]=9,[fõ],0) AS 9, IIf([Hó]=10,[fõ],0) AS 10, IIf([Hó]=11,[fõ],0) AS 11, IIf([Hó]=12,[fõ],0) AS 12
+FROM lkKilépõkPróbaidõFõosztályonkéntÉventeHavonta01;

@@ -1,0 +1,2 @@
+SELECT lkKilépõkSzámaÉventeHavonta.Év, IIf([Hó]=1,[Kilépõk száma],0) AS 1, IIf([Hó]=2,[Kilépõk száma],0) AS 2, IIf([Hó]=3,[Kilépõk száma],0) AS 3, IIf([Hó]=4,[Kilépõk száma],0) AS 4, IIf([Hó]=5,[Kilépõk száma],0) AS 5, IIf([Hó]=6,[Kilépõk száma],0) AS 6, IIf([Hó]=7,[Kilépõk száma],0) AS 7, IIf([Hó]=8,[Kilépõk száma],0) AS 8, IIf([Hó]=9,[Kilépõk száma],0) AS 9, IIf([Hó]=10,[Kilépõk száma],0) AS 10, IIf([Hó]=11,[Kilépõk száma],0) AS 11, IIf([Hó]=12,[Kilépõk száma],0) AS 12
+FROM lkKilépõkSzámaÉventeHavonta;

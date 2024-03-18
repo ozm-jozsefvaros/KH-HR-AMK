@@ -1,0 +1,2 @@
+SELECT lkJárásiKormányKözpontosítottUnió.* INTO tÁllományUnió20230102
+FROM lkJárásiKormányKözpontosítottUnió;

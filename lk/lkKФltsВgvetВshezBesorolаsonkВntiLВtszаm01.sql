@@ -1,0 +1,3 @@
+SELECT lkSzemélyek.*, IIf([lkBesorolásVáltoztatások].[ÚjBesorolás] Is Not Null,[lkSzemélyek].[Besorolás2],[lkBesorolásVáltoztatások].[ÚjBesorolás]) AS Besorolás, lkSzemélyek.[Státusz neve], lkSzemélyek.[Tartós távollét típusa], lkSzemélyek.[Státusz típusa], lkSzemélyek.[Elméleti (szerzõdés/kinevezés szerinti) ledolgozandó havi óraker]
+FROM lkSzemélyek LEFT JOIN lkBesorolásVáltoztatások ON lkSzemélyek.[Státusz kódja] = lkBesorolásVáltoztatások.ÁlláshelyAzonosító
+WHERE (((lkSzemélyek.[Státusz neve])="Álláshely") AND ((lkSzemélyek.[Tartós távollét típusa]) Is Null) AND ((lkSzemélyek.[Státusz típusa])="Szervezeti alaplétszám") AND ((lkSzemélyek.[Elméleti (szerzõdés/kinevezés szerinti) ledolgozandó havi óraker])>=60));

@@ -1,0 +1,2 @@
+SELECT Álláshelyek.*
+FROM Álláshelyek;

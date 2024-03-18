@@ -1,0 +1,4 @@
+SELECT lkÁlláshelyek.Fõosztály AS [Fõosztály (ÁNYR)], lkÁlláshelyek.[5 szint] AS [Osztály (ÁNYR)], lkSzemélyek.fõosztály AS [Fõosztály (Nexon Személyi karton)], lkSzemélyek.osztály AS [Osztály (Nexon Személyi karton)], lkSzemélyek.[Dolgozó teljes neve] AS Név, lkÁlláshelyek.[Álláshely azonosító] AS [Státusz kód], kt_azNexon_Adójel02.NLink AS NLink
+FROM (lkÁlláshelyek INNER JOIN (lkSzemélyek LEFT JOIN tSzervezet ON lkSzemélyek.[Státusz kódja] = tSzervezet.[Szervezetmenedzsment kód]) ON lkÁlláshelyek.[Álláshely azonosító] = lkSzemélyek.[Státusz kódja]) LEFT JOIN kt_azNexon_Adójel02 ON lkSzemélyek.Adójel = kt_azNexon_Adójel02.Adójel
+WHERE (((lkÁlláshelyek.[5 szint])<>[Szint 5 szervezeti egység név]) AND ((bfkh([Szervezeti egység kódja])) Is Not Null)) OR (((lkSzemélyek.fõosztály)<>[lkÁlláshelyek].[Fõosztály]) AND ((bfkh([Szervezeti egység kódja])) Is Not Null))
+ORDER BY bfkh([Szervezeti egység kódja]);

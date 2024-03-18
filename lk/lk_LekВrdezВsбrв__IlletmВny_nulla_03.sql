@@ -1,0 +1,2 @@
+SELECT lk_Lekérdezésíró__Illetmény_nulla_02.Sorszám, lk_Lekérdezésíró__Illetmény_nulla_02.azJavítandó, lk_Lekérdezésíró__Illetmény_nulla_02.[Nexon mezõ megnevezése], lk_Lekérdezésíró__Illetmény_nulla_02.Tábla, lk_Lekérdezésíró__Illetmény_nulla_02.Ellenõrzéshez, lk_Lekérdezésíró__Illetmény_nulla_02.Import, [SQL] & IIf([Sorszám]<>(Select Max(Sorszám) From lk_Lekérdezésíró__Illetmény_nulla_02)," UNION ","") AS SQL1
+FROM lk_Lekérdezésíró__Illetmény_nulla_02;

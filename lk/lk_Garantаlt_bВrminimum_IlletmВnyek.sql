@@ -1,0 +1,4 @@
+SELECT lkSzemélyek.Fõosztály AS Fõosztály, lkSzemélyek.Osztály AS Osztály, lkSzemélyek.[Dolgozó teljes neve] AS Név, lk_Garantált_bérminimum_alatti_01.[Álláshely azonosító] AS [Státusz kód], lk_Garantált_bérminimum_alatti_01.Illetmény AS Illetmény, lk_Garantált_bérminimum_alatti_01.[Heti munkaórák száma] AS [Heti munkaórák száma], lk_Garantált_bérminimum_alatti_01.Bruttó_bér AS [Bruttó illetmény], lkSzemélyek.[KIRA jogviszony jelleg], lkSzemélyek.[Iskolai végzettség foka], lkSzemélyek.[Iskolai végzettség neve], kt_azNexon_Adójel02.NLink AS NLink, lkSzemélyek.[Tartós távollét típusa]
+FROM kt_azNexon_Adójel02 RIGHT JOIN (lk_Garantált_bérminimum_alatti_01 LEFT JOIN lkSzemélyek ON lk_Garantált_bérminimum_alatti_01.Adójel = lkSzemélyek.Adójel) ON kt_azNexon_Adójel02.Adójel = lkSzemélyek.Adójel
+WHERE (((lk_Garantált_bérminimum_alatti_01.Garantált_min_alatt)=Yes))
+ORDER BY lkSzemélyek.[Dolgozó teljes neve];

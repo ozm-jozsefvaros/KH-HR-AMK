@@ -1,0 +1,3 @@
+SELECT lkSzemélyek.[Szervezeti egység kódja], lkSzemélyek.tSzemélyek.Adójel, lkSzemélyek.[TAJ szám], lkSzemélyek.[Dolgozó születési neve], lkSzemélyek.[Születési idõ], lkSzemélyek.[Születési hely], lkSzemélyek.[Anyja neve], Replace([Állandó lakcím],"Magyarország, ","") AS Lakcím, lkSzemélyek.[Munkavégzés helye - cím] AS [Nexon szerinti munkahely], "" AS [Ügyintézõ neve], "" AS [Ügyintézõ tel], "" AS [Ügyintézõ email]
+FROM lkSzemélyek
+WHERE (((lkSzemélyek.[Szervezeti egység kódja])="BFKH.1.2.16.4." Or (lkSzemélyek.[Szervezeti egység kódja])="BFKH.1.2.16.2." Or (lkSzemélyek.[Szervezeti egység kódja])="BFKH.1.2.16.1."));

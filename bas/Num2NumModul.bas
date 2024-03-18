@@ -146,7 +146,6 @@ Private Function Hex2Bin(ByVal strHex As String) As String
         Hex2Bin = Hex2Bin & CStr(Dec2Bin(Hex2Dec(Mid(strHex, intCtr, 1))))
     Next intCtr
 End Function
-
 Private Function Hex2Oct(ByVal strHex As String) As String
     Hex2Oct = Dec2Oct(CLng(Hex2Dec(strHex)))
 End Function
@@ -343,12 +342,12 @@ Private Sub CheckHex(varHex As Variant)
     'Check for valid hex range
     
     For intCtr = 1 To Len(varHex)
-        intAsc = Asc(Mid(varHex, intCtr, 1))
+        intAsc = Asc(UCase(Mid(varHex, intCtr, 1)))
         If (intAsc < 48 Or intAsc > 57) And (intAsc < 65 Or intAsc > 70) Then Err.Raise 13
     Next intCtr
     
     'Check for maximum allowable value
-    If Len(varHex) > 4 Then Err.Raise 6
+    If Len(varHex) > 6 Then Err.Raise 6
 End Sub
 
 Private Sub CheckRoman(varRoman As Variant)

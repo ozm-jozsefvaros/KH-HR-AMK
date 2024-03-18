@@ -1,0 +1,3 @@
+SELECT tBelsõEngedélyezettLétszámok.FõosztályKód, tBelsõEngedélyezettLétszámok.Fõosztály, tBelsõEngedélyezettLétszámok.Osztály, Sum(tBelsõEngedélyezettLétszámok.EngedélyVáltozás) AS Létszám
+FROM tBelsõEngedélyezettLétszámok
+GROUP BY tBelsõEngedélyezettLétszámok.FõosztályKód, tBelsõEngedélyezettLétszámok.Fõosztály, tBelsõEngedélyezettLétszámok.Osztály;

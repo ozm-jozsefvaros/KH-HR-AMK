@@ -1,0 +1,3 @@
+SELECT tEllenõrzõLekérdezések.EllenõrzõLekérdezés, tLekérdezésTípusok.LapNév, tLekérdezésTípusok.Osztály, tLekérdezésTípusok.Megjegyzés, tEllenõrzõLekérdezések.Táblacím, Exists (select azEllenõrzõ from tGrafikonok Where tGrafikonok.azEllenõrzõ=tEllenõrzõLekérdezések.azEllenõrzõ) AS vaneGraf, tLekérdezésTípusok.azETípus, tEllenõrzõLekérdezések.Kimenet
+FROM tLekérdezésTípusok INNER JOIN tEllenõrzõLekérdezések ON tLekérdezésTípusok.azETípus = tEllenõrzõLekérdezések.azETípus
+ORDER BY tLekérdezésTípusok.Osztály, tLekérdezésTípusok.LapNév, tEllenõrzõLekérdezések.Táblacím, tLekérdezésTípusok.azETípus;

@@ -9,9 +9,10 @@
 'WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Option Explicit
 Option Compare Database
-Sub FájlVálasztó(SzövegMezõ As TextBox, Felirat As String, Optional Munkakönyvtár As String = "", Optional Fájlnév As String = "")
+Sub FájlVálasztó(SzövegMezõ As TextBox, Felirat As String, Optional Munkakönyvtár As String = "", Optional fájlnév As String = "", Optional fájltípus As String = "")
 'Open file ablakot nyit meg Felirat felirattal, s a kiválasztott értéket a SzövegMezõ beviteli mezõbe teszi.
 'Meg lehet adni kezdõ mappát, vagy akár az alapértelmezetten megjelenõ állományok neveit is helykitöltõkkel (* és ?)
+'Meg lehet adni a fájltípusok listáját, ha üres (vagy hiányzik) akkor *.xls és *.* az alapértelmezett
 'Ezt meghívják az alábbi eljárások:
 '   Havi_Click
 '   Szervezeti_Click
@@ -19,6 +20,7 @@ Sub FájlVálasztó(SzövegMezõ As TextBox, Felirat As String, Optional Munkakönyvtá
 
     Dim fDialog As Office.FileDialog
     Dim varFile As Variant
+    Dim i, n As Integer
  
     SzövegMezõ.Value = ""
 
@@ -31,12 +33,19 @@ Sub FájlVálasztó(SzövegMezõ As TextBox, Felirat As String, Optional Munkakönyvtá
       .Title = Felirat
  
       .Filters.Clear
-      .Filters.Add "MsExcel tábla", "*.XLS*"
-      .Filters.Add "Minden fajta", "*.*"
+      If fájltípus = "" Then
+        '.Filters.Add "MsExcel tábla", "*.XLS*"
+        '.Filters.Add "Minden fajta", "*.*"
+        fájltípus = "*.XSL*,*.*"
+      End If
+      n = StrCount(fájltípus, ",") + 1
+      For i = 1 To n
+        .Filters.Add ffsplit(fájltípus, i), ffsplit(fájltípus, i)
+      Next i
       If Right(Munkakönyvtár, 1) <> "\" Then
         Munkakönyvtár = Munkakönyvtár & "\"
       End If
-      .InitialFileName = Munkakönyvtár & Fájlnév 'Hol nyíljon meg
+      .InitialFileName = Munkakönyvtár & fájlnév 'Hol nyíljon meg
  
       If .Show = True Then
  
@@ -83,19 +92,19 @@ Sub MappaVálasztó(SzövegMezõ As TextBox, Felirat As String, Optional Munkakönyvt
        End If
    End With
 End Sub
-Public Sub HaviTáblaImport(Fájlnév As String, Ûrlap As Object)
+Public Sub HaviTáblaImport(fájlnév As String, Ûrlap As Object)
 Dim a As Boolean
     Ûrlap.Folyamat.RowSource = ""
-    a = fvHaviTáblaImport(Fájlnév, Ûrlap)
+    a = fvHaviTáblaImport(fájlnév, Ûrlap)
 End Sub
 
-Public Function fvHaviTáblaImport(ByVal Fájlnév As String, ByRef Ûrlap As Object) As Boolean
+Public Function fvHaviTáblaImport(ByVal fájlnév As String, ByRef Ûrlap As Object) As Boolean
 'Licencia: MIT Oláh Zoltán 2022 (c)
     'Az Excel megnyitásához
-    Dim objExcel        As Excel.Application
-    Dim objBook         As Excel.Workbook
-    Dim objSheet        As Excel.Worksheet
-    Dim objRange        As Excel.Range
+    Dim objExcel        As excel.Application
+    Dim objBook         As excel.Workbook
+    Dim objSheet        As excel.Worksheet
+    Dim objRange        As excel.Range
     
     Dim xlTábla         As String
     Dim xlTáblaEred     As String
@@ -133,7 +142,7 @@ Public Function fvHaviTáblaImport(ByVal Fájlnév As String, ByRef Ûrlap As Object
     Set db = CurrentDb()
     'Set háttérdb =
     ' ha az útvonal végén nincs \, akkor hozzáfûzzük, [de ha van, akkor meg nem :)]
-    fájl = Fájlnév
+    fájl = fájlnév
     ' megnyitjuk az Excel táblát
     Set objBook = objExcel.Workbooks.Open(fájl, ReadOnly:=True, IgnoreReadOnlyRecommended:=True, Editable:=False, Notify:=False)
     
@@ -146,25 +155,36 @@ Public Function fvHaviTáblaImport(ByVal Fájlnév As String, ByRef Ûrlap As Object
         Erase Értékek
         xlTábla = rs("AccessNév")
         xlTáblaEred = rs("EredetiNév"): 'Debug.Print xlTáblaEred & " -- " & xlTábla
+        
+        
         Set objSheet = objBook.Worksheets(xlTáblaEred)
         objSheet.Select ' Ráugrunk a lapra
+        '### A Fedlap A2 cellájából a dátumot (a tábla hatályát) beírjuk a hatálytáblába.
+        If xlTáblaEred = "Fedlap" Then
+            Dim qdfHJH As DAO.QueryDef
+            Dim sql As String
+            sql = "INSERT INTO tHaviJelentésHatálya ([hatálya], [fájlnév]) VALUES ([hatály],[fájl]);"
+            Set qdfHJH = db.CreateQueryDef("lkTmp01", sql)
+            qdfHJH!hatály = objSheet.Range("a2").Value
+            qdfHJH!fájl = fájl
+            qdfHJH.Execute
+            db.QueryDefs.Delete ("lktmp01")
+            Set qdfHJH = Nothing
+            sql = ""
+        End If
+        '### Hatály beírása: vége
         If Nz(rs("Végcella"), "") = "" Then
             xlHosszmérõ = rs("HosszmérõCella")
             xlUtolsóOszlop = rs("UtolsóOszlop")
-            '
-            ' rs("HosszmérõCella") -- a hosszmérésre használt oszlopot keresi ki az adatbázisból.
-            ' objBook.ActiveSheet.Range(rs("HosszmérõCella")&1).Column  -- a hosszmérõ cella oszlopának a számát adja meg.
-            ' Cells(Rows.Count, 1).End(xlUp).Row -- az elsõ oszlopban található cellák számát adja
-            ' Cells(Rows.Count, ActiveSheet.Range(rs("HosszmérõCella")&1).Column).End(xlUp).Row -- a hosszmérõ cella oszlopában a legalsó használt cella sorának a száma?
             intVégcella = objSheet.Range(xlHosszmérõ & 1).Column
-            xlVégcella = objSheet.Cells(objSheet.Cells.Rows.Count, intVégcella).End(xlUp).row
+            xlVégcella = objSheet.Cells(objSheet.Cells.Rows.count, intVégcella).End(xlUp).row
             xlVégcella = xlUtolsóOszlop & xlVégcella
         Else
             xlVégcella = rs("Végcella")
         End If
         With objSheet
             .Range(.Range(rs("KezdõCella")), .Range(xlVégcella)).Name = xlTábla 'Elnevezzük a területet
-            sFoly Ûrlap, xlTábla & ":;" & .Range(xlTábla).Rows.Count
+            sFoly Ûrlap, xlTábla & ":;" & .Range(xlTábla).Rows.count
             'Debug.Print .Range(xlTábla).Rows.Count
             
         End With
@@ -172,13 +192,11 @@ Public Function fvHaviTáblaImport(ByVal Fájlnév As String, ByRef Ûrlap As Object
         
         If DCount("[Name]", "MSysObjects", "[Name] = '" & xlTábla & "'") = 1 Then
             CurrentDb.Execute "Delete * From " & xlTábla & ";", dbFailOnError
-'            DoCmd.Close acTable, xlTábla, acSaveYes
-'            DoCmd.Rename xlTábla & RIC(Now()), acTable, xlTábla
         Else
             CurrentDb.Execute "Delete * From " & xlTábla & "_tart;", dbFailOnError
             DoCmd.CopyObject strHáttérDb, xlTábla, acTable, xlTábla & "_tart"
         End If
-'        DoCmd.CopyObject , xlTábla, acTable, xlTábla & "_tart"
+
 
         'Elkezdjük az adatok betöltését
         Set rsCél = db.OpenRecordset(xlTábla)
@@ -192,13 +210,11 @@ Public Function fvHaviTáblaImport(ByVal Fájlnév As String, ByRef Ûrlap As Object
             'új rekord hozzáadása kezdõdik...
             rsCél.AddNew
             For oszlop = LBound(Értékek, 2) To UBound(Értékek, 2)
-                If rsCél.Fields.Count < oszlop Then
+                If rsCél.Fields.count < oszlop Then
                     Exit For
                 End If
                 intMezõ = oszlop - 1
-'                Debug.Print sor & ":" & oszlop & " = "
-'                Debug.Print Értékek(sor, oszlop)
-'                Debug.Print " Type:" & rsCél.Fields(intMezõ).Type
+
                 rsCél.Fields(intMezõ) = konverter(rsCél.Fields(intMezõ), Értékek(sor, oszlop))
                 
             Next oszlop
@@ -214,74 +230,11 @@ fvHaviTáblaImport = True
 Exit Function
 
 
-hiba:
+Hiba:
 Debug.Print Err.Number, Err.Description
 fvHaviTáblaImport = False
 
 End Function
-Public Function konverter(fMezõ As Field, érték As Variant)
-'****** (c) Oláh Zoltán 2022 - MIT Licence ****************
-'Debug.Print fMezõ.Type; Érték
-If IsNull(érték) Then
-    konverter = Null
-    Exit Function
-End If
-Select Case TypeName(érték)
-    Case "String"
-        Select Case fMezõ.Type
-            Case 1 To 8, 19 To 23            'A tömbben található String típusú adatot nem alakítjuk át számmá, az értékét 0-ra állítjuk.
-                     konverter = 0
-            Case 10: konverter = CStr(érték) 'Text
-            Case 12: konverter = CVar(érték) 'Memo
-            Case 16: konverter = CLng(érték) 'Big Integer
-            Case 17: konverter = CVar(érték) 'VarBinary
-            Case 18: konverter = CStr(érték) 'Char
-            Case Else
-                MsgBox "Nem lehet konevertálni a" & névelõ(érték) & " " & érték & " értéket a" & névelõ(fMezõ.Type) & " " & fMezõ.Name & " " & fMezõ.Type & "típusába!"
-        End Select
-    Case Else
-        Select Case fMezõ.Type
-            Case 1:  konverter = CBool(érték) 'Boolean
-            Case 2:  konverter = CByte(érték) 'Byte
-            Case 3:  konverter = CInt(érték)  'Integer
-            Case 4:  konverter = CLng(érték)  'Long
-            Case 5:  konverter = CCur(érték)  'Currency
-            Case 6:  konverter = CSng(érték)  'Single
-            Case 7:  konverter = CDbl(érték)  'Double
-            Case 8:  konverter = CDate(érték) 'Date/Time
-            Case 10: konverter = CStr(érték)  'Text
-            Case 12: konverter = CVar(érték)  'Memo
-            Case 16: konverter = CLng(érték)  'Big Integer
-            Case 17: konverter = CVar(érték)  'VarBinary
-            Case 18: konverter = CStr(érték)  'Char
-            Case 19: konverter = CLng(érték)  'Numeric
-            Case 20: konverter = CDec(érték)  'Decimal
-            Case 21: konverter = CDbl(érték)  'Float
-            Case 22: konverter = CDate(érték) 'Time
-            Case 23: konverter = CDate(érték) 'Time Stamp
-            Case Else
-                MsgBox "Nem lehet konevertálni a" & névelõ(érték) & " " & érték & " értéket a" & névelõ(fMezõ.Type) & " " & fMezõ.Name & " " & fMezõ.Type & "típusába!"
-        End Select
-End Select
-End Function
-
-
-Sub ListTdfFields()
-    Dim db As DAO.Database
-    Dim tdf As DAO.TableDef
-    Dim fld As DAO.Field
-
-    Set db = CurrentDb
-
-    Set tdf = db.TableDefs("Határozottak")
-
-    For Each fld In tdf.Fields
-        'Debug.Print fld.Name
-    Next
-
-    Set tdf = Nothing
-    Set db = Nothing
-End Sub
 Sub LekérdezésÍró()
 'Licencia: MIT Oláh Zoltán 2022 (c)
     Dim rs As Recordset
@@ -291,9 +244,8 @@ Sub LekérdezésÍró()
     Dim kSQL As String
     Dim lekérd As String
     Dim újnév As String
-    Dim X As Integer
+    Dim x As Integer
     Dim Találat, dbTalálat As Integer
-    
     
     sql = "SELECT AccessNév, Hiány_lekérdezés FROM tImportálandóTáblák"
     Set rs = CurrentDb.OpenRecordset(sql)
@@ -342,71 +294,7 @@ kijárat:
 
 End Sub
 
-Sub tSzemélyekImport()
-    On Error GoTo ErrorHandler
 
-    Dim dlg As FileDialog
-    Dim selectedFilePath As String
-    Dim importSpecName As String
-    Dim strXML As String
-    Dim strRégiFájl As String
-    Dim strÚjFájl As String
-    Dim intKezdPoz As Integer
-    Dim intVégPoz As Integer
-
-    ' Replace "YourSavedImportSpecificationName" with the name of your saved import specification.
-    importSpecName = "tSzemélyek"
-
-
-    ' Create a FileDialog object to allow the user to select a file.
-    Set dlg = Application.FileDialog(msoFileDialogFilePicker)
-
-    ' Set the title and filters for the dialog box.
-    dlg.Title = "Személtörzs alapriport kiválasztása"
-    dlg.Filters.Clear
-    dlg.Filters.Add "All Files", "*.xlsx"
-
-    ' Show the FileDialog and check if the user selected a file.
-    If dlg.Show = -1 Then
-        ' Get the selected file path and name.
-        strÚjFájl = " Path=""" & dlg.SelectedItems(1) & """"
-'            Debug.Print "1. Új fájl:" & strÚjFájl & "##" '1
-        UresOszlopokTorlese dlg.SelectedItems(1)
-
-        'Átírjuk az XML-t
-        On Error Resume Next
-            strXML = CurrentProject.ImportExportSpecifications.Item(importSpecName).XML 'Itt megszerezzük
-            If Err.Number <> 0 Then
-                MsgBox "Error updating the XML of the import specification.", vbExclamation + vbOKOnly, "Error"
-            End If
-        On Error GoTo ErrorHandler
-        intKezdPoz = InStr(1, strXML, "Path=") 'majd megnézzük, hol kezdõdik az útvonal
-        intVégPoz = InStr(intKezdPoz + 7, strXML, """") ' és hogy hol a vége
-'            Debug.Print "2. Régi XML:##" & Mid(strXML, intKezdPoz, intVégPoz) & "##" '2
-        strRégiFájl = Mid(strXML, intKezdPoz, intVégPoz - intKezdPoz + 1) 'a két pont közötti részt kiemeljük
-'            Debug.Print "3. Régi fájl:" & strRégiFájl
-        strXML = Replace(strXML, strRégiFájl, strÚjFájl) 'No itt meg kicseréljük a régi fájlnevet, az újra
-'            Debug.Print "4. Új XML:##" & Mid(strXML, intKezdPoz - 10, Len(strÚjFájl) + 16) & "##"
-        CurrentProject.ImportExportSpecifications.Item(importSpecName).XML = strXML
-        ' Run the saved import specification with the selected file.
-        DoCmd.RunSavedImportExport importSpecName
-
-        ' Display a success message.
-        'MsgBox "Import completed successfully!", vbInformation + vbOKOnly, "Import Completed"
-    End If
-    
-Kilépés:
-    ' Clean up the FileDialog object.
-    Set dlg = Nothing
-
-    Exit Sub
-
-ErrorHandler:
-    ' Display an error message if something goes wrong.
-    MsgBox "Error: " & Err.Description, vbExclamation + vbOKOnly, "Error"
-    Debug.Print "Error: " & Err.Description
-    Resume Kilépés
-End Sub
 Public Function tTáblaImport(strFájl As String, Ûrlap As Form, táblanév As String)
     'On Error GoTo ErrorHandler
 
@@ -419,7 +307,7 @@ Public Function tTáblaImport(strFájl As String, Ûrlap As Form, táblanév As Strin
     Dim Üzenet As String
     Dim válasz As Boolean
     
-    importSpecName = táblanév '"tAdatváltoztatásiIgények"
+    importSpecName = táblanév 'pl.:"tAdatváltoztatásiIgények"
 
     If strFájl <> "" Then
 
@@ -434,7 +322,7 @@ Public Function tTáblaImport(strFájl As String, Ûrlap As Form, táblanév As Strin
 '#           Az átírt XML-lel pedig futtatjuk a mentett importot
         DoCmd.RunSavedImportExport importSpecName
                                                     sFoly Ûrlap, importSpecName & ":; importálás véget ért"
-                                                    sFoly Ûrlap, importSpecName & ":; " & DCount("*", "tSzemélyek") & " sor."
+                                                    sFoly Ûrlap, importSpecName & ":; " & DCount("*", táblanév) & " sor."
     End If
    tTáblaImport = True
     
@@ -452,60 +340,16 @@ ErrorHandler:
     tTáblaImport = False
     Resume Kilépés
 End Function
-Public Function tSzemélyekImport02(strFájl As String, Ûrlap As Form)
-    'On Error GoTo ErrorHandler
 
-    Dim importSpecName As String
-'    Dim strXML As String
-'    Dim strRégiFájl As String
-'    Dim strÚjFájl As String
-'    Dim intKezdPoz As Integer
-'    Dim intVégPoz As Integer
-    Dim Üzenet As String
-    Dim válasz As Boolean
-    
-    importSpecName = "tSzemélyek"
 
-    If strFájl <> "" Then
-
-                                                    sFoly Ûrlap, "Személyek:; importálás üres oszlopok törlése..."
-        UresOszlopokTorlese strFájl 'A megadott állományból töröljük az üres oszlopokat
-                                                    sFoly Ûrlap, "Személyek:; importálás üres oszlopok törlése kész!"
-'#           Átírjuk az XML-t:
-                                                    sFoly Ûrlap, "Személyek:; mentett import átalakítása"
-        válasz = XMLátalakító(importSpecName, strFájl)
-        
-
-                                                    sFoly Ûrlap, "Személyek:; importálás indítása"
-'#           Az átírt XML-lel pedig futtatjuk a mentett importot
-        DoCmd.RunSavedImportExport importSpecName
-                                                    sFoly Ûrlap, "Személyek:; importálás véget ért"
-                                                    sFoly Ûrlap, "Személyek:; " & DCount("*", "tSzemélyek") & " sor."
-    End If
-    tSzemélyekImport02 = True
-    
-Kilépés:
-    Exit Function
-
-ErrorHandler:
-    ' Szabványos hibaüzenet elõállítása
-    If Err.Number = 3709 Then
-        
-        'Resume 0
-    End If
-    MsgBox "Error: " & Err.Number & " - " & Err.Description, vbExclamation + vbOKOnly, "Error"
-    Debug.Print "Error: " & Err.Number & " - " & Err.Description
-    tSzemélyekImport02 = False
-    Resume Kilépés
-End Function
-Public Function SzervezetiTáblaImport(Fájlnév As String, Ûrlap As Object) As Boolean
+Public Function SzervezetiTáblaImport(fájlnév As String, Ûrlap As Object) As Boolean
     'MIT Oláh Zoltán 2022
     'Az Excel megnyitásához
-    Dim objExcel       As Excel.Application
-    Dim objBook         As Excel.Workbook
-    Dim objSheet        As Excel.Worksheet
-    Dim objRange        As Excel.Range
-    Dim objRange2       As Excel.Range
+    Dim objExcel       As excel.Application
+    Dim objBook         As excel.Workbook
+    Dim objSheet        As excel.Worksheet
+    Dim objRange        As excel.Range
+    Dim objRange2       As excel.Range
     
     Dim xlTábla         As String
     Dim xlTáblaEred     As String
@@ -544,7 +388,7 @@ Public Function SzervezetiTáblaImport(Fájlnév As String, Ûrlap As Object) As Boo
     Set objExcel = CreateObject("Excel.Application")
     Set db = CurrentDb()
     ' ha az útvonal végén nincs \, akkor hozzáfûzzük, [de ha van, akkor meg nem :)]
-    fájl = Fájlnév
+    fájl = fájlnév
     If Not (vane(fájl)) Then 'Ha nincs ilyen fájl, akkor kiszállunk...
         SzervezetiTáblaImport = False
         sFoly Ûrlap, xlTábla & ":;fájl nem található, átugorjuk"
@@ -562,8 +406,8 @@ Public Function SzervezetiTáblaImport(Fájlnév As String, Ûrlap As Object) As Boo
     objSheet.Activate
     
     Set objRange = objSheet.Range("A2").CurrentRegion
-        xlUtolsóOszlop = objRange.Columns.Count
-        xlHosszmérõ = objRange.Rows.Count
+        xlUtolsóOszlop = objRange.Columns.count
+        xlHosszmérõ = objRange.Rows.count
 
     With objRange
         Set objRange2 = .Range(.Cells(2, 1), objRange.Cells(xlHosszmérõ, xlUtolsóOszlop + 0))  'leszedjük az elsõ sort
@@ -584,8 +428,8 @@ Public Function SzervezetiTáblaImport(Fájlnév As String, Ûrlap As Object) As Boo
     'Elkezdjük az adatok betöltését
     Set rsCél = db.OpenRecordset(xlTábla)
     Értékek = objRange2.Value
-    ehj.SzakaszSzám = 5 '20%-konként jelezzük ki az értéket
-    ehj.OszlopSzam = UBound(Értékek, 1) - (LBound(Értékek, 1) + 1) 'Itt az oszlopszám a sorokat jelöli :)
+    'ehj.SzakaszSzám = 5 '20%-konként jelezzük ki az értéket
+    ehj.oszlopszam = UBound(Értékek, 1) - (LBound(Értékek, 1) + 1) 'Itt az oszlopszám a sorokat jelöli :)
     For sor = LBound(Értékek, 1) + 1 To UBound(Értékek, 1)
         intMezõ = 0
         'új rekord hozzáadása kezdõdik...
@@ -613,7 +457,7 @@ Kilépés:
     rsCél.Close
 Exit Function
 
-hiba:
+Hiba:
     
     MsgBox "Hiba!! " & Err.Number & ": " & Err.Description
     SzervezetiTáblaImport = False 'Visszatérési értéke Hamis, ha hiba történt.
@@ -622,11 +466,11 @@ End Function
 
 
 
-Function ImportTáblaHibaJavító(terület As Excel.Range) As Integer
+Function ImportTáblaHibaJavító(terület As excel.Range) As Integer
     'A kapott tábla (Excel.Range) fejlécében megkeresi az azonos nevûeket, és a másodiktól kezdve az oszlop számát hozzáfûzi.
     'Mindeközben a neveket trim-eli.
     'Ha hiba nem történt:0 értékkel tér vissza, egyébként a hibakóddal
-    On Error GoTo hiba
+    On Error GoTo Hiba
     Dim intOszlopok     As Integer  'Az oszlopok száma
     Dim i, n            As Integer  'Számláló
     Dim varOszlopNevek  As Variant   'Az oszlopok nevei
@@ -634,7 +478,7 @@ Function ImportTáblaHibaJavító(terület As Excel.Range) As Integer
     Dim gyûjt           As Collection
     Dim név             As Variant
     
-    intOszlopSzám = terület.Columns.Count
+    intOszlopSzám = terület.Columns.count
     ReDim varOszlopNevek(1, intOszlopSzám)
     
     Set gyûjt = New Collection
@@ -648,13 +492,13 @@ Function ImportTáblaHibaJavító(terület As Excel.Range) As Integer
         'Debug.Print i, név
     Next i
     
-    For n = 1 To gyûjt.Count
+    For n = 1 To gyûjt.count
         terület.Cells(1, n) = Trim(gyûjt(n)) 'Visszatesszük, de egyúttal levesszük a felesleges szóközöket.
     Next n
     
     ImportTáblaHibaJavító = 0
 Exit Function
-hiba:
+Hiba:
     If Err.Number = 457 Then
         gyûjt.Add név & i, név & i
         Debug.Print név; i
@@ -663,22 +507,23 @@ hiba:
     ImportTáblaHibaJavító = Err.Number
     
 End Function
-Public Sub táblagyártó()
+Public Sub táblagyártó(Optional ByVal SzervezetiLek As String = "lk_átvilágítás_mind_02", Optional ByVal AdatLek As String = "lk__Átvilágításhoz_Személytörzs_02")
 'Licencia: MIT Oláh Zoltán 2022 (c)
 Dim db As Database
 Dim rst As Recordset
+Dim qdf As QueryDef
 Dim sql As String
 Dim érték As Variant
 Dim a As Integer
-sql = "Select Distinct [Szervezeti egység] From  lk_átvilágítás_mind_02 WHERE [Szervezeti egység] not like '' "
+sql = "Select Distinct [Szervezeti egység] From  [" & SzervezetiLek & "] WHERE [Szervezeti egység] not like '' "
 Set db = CurrentDb()
-Set rst = db.OpenRecordset(sql, dbOpenDynaset)
+Set rst = qdf.OpenRecordset(sql)
 rst.MoveLast
 rst.MoveFirst
 Do Until rst.EOF
     érték = rst.Fields("Szervezeti egység").Value
     'Debug.Print érték
-    Call Kimutatás("O:\Átvilágítás\Átvilágítás2" & érték & ".xlsx", "SELECT * FROM lk__Átvilágításhoz_Személytörzs_02 WHERE [Szervezeti egység] = '" & érték & "';")
+    Call Kimutatás("O:\Átvilágítás\Átvilágítás2" & érték & ".xlsx", "SELECT * FROM [" & AdatLek & "] WHERE [Szervezeti egység] = '" & érték & "';")
     'Debug.Print "O:\Átvilágítás\Átvilágítás2" & érték & ".xlsx"
     rst.MoveNext
 Loop
@@ -704,7 +549,7 @@ Do Until rst.EOF
 Loop
 End Sub
 
-Sub BeszámolóTábla(fájl As String, Lekérdezés As String)
+Sub BeszámolóTábla(fájl As String, lekérdezés As String)
 '****** (c) Oláh Zoltán 2022 - MIT Licence ****************
  
  'Az adatbázishoz
@@ -715,7 +560,7 @@ Sub BeszámolóTábla(fájl As String, Lekérdezés As String)
     
     'Excelhez
     Dim sor, oszlop     As Long
-    Dim oApp            As Excel.Application
+    Dim oApp            As excel.Application
     Dim oWb             As Workbook
     Dim oWs1, oWs2      As Worksheet
     Dim oWc             As Chart
@@ -733,7 +578,7 @@ Sub BeszámolóTábla(fájl As String, Lekérdezés As String)
 
     Set db = CurrentDb()
     'Set qdf = db.
-    Set rs = db.OpenRecordset(Lekérdezés)
+    Set rs = db.OpenRecordset(lekérdezés)
     
     Set oApp = CreateObject("Excel.Application")
     Set oWb = oApp.Workbooks.Add
@@ -749,8 +594,8 @@ Sub BeszámolóTábla(fájl As String, Lekérdezés As String)
     With rs
         rs.MoveFirst
         rs.MoveLast
-        maxoszlop = .Fields.Count  'A leendõ oszlopok száma, ahány mezõ van a lekérdezésben és még egy a sorszám miatt
-        maxsor = .RecordCount
+        maxoszlop = .Fields.count  'A leendõ oszlopok száma, ahány mezõ van a lekérdezésben és még egy a sorszám miatt
+        maxsor = .recordCount
         'Az elõrehaladás-jelzõ elõkészítése
 
         .MoveFirst
@@ -824,14 +669,14 @@ Sub BeszámolóTábla(fájl As String, Lekérdezés As String)
     oWs2.Range("A2").Value = "Adatsor:": oWs2.Range("B2").Value = sor - 1
     
     'Takarítás
-    oWb.SaveAs FileName:=fájl, FileFormat:=xlOpenXMLWorkbook, AddToMru:=True, Local:=True
+    oWb.SaveAs fileName:=fájl, FileFormat:=xlOpenXMLWorkbook, AddToMru:=True, Local:=True
     oWb.Close
     'Debug.Print fájl & " kész (" & sor & " sor) ."
     Set oWb = Nothing
 '   Kill oWb
     
 End Sub
-Sub Kimutatás(fájl As String, Lekérdezés As String)
+Sub Kimutatás(fájl As String, lekérdezés As String)
 '****** (c) Oláh Zoltán 2022 - MIT Licence ****************
  
  'Az adatbázishoz
@@ -842,7 +687,7 @@ Sub Kimutatás(fájl As String, Lekérdezés As String)
     
     'Excelhez
     Dim sor, oszlop     As Long
-    Dim oApp            As Excel.Application
+    Dim oApp            As excel.Application
     Dim oWb             As Workbook
     Dim oWs1, oWs2      As Worksheet
     Dim oWc             As Chart
@@ -859,7 +704,7 @@ Sub Kimutatás(fájl As String, Lekérdezés As String)
 
     Set db = CurrentDb()
     'Set qdf = db.
-    Set rs = db.OpenRecordset(Lekérdezés)
+    Set rs = db.OpenRecordset(lekérdezés)
     
     Set oApp = CreateObject("Excel.Application")
     Set oWb = oApp.Workbooks.Add
@@ -875,8 +720,8 @@ Sub Kimutatás(fájl As String, Lekérdezés As String)
     With rs
         rs.MoveFirst
         rs.MoveLast
-        maxoszlop = .Fields.Count  'A leendõ oszlopok száma, ahány mezõ van a lekérdezésben és még egy a sorszám miatt
-        maxsor = .RecordCount
+        maxoszlop = .Fields.count  'A leendõ oszlopok száma, ahány mezõ van a lekérdezésben és még egy a sorszám miatt
+        maxsor = .recordCount
         'Az elõrehaladás-jelzõ elõkészítése
 
         .MoveFirst
@@ -950,7 +795,7 @@ Sub Kimutatás(fájl As String, Lekérdezés As String)
     oWs2.Range("A2").Value = "Adatsor:": oWs2.Range("B2").Value = sor - 1
     
     'Takarítás
-    oWb.SaveAs FileName:=fájl, FileFormat:=xlOpenXMLWorkbook, AddToMru:=True, Local:=True
+    oWb.SaveAs fileName:=fájl, FileFormat:=xlOpenXMLWorkbook, AddToMru:=True, Local:=True
     oWb.Close
     'Debug.Print fájl & " kész (" & sor & " sor) ."
     Set oWb = Nothing
@@ -958,151 +803,12 @@ Sub Kimutatás(fájl As String, Lekérdezés As String)
     
 End Sub
 
-Public Sub SzemélytörzsImport(Fájlnév As String, Ûrlap As Object)
-'(c) Oláh Zoltán 2022. Licencia: MIT
 
-    'Az Excel megnyitásához
-    Dim objExcel        As Excel.Application
-    Dim objBook         As Excel.Workbook
-    Dim objSheet        As Excel.Worksheet
-    Dim objRange        As Excel.Range
-    
-    Dim xlTábla, kieg   As String
-    Dim xlTáblaEred     As String
-    
-    Dim Értékek()       As Variant
-    Dim intMezõ         As Integer
-
-    
-    'Az adatbázis megnyitásához
-    Dim db              As DAO.Database     'Ez lesz az adatbázisunk
-    Dim rsCél           As DAO.Recordset    'Ahová másolunk
-
-    Dim fájl            As String
-    Dim helyzet         As Variant          'A feltöltendõ rekord eléréséhez
-    Dim mezõ            As String           'A mezõ nevének átmeneti tárolására és tisztítására
-    
-    
-    Dim Eredmény        As Integer
-    Dim MezõListaTábla  As String           'A tábla : a tábla mezõinek (eredeti oszlopcím, mezõnév, típus) jellemzõit tároló tábla
-    
-    'A szöveges kimenethez
-    Dim Üzenet          As String
-    
-    'Számláláshoz
-    Dim sor, oszlop     As Integer
-    Dim ehj             As New ehjoszt
-    
-    Dim válasz          As Integer
-On Error GoTo hiba
-    
-    Set objExcel = CreateObject("Excel.Application")
-    Set db = CurrentDb()
-    MezõListaTábla = "tSzemélyMezõk"
-
-    
-    ' azt feltételezzük, hogy a fájlnév jó, helyes és alkalmas
-    fájl = Fájlnév
-    ' megnyitjuk az Excel táblát
-'''
-    sFoly Ûrlap, "Adatforrás megnyitása:; megkezdve..."
-   
-    
-    Set objBook = objExcel.Workbooks.Open(fájl, ReadOnly:=True, IgnoreReadOnlyRecommended:=True, Editable:=False, Notify:=False)
-
-'''
-    sFoly Ûrlap, "Adatforrás megnyitása:; megtörtént!"
-    
-    
-        Erase Értékek
-        xlTábla = "tSzemélyek"
-        xlTáblaEred = "Személytörzs alapriport"
-        Set objSheet = objBook.Worksheets(xlTáblaEred)
-        objSheet.Select ' Ráugrunk a lapra
-        
-'''
-    sFoly Ûrlap, "Üres oszlopok törlése:; megkezdve..."
-    
-        
-'        Call UresOszlopokTorlese(objSheet)
-'''
-    sFoly Ûrlap, "Üres oszlopok törlése:; befejezve!"
-   
-        With objSheet
-            .UsedRange.Name = xlTábla 'Elnevezzük a területet
-'''
-            sFoly Ûrlap, "Beolvasandó sorok száma:;" & .Range(xlTábla).Rows.Count
-            'Debug.Print Üzenet
-            
-            
-        End With
-        
-        If DCount("[Name]", "MSysObjects", "[Name] = '" & xlTábla & "'") = 1 Then
-            kieg = RIC(Now())
-            DoCmd.Rename xlTábla & kieg, acTable, xlTábla
-'''
-            sFoly Ûrlap, névelõvel(xlTábla, , , True) & " átneveztetett:; " & xlTábla & kieg
-           
-    
-        End If
-'''
-        sFoly Ûrlap, "Az új " & xlTábla & " elkészítése:; megkezdve..."
-        
-        
-        Call Táblakészítõ(db, MezõListaTábla, xlTábla)
-
-'''
-        sFoly Ûrlap, "Az új " & xlTábla & " elkészült:; sikerült!"
-       
-
-        'Elkezdjük az adatok betöltését
-        Set rsCél = db.OpenRecordset(xlTábla)
-
-        Értékek = objSheet.Range(xlTábla).Value
-        
-        ehj.Ini (100)
-        'Sorok száma: !!!!
-        ehj.OszlopSzam = UBound(Értékek, 1) - (LBound(Értékek, 1)) ' Az oszlopszám itt a sorok számát jelöli!
-'''
-        sFoly Ûrlap, "A beolvasandó oszlopok száma:;" & UBound(Értékek, 2) - (LBound(Értékek, 2) + 1)
-        
-
-        For sor = LBound(Értékek, 1) + 1 To UBound(Értékek, 1)
-            intMezõ = 0
-            'új rekord hozzáadása kezdõdik...
-            rsCél.AddNew
-            rsCél.Update
-            helyzet = rsCél.LastModified
-            
-            For oszlop = LBound(Értékek, 2) + 1 To UBound(Értékek, 2)
-
-                intMezõ = oszlop
-                rsCél.Bookmark = helyzet
-                rsCél.Edit
-                mezõ = Clean_NPC(Trim(Left(Értékek(1, oszlop), 64))) 'A nem nyomtatható karaktereket kiszûrjük
-                rsCél.Fields(mezõ) = konverter(rsCél.Fields(mezõ), Értékek(sor, oszlop))
-                'Debug.Print mezõ, rsCél.Fields(mezõ).Value
-                rsCél.Update
-            Next oszlop
-            ehj.Novel
-            'új rekord hozzáadása véget ért
-            
-        Next sor
-'''
-    sFoly Ûrlap, névelõvel(fájl, , , True) & " adatai beolvastattak; " & névelõvel(xlTábla) & "táblába!"
-    
-Exit Sub
-hiba:
-If Err.Number = 3265 Then
-    válasz = ÚjOszlop(mezõ)
-End If
-
-End Sub
 Function ÚjOszlop(strOszlopNév As String) As Integer
     Dim szöveg As String
     Dim válasz As Variant
-    Dim Szám As Integer
-On Error GoTo hiba
+    Dim szám As Integer
+On Error GoTo Hiba
 Kezdet:
     szöveg = strOszlopNév & Chr(10) & "2 - Byte" & Chr(10) & "3 - Integer" & Chr(10) & "4 - Long" & Chr(10) & "5 - Currency" & Chr(10) & "6 - Single" & Chr(10) & "7 - Double" & Chr(10) & "8 - Date/Time" & Chr(10) & "10 - Text" & Chr(10) & "12 - Memo" & Chr(10) & "16 - Big Integer" & Chr(10) & "17 - VarBinary" & Chr(10) & "18 - Char" & Chr(10) & "19 - Numeric" & Chr(10) & "20 - Decimal" & Chr(10) & "21 - Float" & Chr(10) & "22 - Time" & Chr(10) & "23 - Time Stamp"
     válasz = InputBox(szöveg, "Új oszlop", 10) 'Ha nem válaszol, akkor 10 lesz az érték.
@@ -1113,10 +819,10 @@ Kezdet:
         GoTo Kezdet
     End If
 Vég:
-    Szám = CInt(válasz)
-    MsgBox ("Eredmény:" & Szám)
+    szám = CInt(válasz)
+    MsgBox ("Eredmény:" & szám)
 Exit Function
-hiba:
+Hiba:
 If Err.Number = 13 Then
     Select Case MsgBox(Err.Number & " számú hiba." & Chr(10) & " Csak szám adható meg!", vbRetryCancel)
         Case 2
@@ -1130,105 +836,8 @@ End If
 '    Resume Kezdet
 
 End Function
-Function mezõnév(ByRef adatbázis As DAO.Database, ByVal MezõListaTábla As String, ByVal oszlopcím As String) As String
-    Dim sql As String
-    Dim rekordok As Recordset
-    Dim szRek As Long
-    
-On Error GoTo ErrorHandler
-    
-    sql = "SELECT TOP 1 [Mezõnév]" _
-        & " FROM [" & MezõListaTábla & "]" _
-        & " WHERE [Oszlopnév]='" & oszlopcím & "';"
-    Set rekordok = adatbázis.OpenRecordset(sql)
-    
-    If rekordok.EOF Then
-        MsgBox Title:="Az oszlopnév nincs " & névelõvel(MezõListaTábla) & " táblában", _
-               prompt:=névelõvel(oszlopcím, , , True) & "nem szerepel " & névelõvel(MezõListaTábla) & " táblában!"
-    Else
-        rekordok.MoveLast
-        szRek = rekordok.RecordCount
-    End If
 
-    Set rekordok = Nothing
-Exit Function
- 
-ErrorHandler:
-   MsgBox "Error #: " & Err.Number & vbCrLf & vbCrLf & Err.Description
-    
-End Function
-Sub Táblakészítõ(adatbázis As DAO.Database, ByVal forrástábla As String, ByVal céltábla As String)
-'(c) Oláh Zoltán 2022. Licencia: MIT
-' A forrástáblában található mezõnevek-nek és típus-nak megfelelõ mezõkkel hoz létre egy céltábla nevû táblát
 
-    Dim db              As DAO.Database     'Ez lesz az adatbázisunk
-    Dim sqlMezõk        As String           'A mezõnevek lekérdezéséhez
-    Dim sqlTgy          As String           'A tSzemély táblát készítõ lekérdezéshez
-    Dim rsSorSzám       As Integer
-    Dim rsMezõk         As DAO.Recordset    'A mezõnevek táblája
-    Dim strMezõNév     As String
-    
-On Error GoTo hiba
-    'Alapértékek beállítása
-    Set db = adatbázis
-    sqlMezõk = "SELECT [" & forrástábla & "].[Az]" _
-             & ", [" & forrástábla & "].[Oszlopnév]" _
-             & ", [" & forrástábla & "].[Típus]" _
-             & ", [" & forrástábla & "].[Mezõnév]" _
-             & ", (SELECT Count([Az])" _
-             & "     FROM [" & forrástábla & "] as Tmp " _
-             & "     WHERE   [Tmp].[Az] <= [" & forrástábla & "].[Az]" _
-             & "        AND [Tmp].[Típus] = [" & forrástábla & "].[Típus]" _
-             & "        AND [Tmp].[Mezõnév] = [" & forrástábla & "].[Mezõnév]" _
-             & "  )" _
-             & " FROM [" & forrástábla & "] " _
-             & " WHERE " _
-             & "  (SELECT Count([Az])" _
-             & "     FROM [" & forrástábla & "] as Tmp " _
-             & "     WHERE   [Tmp].[Az] <= [" & forrástábla & "].[Az]" _
-             & "        AND [Tmp].[Típus] = [" & forrástábla & "].[Típus]" _
-             & "        AND [Tmp].[Mezõnév] = [" & forrástábla & "].[Mezõnév]" _
-             & "  ) = 1;"
-
-    Set rsMezõk = db.OpenRecordset(sqlMezõk)
-    rsMezõk.MoveLast
-    rsMezõk.MoveFirst
-    sqlTgy = "CREATE TABLE " & céltábla & "([az" & céltábla & "] COUNTER, CONSTRAINT [PrimaryKey] PRIMARY KEY ([az" & céltábla & "]) );"
-    db.Execute (sqlTgy)
-    sqlTgy = ""
-    For rsSorSzám = 0 To rsMezõk.RecordCount - 1
-        sqlTgy = "ALTER TABLE [" & céltábla & "] ADD COLUMN [" & rsMezõk.Fields("Mezõnév") & "] "  'A mezõnév
-        Select Case rsMezõk.Fields("Típus")               'utána jön típus
-            Case 10
-                sqlTgy = sqlTgy & "VARCHAR; "
-            Case 8
-                sqlTgy = sqlTgy & "DATETIME; "
-            Case 5
-                sqlTgy = sqlTgy & "MONEY; "
-            Case 4
-                sqlTgy = sqlTgy & "INTEGER; "             'LONG
-            Case Else
-                sqlTgy = sqlTgy & "CHAR; "                'ha semmi más nincs, legyen szöveg
-        End Select
-
-'Debug.Print ".";
-        strMezõNév = Clean_NPC(sqlTgy)
-        If Len(strMezõNév) > 60 Then
-            strMezõNév = Left(strMezõNév, 60) & rsSorSzám
-        End If
-        db.Execute (strMezõNév)
-'Debug.Print ".";
-        rsMezõk.MoveNext
-'Debug.Print "."
-'Debug.Print rsSorSzám, Len(rsMezõk.Fields("Mezõnév")), strMezõNév;
-    Next rsSorSzám
-'Debug.Print "!";
-MsgBox ("!")
-Exit Sub
-hiba:
-    MsgBox (Err.Number & ": " & Err.Description & " - " & Err.Source)
-    Exit Sub
-End Sub
 Sub TáblaMezõk()
     Dim db As Database
     Dim rs As Recordset
@@ -1257,7 +866,7 @@ Sub TáblaMezõk()
         sql2 = "SELECT TOP 1 * FROM [" & táblanév & "];"
         Set rs2 = db.OpenRecordset(sql2)
         'Debug.Print táblanév, rs2.Fields.Count
-        For mezõszám = 0 To rs2.Fields.Count - 1
+        For mezõszám = 0 To rs2.Fields.count - 1
             tbla.AddNew
             tbla.Fields("táblanév") = táblanév
             mezõnév = rs2.Fields(mezõszám).Name
@@ -1276,122 +885,6 @@ Sub TáblaMezõk()
     
 End Sub
 
-Public Function dtÁtal(strDátum As Variant) As Date
-' Kell hozzá az ffsplit() fv., ahhoz meg a StrCount() függvény.
-    Dim dtVál As String
-    'Debug.Print strDátum
-    If IsNull(strDátum) Or strDátum = "" Then
-        dtÁtal = 1
-        Exit Function
-    End If
-    dtVál = "."
-    
-    dtÁtal = DateSerial(ffsplit(strDátum, dtVál, 1), ffsplit(strDátum, dtVál, 2), ffsplit(strDátum, dtVál, 3))
-End Function
 
-Public Function SetNavPaneGroup(strObjName, strGroupName)
-'## © JBStovers (Apr 17, 2018 at 18:03)
-'## forrás: https://stackoverflow.com/questions/12863959/access-custom-group
 
-    Dim strSQL, idObj, idGrp, db
-    Set db = CurrentDb
-    idObj = DLookup("Id", "MSysNavPaneObjectIDs", "Name='" & strObjName & "'")
-    idGrp = DLookup("Id", "MSysNavPaneGroups", "Name='" & strGroupName & "'")
 
-    If DCount("*", "MSysNavPaneGroupToObjects", "GroupID = " & idGrp & " AND ObjectID = " & idObj) > 0 Then
-        strSQL = "UPDATE MSysNavPaneGroupToObjects SET GroupID = " & idGrp & ", Name='" & strObjName & "' WHERE ObjectID = " & idObj
-        db.Execute strSQL, dbFailOnError
-    Else
-        strSQL = "INSERT INTO MSysNavPaneGroupToObjects ( GroupID, ObjectID, Name ) " & vbCrLf & _
-        "VALUES (" & idGrp & "," & idObj & ",'" & strObjName & "');"
-        db.Execute strSQL, dbFailOnError
-    End If
-    RefreshDatabaseWindow
-    Set db = Nothing
-    
-End Function
-
-Public Sub CloseAllExcel()
-    Dim obj As Object
-    On Error GoTo ExitSub
-    Dim i As Integer
-    'There shouldn't be more than 10000 running Excel applications
-    'Can use While True too, but small risk of infinite loop
-    For i = 0 To 10000
-        Set obj = GetObject(, "Excel.Application")
-        obj.Quit
-    Next i
-ExitSub:
-End Sub
-
-Sub MoveTableAndCreateLink()
-'# Oláh Zoltán (c) 2023 Licencia: MIT
-'
-    Dim forrásDB As DAO.Database
-    Dim targetDB As DAO.Database
-    Dim tableName As String
-    Dim newTableName As String
-    Dim linkTableName As String
-    
-    ' Set the source and target database file paths
-    Dim sourceDBPath As String
-    Dim targetDBPath As String
-    
-    sourceDBPath = "C:\Path\To\Source\Database.accdb"
-    targetDBPath = "C:\Path\To\Target\Database.accdb"
-    
-    ' Set the table name you want to move
-    tableName = "TableNameToMove"
-    
-    ' Set the new table name in the target database
-    newTableName = "NewTableName"
-    
-    ' Set the linked table name in the source database
-    linkTableName = "LinkedTableName"
-    
-    ' Open the source and target databases
-    Set forrásDB = OpenDatabase(sourceDBPath)
-    Set targetDB = OpenDatabase(targetDBPath)
-    
-    ' Copy the table from the source to the target database
-    DoCmd.TransferDatabase acExport, "Microsoft Access", targetDBPath, acTable, tableName, newTableName
-    
-    ' Close the source and target databases
-    forrásDB.Close
-    targetDB.Close
-    
-    ' Open the source database again
-    Set forrásDB = OpenDatabase(sourceDBPath)
-    
-    ' Create a link to the table in the target database
-    Dim tdf As DAO.TableDef
-    Set tdf = forrásDB.CreateTableDef(linkTableName)
-    tdf.Connect = ";DATABASE=" & targetDBPath
-    tdf.SourceTableName = newTableName
-    forrásDB.TableDefs.Append tdf
-    
-    ' Refresh the linked table to get the latest data
-    DoCmd.RunCommand acCmdRefresh
-    
-    ' Close the source database
-    forrásDB.Close
-    
-    ' Clean up
-    Set forrásDB = Nothing
-    Set targetDB = Nothing
-    Set tdf = Nothing
-End Sub
-
-Sub MegnyitMentBezár(ByVal fájlNévÚtv As String)
-    Dim ojExcel As Object
-    Dim ojWB As Object
-    
-    Set ojExcel = CreateObject("Excel.Application")
-    Set ojWB = ojExcel.Workbooks.Open(fájlNévÚtv, ReadOnly:=False, IgnoreReadOnlyRecommended:=True, Editable:=True, Notify:=False)
-    ojWB.Save
-    ojWB.Close
-    ojExcel.Quit
-    Set ojWB = Nothing
-    Set ojExcel = Nothing
-    
-End Sub

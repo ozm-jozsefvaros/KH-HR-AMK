@@ -1,4 +1,4 @@
-SELECT lkSzemélyek.[Dolgozó teljes neve], lkSzemélyek.[Szervezeti egység neve], lkSzemélyek.Besorolás, lkSzemélyek.[KIRA feladat megnevezés], lkSzemélyek.[Vezetõi megbízás típusa]
-FROM lkSzemélyek
-WHERE (((lkSzemélyek.[Szervezeti egység neve]) Like "Humán*"))
-ORDER BY IIf(InStr(1,[Besorolás],"osztály"),1,IIf(InStr(1,[KIRA feladat megnevezés],"titkár"),2,3)), lkSzemélyek.[Szervezeti egység kódja], lkSzemélyek.[Dolgozó teljes neve];
+SELECT kt_azNexon_Adójel02.azNexon, lkSzemélyek.[Dolgozó teljes neve], lkSzemélyek.Osztály, lkSzemélyek.[Hivatali email], lkSzemélyek.[Hivatali telefon]
+FROM kt_azNexon_Adójel02 RIGHT JOIN lkSzemélyek ON kt_azNexon_Adójel02.Adójel = lkSzemélyek.Adójel
+WHERE (((kt_azNexon_Adójel02.azNexon) Not In (Select NexonAz From tReferensekTerületNélkül)) AND ((lkSzemélyek.Fõosztály) Like "Humán*") AND ((lkSzemélyek.[KIRA feladat megnevezés]) Like "humán*" Or (lkSzemélyek.[KIRA feladat megnevezés]) Like "*osztály*") AND ((IIf(Nz([Tartós távollét típusa],False)<>False,True,False))=0))
+ORDER BY lkSzemélyek.Osztály, lkSzemélyek.[Dolgozó teljes neve];

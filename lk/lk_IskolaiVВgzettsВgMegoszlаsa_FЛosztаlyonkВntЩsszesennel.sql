@@ -1,0 +1,9 @@
+SELECT IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.[Fõosztály ill hivatal], IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.[<>], IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.[Általános iskola 8 osztály], IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.[Egyetemi /felsõfokú (MA/MsC) vagy osztatlan képz_], IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.[Éretts_biz_szakképes-vel,képesítõ biz_], IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.[Éretts_biz_Szakkép-vel,éretts_ép_ iskr-ben szakkép], IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.[Érettségi biz_ szakképesítés nélk (pl: gimn_ér_)], IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.[Felsõokt-i (felsõfokú) szakképzésben szerzett biz_], IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.[Fõiskolai vagy felsõfokú alapképzés (BA/BsC)okl_], IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.Gimnázium, IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.Szakiskola, IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.[Szakképzettség érettségi bizonyítvány nélkül], IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.Szakközépiskola, IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.[Szakmunkásképzõ iskola], IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.Technikum
+FROM (SELECT * ,0 as sor
+FROM  lk_IskolaiVégzettségMegoszlása_Fõosztályonként
+UNION
+
+SELECT *, 1 as sor
+FROM lk_IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesen
+)  AS IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel
+ORDER BY IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.sor, IskolaiVégzettségMegoszlása_FõosztályonkéntÖsszesennel.FõosztályKód;

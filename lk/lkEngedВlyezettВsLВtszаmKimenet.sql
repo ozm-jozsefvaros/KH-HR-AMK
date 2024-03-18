@@ -1,0 +1,7 @@
+SELECT IIf([Fõosztály]="Kormánymegbízott","Fõispán",[Fõosztály]) AS Fõoszt, IIf(([Fõosztály] Like "*Fõosztály" And ([Osztály]="" Or [Osztály]="Fõosztályvezetõ")) Or ([Fõosztály] Like "BFKH*" And ([Osztály]="" Or [Osztály]="Hivatalvezetés")),[Fõosztály],IIf([Osztály]="Kormánymegbízott","Fõispán",[Osztály])) AS Oszt1, Sum(TT21_22_23ésLétszám21_22.L2021) AS L2021, Sum(TT21_22_23ésLétszám21_22.L2022) AS L2022, Sum(TT21_22_23ésLétszám21_22.L2023) AS L2023, Sum(TT21_22_23ésLétszám21_22.TT2021) AS TT2021, Sum(TT21_22_23ésLétszám21_22.TT2022) AS TT2022, Sum(TT21_22_23ésLétszám21_22.TT2023) AS TT2023
+FROM (SELECT lkTT21_22_23.Fõosztály, lkTT21_22_23.Osztály, 0 AS L2021, 0 AS L2022, SumOfLétszám2023 as L2023, lkTT21_22_23.SumOfTTLétszám2021 AS TT2021, lkTT21_22_23.SumOfTTLétszám2022 AS TT2022, lkTT21_22_23.SumOfTTLétszám2023 AS TT2023
+FROM lkTT21_22_23
+UNION
+SELECT lkEngedélyezettLétszámok.[Fõosztály], lkEngedélyezettLétszámok.Osztály, lkEngedélyezettLétszámok.SumOf2021 AS L2021, lkEngedélyezettLétszámok.SumOf2022 AS L2022, 0 AS L2023, 0 AS TT2021, 0 AS TT2022, 0 AS TT2023
+FROM  lkEngedélyezettLétszámok)  AS TT21_22_23ésLétszám21_22
+GROUP BY IIf([Fõosztály]="Kormánymegbízott","Fõispán",[Fõosztály]), IIf(([Fõosztály] Like "*Fõosztály" And ([Osztály]="" Or [Osztály]="Fõosztályvezetõ")) Or ([Fõosztály] Like "BFKH*" And ([Osztály]="" Or [Osztály]="Hivatalvezetés")),[Fõosztály],IIf([Osztály]="Kormánymegbízott","Fõispán",[Osztály]));

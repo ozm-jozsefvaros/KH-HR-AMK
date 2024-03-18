@@ -1,0 +1,3 @@
+SELECT Year(IIf([Nyugdíjkorhatárt betölti]<Date(),Date(),[Nyugdíjkorhatárt betölti])) & "." & IIf(Len(Month(IIf([Nyugdíjkorhatárt betölti]<Date(),Date(),[Nyugdíjkorhatárt betölti])))<2,0,"") & Month(IIf([Nyugdíjkorhatárt betölti]<Date(),Date(),[Nyugdíjkorhatárt betölti])) AS Év_hónap, Count(lkNyugdíjazandóDolgozók.[Dolgozó teljes neve]) AS Fõ
+FROM lkNyugdíjazandóDolgozók
+GROUP BY Year(IIf([Nyugdíjkorhatárt betölti]<Date(),Date(),[Nyugdíjkorhatárt betölti])) & "." & IIf(Len(Month(IIf([Nyugdíjkorhatárt betölti]<Date(),Date(),[Nyugdíjkorhatárt betölti])))<2,0,"") & Month(IIf([Nyugdíjkorhatárt betölti]<Date(),Date(),[Nyugdíjkorhatárt betölti]));

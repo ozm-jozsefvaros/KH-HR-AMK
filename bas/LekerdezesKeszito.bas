@@ -50,7 +50,7 @@ Sub Ellenõrzés1(ByVal Ûrlapnév As String)
 '    Dim lkEredm             As String       'Az eredmény lekérdezés neve
     Dim ûrl                 As Form
     Set ûrl = Application.Forms(Ûrlap)
-    lkEllLek = "SELECT * FROM lkEllenõrzõLekérdezések WHERE azETípus = 1 AND Kimenet = False;"    'Ez a lekérdezés sorolja fel azokat a lekérdezéseket, amelyeket le kell futtatnunk.
+    lkEllLek = "SELECT * FROM lkEllenõrzõLekérdezések2 WHERE azETípus = 1 AND Kimenet = False;"    'Ez a lekérdezés sorolja fel azokat a lekérdezéseket, amelyeket le kell futtatnunk.
     tEll = "t__Ellenõrzés_02"
 '    lkEredm = "lk_Ellenõrzés_03"
 sFoly ûrl, "Betöltés:; Adathiány ellenõrzés elõkészítése"
@@ -63,7 +63,7 @@ sFoly ûrl, "Betöltés:; Adathiány ellenõrzés elõkészítése"
     lkEll.MoveLast
     lkEll.MoveFirst
     
-sFoly ûrl, "Betöltés:; " & lkEll.RecordCount & " db. lekérdezés indul..."
+sFoly ûrl, "Betöltés:; " & lkEll.recordCount & " db. lekérdezés indul..."
     ' A felsorolt lekérdezések lefuttatása
     sqlA = ""
     Do Until lkEll.EOF
@@ -127,7 +127,7 @@ On Error GoTo Err_Ellenõrzés
     lkEll.MoveLast
     lkEll.MoveFirst
     
-    sFoly Ûrlap, "Ellenõrzés:; " & lkEll.RecordCount & " db. lekérdezés indul..."
+    sFoly Ûrlap, "Ellenõrzés:; " & lkEll.recordCount & " db. lekérdezés indul..."
     
     ' A felsorolt lekérdezések lefuttatása
     sqlA = ""
@@ -162,26 +162,6 @@ Set QD = CurrentDb.QueryDefs(MyQueryName)
 GetQuerySQL = QD.sql
  
 End Function
-Sub sFoly(Ûrlap As Form, Üzenet As String, Optional idõtis As Boolean = True)
 
-    Dim a As Boolean
-    a = Foly(Ûrlap, Üzenet, idõtis)
-    'MsgBox "sFoly Sub!"
-End Sub
-Function Foly(Ûrlap As Form, Üzenet As String, Optional idõtis As Boolean = True) As Boolean
-    If idõtis Then
-        If StrCount(Üzenet, ";") = 1 And Ûrlap.Folyamat.ListCount = 0 Then
-            Üzenet = Üzenet & "; Idõpont"
-        Else
-            If StrCount(Üzenet, ";") = 1 Then
-                Üzenet = Üzenet & "; " & Now()
-            End If
-        End If
-    End If
-    Ûrlap.Folyamat.AddItem Item:=Üzenet
-    Ûrlap.Repaint
-    Ûrlap.Folyamat.Selected(Ûrlap.Folyamat.ListCount - 1) = True
-    
-End Function
 
 

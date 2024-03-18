@@ -1,0 +1,2 @@
+SELECT lkSzemélyek.*
+FROM lkSzemélyek;

@@ -1,0 +1,3 @@
+SELECT tÁlláshelyekBelsõElosztásaFõosztályOsztály.azElosztás, Replace([Fõosztály],"Budapest Fõváros Kormányhivatala","BFKH") AS Fõoszt, tÁlláshelyekBelsõElosztásaFõosztályOsztály.Osztály, tÁlláshelyekBelsõElosztásaFõosztályOsztály.[Álláshely azonosító], tÁlláshelyekBelsõElosztásaFõosztályOsztály.Hatály
+FROM tÁlláshelyekBelsõElosztásaFõosztályOsztály
+WHERE (((tÁlláshelyekBelsõElosztásaFõosztályOsztály.azElosztás)=(Select Top 1 azElosztás from [tÁlláshelyekBelsõElosztásaFõosztályOsztály] as tmp Where tmp.[Álláshely azonosító]=[tÁlláshelyekBelsõElosztásaFõosztályOsztály].[Álláshely azonosító] Order By  tmp.hatály Desc)));

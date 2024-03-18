@@ -1,2 +1,2 @@
-SELECT tJogviszonyok1.*, [Adóazonosító jel]*1 AS Adójel
-FROM tJogviszonyok1;
+SELECT tJogviszonyok.*, [Adóazonosító jel]*1 AS Adójel
+FROM tJogviszonyok;

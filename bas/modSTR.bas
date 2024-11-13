@@ -9,30 +9,35 @@
 'WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Option Compare Database
 Function BFKH(kód As String) As String
-'#MIT Oláh Zoltán (c) 2022
+fvbe ("BFKH")
+'#MIT Oláh Zoltán (c) 2022, 2024
 '# Minden két pont között, ha csak egy karakter van, beszúr eléje egy 0-t. Pl.:BFKH.1.2. -> BKFH.01.02.
 '# Cél: Az így kialakított szervezeti egység azonosító ABC sorba rendezve értelmes sorrendet ad...
-    Dim intN, i, intPoz As Integer
-    Dim strÁtm, strElv As String
+    Dim intN As Integer, i As Integer, intPoz As Integer
+    Dim strÁtm As String, _
+        strElv As String, _
+        szakasz As String
     
     strElv = "."
     strÁtm = ""
     intN = StrCount(kód, strElv)
     
     For i = 1 To intN
+        szakasz = ffsplit(kód, strElv, i)
         Select Case i
             Case 1 'elsõ
-                strÁtm = ffsplit(kód, strElv, i)
+                strÁtm = szakasz
             Case Else 'a közbülsõk
-                If Len(ffsplit(kód, strElv, i)) = 1 Then
-                    strÁtm = strÁtm & ".0" & ffsplit(kód, strElv, i)
+                If Len(szakasz) = 1 Then 'If Len(ffsplit(kód, strElv, i)) = 1 Then
+                    strÁtm = strÁtm & ".0" & szakasz 'strÁtm = strÁtm & ".0" & ffsplit(kód, strElv, i)
                 Else
-                    strÁtm = strÁtm & "." & ffsplit(kód, strElv, i)
+                    strÁtm = strÁtm & "." & szakasz 'strÁtm = strÁtm & "." & ffsplit(kód, strElv, i)
                 End If
         End Select
                 
     Next i
     BFKH = strÁtm
+fvki
 End Function
 Function tBFKH(ByVal strHivatalVagyFõosztály As Variant) As String
 '#MIT Oláh Zoltán (c) 2024
@@ -49,9 +54,12 @@ Public Function ffsplit(ByVal mezõ As Variant, Optional ByVal elválasztó As Stri
 'Ha a megadott 'mezõ' érték null, üres karakterláncot ad vissza.
 'Ha a megadott érték nem tartalmazza az 'elválasztó'-t, a megadott értéket adja vissza
 'Ha Szám nagyobb, mint ahány darabra osztható az elválasztóval a mezõ, akkor az utolsó értéket adja.
+fvbe ("ffsplit")
     Dim temp() As String
     Dim n As Integer
-On Error GoTo Hiba
+    
+    On Error GoTo Hiba
+    
     If IsNull(mezõ) Then
         ffsplit = ""
         Exit Function
@@ -62,20 +70,27 @@ On Error GoTo Hiba
         Exit Function
     End If
     ReDim temp(n)
-    'Debug.Print mezõ & ", " & n
+    logba , mezõ & ", " & n, 4
 
     temp = Split(mezõ, elválasztó)
     If szám > n + 1 Then
         szám = n + 1
     End If
     ffsplit = Trim(temp(szám - 1))
-    'Debug.Print temp(Szám - 1)
-
+    logba , temp(szám - 1), 4
+fvki
 Exit Function
 Hiba:
-MsgBox (Err.Number & " - " & Err.Description)
+    vált1.név = "mezõ"
+    vált1.érték = mezõ
+    vált2.név = "elválasztó"
+    vált2.érték = elválasztó
+    vált3.név = "szám"
+    vált3.érték = szám
+    MsgBox (Hiba(Err))
+fvki
 End Function
-Function Utolsó(ByVal szöveg As String, Optional ByVal elválasztó As String = "", Optional ByVal vissza As Integer = 0) As String
+Function Utolsó(ByVal szöveg As Variant, Optional ByVal elválasztó As String = "", Optional ByVal vissza As Integer = 0) As String
 'Licencia: MIT Oláh Zoltán 2023 (c)
 'Ez a fv az elválasztó-val tagolt megadott szöveg utolsó tagját adja eredményül.
 'Ha a vissza érték meg van adva, akkor az utolsótól vissza értékkel visszaszámol, s annak a helynek az értékét adja vissza.
@@ -119,6 +134,24 @@ Function Utolsó(ByVal szöveg As String, Optional ByVal elválasztó As String = ""
     Utolsó = ffsplit(szöveg, elválasztó, db - vissza)
 
 End Function
+Function strVége(ByVal szöveg As Variant, Optional ByVal elválasztó As String = "", Optional ByVal szakaszokSzáma As Integer = 1) As String
+'Licencia: MIT Oláh Zoltán & Brányi Balázs 2024 (c)
+Dim i As Integer
+Dim Kimenet As String
+szöveg = TrimX(szöveg, elválasztó)
+szakaszokSzáma = Abs(szakaszokSzáma)
+If szakaszokSzáma = 0 Then szakaszokSzáma = 1
+
+For i = szakaszokSzáma To 1 Step -1
+    If i = szakaszokSzáma Then
+        Kimenet = Utolsó(szöveg, elválasztó, i - 1)
+    Else
+        Kimenet = Kimenet & elválasztó & Utolsó(szöveg, elválasztó, i - 1)
+    End If
+Next i
+strVége = Kimenet & elválasztó
+End Function
+
 Public Function StrCount(ByVal szöveg As Variant, ByVal keresett As Variant) As Integer
 '------------------------------------------------------------------
 ' Purpose: Counts the numbers of times an item occurs
@@ -193,8 +226,22 @@ Function névelõ(szó As Variant) As String
     Dim magánhangzók As String
     Dim keresett As String
     
+    If IsNumeric(szó) Then
+        névelõ = ""
+        Select Case Left(CStr(szó), 1)
+            Case "1"
+                Select Case szó
+                    Case 1 To 9, 100 To 199, 1000 To 1999, 100000 To 1999999
+                        névelõ = "z"
+                End Select
+            Case "5"
+                névelõ = "z"
+        End Select
+        Exit Function
+    End If
+    
     magánhangzók = "aáeéiíoóöõuúüûAÁEÉIÍOÓÖÕUÚÜÛ"
-    keresett = Left(szó, 1)
+    keresett = Left(Nz(szó, ""), 1)
     Select Case keresett
         Case 0 To 9
             Select Case keresett
@@ -341,15 +388,15 @@ Public Function dtÁtal(strDátum As Variant, Optional sorrend As String = "éhn") 
 ' Kell hozzá az ffsplit() fv., ahhoz meg a StrCount() függvény.
     Dim dtVál, dtVálasztók, strDate As String
     Dim év, hó, nap As String
-    Dim i, darab, ihó, inap, iév As Integer
+    Dim i, j, darab, ihó, inap, iév As Integer
     sorrend = Left(sorrend, 3)
     If (StrCount(sorrend, "é") <> 1) Or (StrCount(sorrend, "h") <> 1) Or (StrCount(sorrend, "n") <> 1) Then
         dtÁtal = 0
         Exit Function
     End If
     
-    'Debug.Print strDátum
-    If IsNull(strDátum) Or strDátum = "" Then
+            logba , CStr(Nz(strDátum, 0)), 3
+    If IsNull(strDátum) Or strDátum = "" Or strDátum = 0 Then
         dtÁtal = 0
         Exit Function
     End If
@@ -425,4 +472,27 @@ Hiba:
         Resume Next
     End If
     MsgBox Err.Number & ", " & Err.Description, , "Hiba"
+End Function
+Function szétbontó(mezõ As Variant, lekérdezés As Variant) As Variant
+    If IsNull(mezõ) Then Exit Function
+    If IsNull(lekérdezés) Then Exit Function
+    If mezõ = vbNullString Then Exit Function
+    If lekérdezés = vbNullString Then Exit Function
+    Dim n As Long
+    Dim Kimenet() As Variant
+    Dim db As DAO.Database
+    Dim qdf As QueryDef
+    Dim mezõszám As Long
+    
+    Set db = CurrentDb
+    Set qdf = db.QueryDefs(lekérdezés)
+    With qdf
+        mezõszám = StrCount(mezõ, "|")
+        ReDim Kimenet(1 To mezõszám, 1 To 2)
+        For n = 1 To mezõszám
+            Kimenet(n, 1) = .Fields(n - 1).Name
+            Kimenet(n, 2) = Trim(ffsplit(mezõ, "|", n))
+        Next n
+    End With
+    szétbontó = Kimenet
 End Function

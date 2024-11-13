@@ -1,10 +1,109 @@
 Option Compare Database
+Global állj As Boolean
+Public hibatábla As Recordset
+Public jelenDb As DAO.Database
+Public teszt As Boolean ' False 'Ha ez True, akkor teszt üzemmódban fut (nem futtatja a lekérdezéseket)
+Sub OldalPanel(ByRef hf As Object, ByRef lkEll As DAO.Recordset, ByVal Fõcím As String, ByVal oldalcím As String)
+fvbe ("OldalPanel")
+    With hf
+        .writeline "<div id=""oldalpanel"" class=""oldalpanel"">"
+        .writeline "<div ><h3>" & Fõcím & "</h3></div>"
+        .writeline "    <h1 class=""oldal"">" & oldalcím & "</h1>"
+        .writeline "    <div id=""kereso""><input id=""pageSearch"" type=""text"" placeholder=""Minden táblában keres (min. 3 leütés)""></div>"
+        .writeline "    <h2>Táblák</h2>"
+        
+        Dim elõzõFejezetCím As String
+        elõzõFejezetCím = ""
+        Dim TáblaSzám As Integer
+        TáblaSzám = 0
+        Do Until lkEll.EOF
+            TáblaSzám = TáblaSzám + 1
+            Dim fejezetCím As String
+            fejezetCím = lkEll("LapNév")
+            Dim fejezetmegj
+            fejezetmegj = lkEll("Megjegyzés")
+            
+            If elõzõFejezetCím = "" Then 'elsõ fejezet
+                elõzõFejezetCím = fejezetCím
+                .writeline "    <ul class=""chapter-list"">" 'Megnyitjuk a fejezetek listát
+                .writeline "    <li class=""chapter-list-item"" title=""" & fejezetmegj & """><a href=#" & Replace(fejezetCím, " ", "") & ">" & fejezetCím & "</a></li>" 'Beillesztjük az elsõ fejezetet
+                .writeline "        <ul class=""table-list"">" 'Megnyitjuk az elsõ táblalistát
+            End If
+            
+            If fejezetCím <> elõzõFejezetCím Then 'Új fejezet
+                elõzõFejezetCím = fejezetCím
+                .writeline "        </ul>" 'Lezárjuk az elõzõ táblalistát
+                .writeline "    <li class=""chapter-list-item"" title=""" & fejezetmegj & """><a href=#" & Replace(fejezetCím, " ", "") & ">" & fejezetCím & "</a></li>" ' Bejegyezzük a következõ fejezetlista elemet
+                .writeline "        <ul class=""table-list"">" 'Megnyitjuk az új táblalistát
+            End If
+            
+            Dim Táblacím As String
+            Táblacím = lkEll("Táblacím")
+            Dim megj As String
+            megj = Nz(lkEll("TáblaMegjegyzés"), "")
+            Dim vaneGraf As Variant
+            vaneGraf = lkEll("vaneGraf")
+            
+            .writeline "        <li class=""table-list-item"" title=""" & megj & """>"
+            If vaneGraf <> vbNullString Then
+                Dim grIkon As String
+                grIkon = "&#x1F4CA;" ' A grafikont jelzõ ikon
+                .writeline "            <div class=""linkIkon"" >"
+                .writeline "                <a href=""#canv-table" & TáblaSzám & """>" & grIkon & "</a>"
+                .writeline "            </div>"
+            Else
+                .writeline "            <div class=""linkIkon"" ></div>"
+            End If
+            .writeline "                <div class=""table-linkdiv"">"
+            .writeline "                    <a href=#table" & TáblaSzám & " class=""table-link"">" & Táblacím & "</a>"
+            .writeline "                </div></li>"
+            
+            lkEll.MoveNext
+        Loop
+        .writeline "        </ul>" 'lezárjuk az utolsó táblalistát
+        .writeline "    </ul>" 'lezárjuk az utolsó fejezetlistát
+        .writeline "</div>" 'lezárjuk az oldalpanelt
+        .writeline "</div>" 'lezárjuk a gördülõ oldalpanelt
+        .writeline "<div class=""fotartalom"">"
+    End With
+fvki
+End Sub
+Sub fejléc(ByRef hf As Object, ByVal oldalcím As String, ByVal háttérkép As String)
+fvbe ("fejléc")
+    With hf
+        .writeline "<!DOCTYPE html>"
+        .writeline "<html>"
+        .writeline "<head>"
+        .writeline "<title>" & oldalcím & "</title>"
+        .writeline "<link rel=""stylesheet"" href=""./css/hrell.css"">"
+        .writeline "<script src=""./js/hrell.js""></script>"
+        .writeline "<script src=""https://kvotariport.kh.gov.hu/static/quotarep/js/chart.bundle.min.js""></script>"
+        .writeline "</head>"
+        .writeline "<body style='" & háttérkép & "'>"
+        .writeline "<div id=""fejlec"">   <a href=""file:///L:/Ugyintezok/Adatszolg%C3%A1ltat%C3%B3k/HRELL/Ind%C3%ADt%C3%B3pult.html"" ><button id=""inditopultButton"">Indítópult</button> </a></div>"
+        .writeline "<div class=""fokeret"">" 'fõkeret
+        .writeline "<div id=""gordulooldalpanel"">"
+    End With
+fvki
+End Sub
+Function FájlMegnyitása(ByVal filePath As String) As Object
+fvbe ("FájlMegnyitása")
+    Dim fileSystem As Object
+    Set fileSystem = CreateObject("Scripting.FileSystemObject")
+    Set FájlMegnyitása = fileSystem.CreateTextFile(filePath, True)
+fvki
+End Function
 '###KEZDET:fejléc###
-Sub ExportQueryResultsToHTMLWithClassNames(oÛrl As Object, Optional ByVal Kimutatás As Boolean = False, Optional ByVal Ellenõrzés As Boolean = True)
+Sub subHTMLKimenet(oÛrl As Object, oldal As Integer)
+ fvbe ("subHTMLKimenet")
     'On Error GoTo Err_Export
-    Const teszt As Boolean = False 'Ha ez True, akkor teszt üzemmódban fut (nem futtatja a lekérdezéseket)
+    'Const teszt As Boolean
     
+    teszt = oÛrl.Próba.Value 'Ha ez True, akkor teszt üzemmódban fut (nem futtatja a lekérdezéseket)
+        If teszt Then _
+            logba , "Tesztfuttatás indul, üres táblák készülnek!!!", 1
     '# Adatbázishoz kötõdõ változók
+
     Dim db As DAO.Database
     Dim qdf As DAO.QueryDef
     Dim lkEll As DAO.Recordset ' A soron következõ ellenõrzõ lekérdezés
@@ -18,166 +117,191 @@ Sub ExportQueryResultsToHTMLWithClassNames(oÛrl As Object, Optional ByVal Kimuta
     Dim columnIndex As Integer ' Track the current column index
     
     '# Fájlkezeléssel kapcsolatos változók
-    Dim hfNév As String
-    Dim hf As Object
+    Dim hfNév As String, _
+        mappa As String
+    Dim fájlobj As Object
+    Dim hf As Object 'A fájl, amibe dolgozunk
+    Dim mfnév As String 'A fájl másolat neve
+    
+    '#A visszajelzések kezeléséhez kapcsolódó változók
+    Dim lekVisszJelTípus As QueryDef
+    Dim VisszJelTípusok As Recordset
+    Dim VisszTípCsop As Long
     
     '# A HTML oldal változói
-    Dim Fõcím, háttérkép As String
-    Dim oldalcím As String
-    Dim fejezetCím As String
-    Dim elõzõFejezetCím As String
-    Dim FejezetVált As Boolean
-    Dim táblaCím As String
-    Dim TáblaSzám As Integer '->> "<table id=""table" & TáblaSzám...
-    Dim megj As String
+    Dim Fõcím As String, _
+        háttérkép As String, _
+        háttérszín As String, _
+        oldalcím As String, _
+        fejezetCím As String, _
+        elõzõFejezetCím As String, _
+        fejezetmegj As String, _
+        Táblacím As String, _
+        megj As String, _
+        CheckBox As String
     Dim strÜresTábla As String 'ClassName az üres táblák esetén
-    Dim CheckBox As String
+    Dim FejezetVált As Boolean
+    Dim TáblaSzám As Integer '->> "<table id=""table" & TáblaSzám...
     
+    'Számláláshoz - folyamatjelzõ
+    Dim sor, oszlop     As Integer
+    Dim ehj             As New ehjoszt
+    Dim elõzõszakasz    As Integer
+    Dim SzakaszSzám     As Integer
+
+
     háttérkép = AlapadatLek("HTML", "háttérkép")
     If vane(háttérkép) Then
-        háttérkép = "background-image: url(""" & háttérkép & """);"
+        háttérkép = "background-image: url(""" & háttérkép & """);background-repeat: repeat-y;background-size: 100% auto;"
     Else
         háttérkép = ""
     End If
 
     Fõcím = AlapadatLek("HTML", "fõcím")
-    Dim vaneGraf As Boolean
-    Dim mezTip As Variant
+    Dim blKellVisszajelzes As Boolean
+    
+    Dim gráftípus As Variant, _
+        mezTip As Variant
     Dim válasz As Integer
+    Dim vaneGraf As String, _
+        strHash As String, _
+        strDropdown As String, _
+        grIkon As String
+    grIkon = "&#x1F4CA;" ' A grafikont jelzõ ikon
     
-    Dim maxsor As Integer 'Ha a tábla több sorból áll, akkor az egész táblát nem írjuk ki.
-    maxsor = 1100
     
-    qWhere = Forms!ûFõmenü02!Osztály
-    hfNév = DLookup("Fájlnév", "tLekérdezésOsztályok", "[azOsztály]=" & Forms!ûFõmenü02!Osztály)
-    oldalcím = DLookup("Oldalcím", "tLekérdezésOsztályok", "[azOsztály]=" & Forms!ûFõmenü02!Osztály)
+    Dim maxsor As Integer 'Ha a tábla ennél több sorból áll, akkor a táblát egyáltalán nem írjuk ki.
+    maxsor = 1100 'TODO: Az ellenõrzõ lekérdezések táblába felvenni, hogy az adott lekérdezés esetén mi legyen a maxsor. De maradhatna itt alapértelmezés...
+    
+    qWhere = oldal 'oÛrl.Osztály
+    hfNév = DLookup("Fájlnév", "tLekérdezésOsztályok", "[azOsztály]=" & oldal)
+   
+    oldalcím = DLookup("Oldalcím", "tLekérdezésOsztályok", "[azOsztály]=" & oldal)
+    VisszTípCsop = Nz(DLookup("azVisszaJelzésTípusCsoport", "tLekérdezésOsztályok", "[Oldalcím]=""" & oldalcím & """"), 0)
 
-    oldalcím = oldalcím & " (" & Date & ")" 'Az oldalcím a dátummal együtt az igazi oldalcím
-    Set db = CurrentDb()
+    oldalcím = oldalcím & " (" & oÛrl.HaviHatálya & ")" 'Date & ")" 'Az oldalcím a dátummal együtt az igazi, ami pedig a havi jelentés hatálya
+
     '### Ha nincs Kimenet megadva, akkor kilépünk, de elõtte üzenünk
-    
-    Do While Len(oÛrl.FileKimenet) = 0 Or IsNull(oÛrl.FileKimenet) Or válasz = 0
-        MappaVálasztó oÛrl.FileKimenet, "A kimenet helyének kiválasztása", "\\Teve1-jkf-hrf2-oes\vol1\Human\HRF\Ugyintezok\Adatszolgáltatók\HRELL"
-        válasz = válasz + 1
-    Loop
-    If válasz > 1 Then Exit Sub
-    
+'    If IsNull(AlapadatLek("HTML", "kimenet")) Then
+'        MsgBox Prompt:="Nincs kimeneti mappa megadva, az Alapadatok ablakban meg kell adni, utána újraindítani a lekérdezéseket"
+'        logba , "Nincs kimeneti mappa megadva, megállunk!"
+'        sFoly oÛrl, "Nincs kimeneti mappa, ezért megállunk!!!!"
+'        Exit Sub
+'
+'    End If
+    If teszt Then
+        mappa = ÚtvonalKészítõ(AlapadatLek("HTML", "próbaútvonal"), "")
+    Else
+        mappa = ÚtvonalKészítõ(AlapadatLek("HTML", "kimenet"), "")
+    End If
+    '### Az adatbázis megnyitása
+    Set db = CurrentDb()
+    '### A visszajelzések kezeléséhez szükséges adatok beszerzése
+
+        Set lekVisszJelTípus = db.CreateQueryDef("", "SELECT tVisszajelzésTípusok.[VisszajelzésKód], tVisszajelzésTípusok.[VisszajelzésSzövege] " & _
+                                        " From [tVisszajelzésTípusok]" & _
+                                        " Where [VisszaJelzésTípusCsoport] = " & VisszTípCsop & _
+                                        " ORDER BY tVisszajelzésTípusok.[VisszajelzésKód] DESC;")
+        Set VisszJelTípusok = lekVisszJelTípus.OpenRecordset(dbOpenSnapshot)
     '### A lefuttatandó lekérdezések tulajdonságainak beszerzése -----------
     Set qdf = db.QueryDefs("parlkEllenõrzõLekérdezések")
     qdf.Parameters("qWhere") = qWhere
     Set lkEll = qdf.OpenRecordset
     If lkEll.EOF Then
-        sFoly oÛrl, "A választott gyûjteményben:;nincsenek lekérdezések!"
-        sFoly oÛrl, "Ezért a futás:;véget ért..."
+        sFoly oÛrl, "A választott gyûjteményben:;nincsenek lekérdezések!", , 0
+        sFoly oÛrl, "Ezért a futás:;véget ért...", , 0
+        fvki
         Exit Sub
     End If
     '### A fájlnév meghatározása -------------------------------------------
-    If Right(oÛrl.FileKimenet, 1) <> "\" Then
-        hfNév = oÛrl.FileKimenet & "\" & hfNév '
-    Else
-        hfNév = oÛrl.FileKimenet & hfNév
-    End If
-    hfNév = hfNév & Format(Now(), "yyyy-mm-dd-hh-nn-ss") & ".html"
+    mfnév = hfNév & ".html" ' A másolat ezen a néven készül majd
+    hfNév = hfNév & "_" & Format(Now(), "yyyy-mm-dd-hh-nn-ss") & ".html"
+'    If teszt Then _
+'        mappa = mappa & "Próba\"
+        
+    hfNév = mappa & "html\" & hfNév
+    mfnév = mappa & mfnév
+    
     '#######################################################################
     '### A html fájl megnyitása --------------------------------------------
-    Set hf = CreateObject("Scripting.FileSystemObject").CreateTextFile(hfNév, True)
+    '#######################################################################
+    Set hf = FájlMegnyitása(hfNév)
     
     '### A html fejrész megírása -------------------------------------------
-    With hf
-        .writeline "<!DOCTYPE html>"
-        .writeline "<html>"
-        .writeline "<head>"
-        .writeline "<title>" & oldalcím & "</title>"
-        .writeline "<link rel=""stylesheet"" href=""./css/hrell.css"">"
-        .writeline "<script src=""./js/hrell.js""></script>"
-        .writeline "<script src=""https://kvotariport.kh.gov.hu/static/quotarep/js/chart.bundle.min.js""></script>" 'belülrõl származik!!!!!!!!
-        .writeline "</head>"
-        .writeline "<body style='" & háttérkép & "'>"
-        .writeline "<div ><h3>" & Fõcím & "</h3></div>"
-        .writeline "<div class=""fokeret"">" 'fõkeret
-        
-    End With
+    fejléc hf, oldalcím, háttérkép
+
     '#############################
     '### Oldalpanel felépítése ###
     '#############################
     'lkell.MoveLast
     lkEll.MoveFirst
     TáblaSzám = 0
-    With hf
-                .writeline "<div id=""oldalpanel"" class=""oldalpanel"">"
-                .writeline "    <h2>Táblák</h2>"
-        elõzõFejezetCím = ""
-        Do Until lkEll.EOF
-            TáblaSzám = TáblaSzám + 1
-            táblaCím = lkEll("Táblacím")
-            fejezetCím = lkEll("LapNév")
-            megj = Nz(lkEll("Megjegyzés"), "")
-            If elõzõFejezetCím = "" Then 'elsõ fejezet
-                elõzõFejezetCím = fejezetCím
-                .writeline "    <ul class=""chapter-list"">" 'Megnyitjuk a fejezetek listát
-                .writeline "    <li class=""chapter-list-item"">" & fejezetCím & "</li>" 'Beillesztjük az elsõ fejezetet
-                .writeline "        <ul class=""table-list"">" 'Megnyitjuk az elsõ táblalistát
-            End If
-            If fejezetCím <> elõzõFejezetCím Then 'Új fejezet
-                
-                elõzõFejezetCím = fejezetCím
-                .writeline "        </ul>" 'Lezárjuk az elõzõ táblalistát
-                .writeline "    <li class=""chapter-list"">" & fejezetCím & "</li>" ' Bejegyezzük a következõ fejezetlista elemet
-                .writeline "        <ul class=""table-list"">" 'Megnyitjuk az új táblalistát
-            
-            End If
-            'Következik a táblalista elem
-                .writeline "        <li class=""table-list-item"" title=""" & megj & """><a href=#table" & TáblaSzám & " class=""table-link"">" & táblaCím & "</a></li>"
-            lkEll.MoveNext
-        Loop
-                .writeline "        </ul>" 'lezárjuk az utolsó táblalistát
-                .writeline "    </ul>" 'lezárjuk az utolsó fejezetlistát
-                .writeline "</div>" 'lezárjuk az oldalpanelt
-                .writeline "<div class=""fotartalom"">"
-                .writeline "    <h1 class=""oldal"">" & oldalcím & "</h1>"
-                .writeline "    <div id=""kereso""><input id=""pageSearch"" type=""text"" placeholder=""Az összes táblában keresendõ szöveg (pl.: Fõosztály neve)""></div>"
-    End With
-    táblaCím = ""
+    OldalPanel hf, lkEll, Fõcím, oldalcím
+
+    Táblacím = ""
     megj = ""
+    vaneGraf = ""
     '##############################################
     '### A lekérdezésenkénti táblák felépítése ####
     '##############################################
+lkEll.MoveLast
 lkEll.MoveFirst
+ehj.Ini 100
+ehj.oszlopszam = lkEll.RecordCount
+
 TáblaSzám = 0
-If teszt Then GoTo tesztpont
+'If teszt Then GoTo tesztpont
 fejezetCím = ""
 elõzõFejezetCím = ""
+hf.writeline "<form id=""urlap"" >"
+hf.writeline "<button class=""elkuldgomb"" type=""submit"">Visszajelzés...</button>"
 Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
         TáblaSzám = TáblaSzám + 1
         queryName = lkEll("EllenõrzõLekérdezés")
-        táblaCím = lkEll("Táblacím")
+        blKellVisszajelzes = lkEll("KellVisszajelzes")
+
+'TODO:        If Not paraméterLek(queryName) Then
+
+        Táblacím = lkEll("Táblacím")
               hf.writeline "<div class=""tablediv "">"
         '## A Fejezetcím kiíratása, ha változott
         If fejezetCím <> lkEll("LapNév") Then
             fejezetCím = lkEll("LapNév")
-               hf.writeline "    <h2 class=""fejezetcim"">" & fejezetCím & "</h2>"
+            fejezetmegj = Nz(lkEll("Megjegyzés"), "")
+            hf.writeline "    <h2 id=""" & Replace(fejezetCím, " ", "") & """ class=""fejezetcim"" title=""" & fejezetmegj & """ >" & fejezetCím & "</h2>"
         End If
-        megj = Nz(lkEll("Megjegyzés"), "")
+        megj = Nz(lkEll("TáblaMegjegyzés"), "")
         vaneGraf = lkEll("vaneGraf")
         
-        sFoly oÛrl, névelõvel(táblaCím, , , True) & ":; összeállítása indul..."
-        sqlA = "SELECT * FROM [" & queryName & "];"
+        sFoly oÛrl, névelõvel(Táblacím, , , True) & ":; összeállítása indul..."
+        sqlA = "SELECT * FROM [" & queryName & "]" & _
+                    IIf(teszt, "WHERE false", "") ' Ha teszt üzemmódban vagyunk, üres táblákat készítünk
+                    
         'A mezTip tömbben eltároljuk a mezõneveket és a hozzájuk tartozó kimeneti típust (hogy mire kell formázni)
-        mezTip = vFldTípus("SELECT [MezõNeve],[MezõTípusa] FROM tLekérdezésMezõTípusok WHERE [LekérdezésNeve]='" & queryName & "';")
+        mezTip = vFldTípus("SELECT [MezõNeve],[MezõTípusa],[Grafikonra] FROM tLekérdezésMezõTípusok WHERE [LekérdezésNeve]='" & queryName & "';")
         'Debug.Print queryName & " : "; LBound(mezTip) & vbTab & UBound(mezTip)
         
         ' A lekérdezés futtatása
         Dim rs As DAO.Recordset
         Set rs = db.OpenRecordset(sqlA)
+        
+        '## A hibák feljegyzése a táblába
+        If blKellVisszajelzes Then
+            
+            RégiHibákTáblába rs, queryName, VisszTípCsop
+        End If
+        
+            DoEvents
+            If állj Then Exit Sub
 
-        intSorokSzáma = rs.recordCount
+        intSorokSzáma = rs.RecordCount
         If intSorokSzáma = 0 Then
             strÜresTábla = "uresTabla"
         Else
             strÜresTábla = ""
         End If
 
-        sFoly oÛrl, névelõvel(táblaCím, , , True) & ":;" & intSorokSzáma & " sor."
+        sFoly oÛrl, névelõvel(Táblacím, , , True) & ":;" & intSorokSzáma & " sor"
 
         ' Index kezdõértékei
         rowIndex = 1
@@ -186,27 +310,32 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
         ' A táblát magába foglaló keretnek és a tábla fejlécének a kiírása ###
         
         With hf
-            
-            .writeline "<table id=""table" & TáblaSzám & """ class=""collapsible-table " & strÜresTábla & " "">"
+            If vaneGraf <> vbNullString Then
+                .writeline "<table id=""table" & TáblaSzám & """ charttype=""" & vaneGraf & """ class=""collapsible-table " & strÜresTábla & " "">"
+            Else
+                .writeline "<table id=""table" & TáblaSzám & """ class=""collapsible-table " & strÜresTábla & " "">"
+            End If
             .writeline "<thead class=""collapsible-header tablehead " & strÜresTábla & " ""> "
             '## A tábla fejléce .........................................................
             .writeline "<tr>"
-            letoltoHTML = "<button class=""export-button"" onclick=""exportTableToCSV('table" & TáblaSzám & "', '" & táblaCím & ".csv')"">Letöltés...</button>"
+            letoltoHTML = "<button class=""export-button"" type=""button"" onclick=""exportTableToCSV('table" & TáblaSzám & "', '" & Táblacím & ".csv')"">Letöltés...</button>"
+            Dim táblatitle As String
+            táblatitle = " title=""" & megj & """ "
             Select Case intOszlopokSzáma
                 Case 1
                     'Ha a tábla egy oszlopos, akkor a keresõ a következõ sorba kerül.
-                    .writeline "<th class=""" & strÜresTábla & """>" & táblaCím & " </th>"  '
+                    .writeline "<th class=""" & strÜresTábla & """" & táblatitle & ">" & Táblacím & " </th>"  '
                     .writeline "</tr><tr>"
                     'A tábla is kap egy sorszámot
                     .writeline "<th " & intOszlopokSzáma & ">" & letoltoHTML & " <input type=""text"" id=""filterInputtable" & TáblaSzám & """ placeholder=""Keresendõ szöveg""></th>"
                 Case 2
                     'Ha a tábla 2 oszlopos, akkor az egyik oszlop a címé, a másik a keresõé.
-                    .writeline "<th class=""" & strÜresTábla & """>" & táblaCím & " </th>"
+                    .writeline "<th class=""" & strÜresTábla & """" & táblatitle & ">" & Táblacím & " </th>"
                     'A tábla is kap egy sorszámot
                     .writeline "<th >" & letoltoHTML & "<input type=""text"" id=""filterInputtable" & TáblaSzám & """ placeholder=""Keresendõ szöveg""></th>"
                 Case Else
                     'Ha a tábla több oszlopos, akkor az utolsó két oszlopot fenntartjuk a keresõnek.
-                    .writeline "<th colspan=""" & intOszlopokSzáma - 2 & """ class = """ & strÜresTábla & """>" & táblaCím & " </th>"
+                    .writeline "<th colspan=""" & intOszlopokSzáma - 2 & """ class = """ & strÜresTábla & """" & táblatitle & ">" & Táblacím & " </th>"
                     'A tábla is kap egy sorszámot
                     .writeline "<th colspan="" 2"">" & letoltoHTML & " <input type=""text"" id=""filterInputtable" & TáblaSzám & """ placeholder=""Keresendõ szöveg""></th>"
             End Select
@@ -217,7 +346,7 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
             .writeline "<tr class=""collapsible-header elsosor " & strÜresTábla & " "">"
         End With
         For Each fld In rs.Fields 'A tábla sorait vesszük egyenként ###
-        
+            
             ' A fejléc páros és páratlan oszlopainak megjelölése
             Dim headerClassName As String
             If columnIndex Mod 2 = 0 Then
@@ -230,8 +359,13 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
             End If
             ' A jelölõnégyzet összeállítása
             CheckBox = ""
-            If vaneGraf Then
-                CheckBox = "<input type=""checkbox"" class=""columnCheckbox"" data-table="" " & TáblaSzám & " "" data-column="" " & columnIndex & " "" checked>"
+            If vaneGraf <> vbNullString Then
+                gráftípus = párkeresõ(mezTip, fld.Name, 3)
+                If IsNull(gráftípus) Then
+                CheckBox = ""
+                Else
+                CheckBox = "<input type=""checkbox"" class=""columnCheckbox"" data-table=""" & TáblaSzám & """ data-column="" " & columnIndex & " "" " & gráftípus & ">" 'párkeresõ(mezTip, fld.Name, 3)
+                End If
             End If
             ' CSS osztály név a fentiek szerint
             hf.writeline "<th class='" & headerClassName & "'>" & fld.Name & CheckBox & "</th>"
@@ -239,6 +373,10 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
             ' Oszlopszám növelése
             columnIndex = columnIndex + 1
         Next fld
+                If blKellVisszajelzes Then
+                    hf.writeline "<td class=""rejtettOszlop"">&nbsp;</td>"
+                    hf.writeline "<td class=""valaszOszlop"">Visszajelzés</td>"
+                End If
                 hf.writeline "</tr>"
                     '## Elkészült a fejléc második sora
                 hf.writeline "</thead>"
@@ -254,22 +392,25 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
                 End If
                 
                 If intSorokSzáma > maxsor Then
-                    sFoly oÛrl, névelõvel(táblaCím, , , True) & ":; A sorok száma több, mint " & maxsor & ", ezért átugorjuk."
+                    sFoly oÛrl, névelõvel(Táblacím, , , True) & ":; A sorok száma több, mint " & maxsor & ", ezért átugorjuk."
                     hf.writeline "<tr class=""collapsible-content  " & strÜresTábla & """ >"
                     hf.writeline "<td colspan=""" & intOszlopokSzáma & """> Ez a tábla több, mint " & maxsor & " sort tartalmazna, ezért inkább egyet sem... </td>"
                     hf.writeline "</tr>"
                     GoTo Tovalép
                 End If
+        
+        If rs.RecordCount Then rs.MoveFirst
         Do Until rs.EOF 'Belsõ, sor szintû loop
             hf.writeline "<tr class=""collapsible-content "">"
-            
+
+
             '#####################################################
             '## A táblatest sorának összeállítása
             '#####################################################
             columnIndex = 1
             
             For Each fld In rs.Fields
-                ' Determine the class names based on row and column indices
+                ' Stílus osztályok meghatározása oszlop és sor alapján
                 Dim className As String
                 
                 If rowIndex Mod 2 = 0 Then
@@ -288,7 +429,7 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
                 If strÜresTábla <> "" Then
                     className = strÜresTábla
                 End If
-                ' Write the table cell with the determined class name
+                ' Táblamezõ a stílus osztály nevével
                 If columnIndex = 1 Then
                     className = "elsooszlop " & className
                 End If
@@ -296,15 +437,60 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
                     className = "utolsooszlop " & className
                 End If
                 'Debug.Print mezTip(columnIndex, 1), fld.Name, fld.Value, className
-                formáz = formazo(párkeresõ(mezTip, fld.Name), fld.Value, className)
+'                If queryName = "lkOrvosÁlláshelyekenDolgozókEllenõrzésbe" Then
+'                    formáz = formazo(párkeresõ(mezTip, fld.Name), fld.Value, className)
+'                Else
+                    formáz = formazo(párkeresõ(mezTip, fld.Name), fld.Value, className)
+'                End If
                 hf.writeline formáz
                 ' Debug.Print
-                columnIndex = columnIndex + 1
+                ÷ columnIndex '= columnIndex + 1
             Next fld
-            
+            If blKellVisszajelzes Then 'Ha kell visszajelzés,
+                If VisszTípCsop <> 0 Then
+                    
+                    Select Case VisszTípCsop
+                        Case 1 'Hibacsoport
+                            strHash = TextToMD5Hex(egyesítettMezõk(rs, rs.Bookmark))
+                            hf.writeline "<td class=""rejtettOszlop""  > " & Nz(DLookup("azIntfajta", "lkRégiHibákUtolsóIntézkedés", "[HASH]='" & strHash & "'"), "0") & "</td>"
+                            strDropdown = "<select name=""" & strHash & """>" & vbNewLine
+                            strDropdown = strDropdown & "<option value=""0"" selected>-</option>" & vbNewLine
+                            Do Until VisszJelTípusok.EOF
+                                strDropdown = strDropdown & "<option value=""" & VisszJelTípusok![VisszajelzésKód] & """ >" & VisszJelTípusok![VisszajelzésSzövege] & "</option>" & vbNewLine
+                                VisszJelTípusok.MoveNext
+                            Loop
+                            VisszJelTípusok.MoveFirst
+                            strDropdown = strDropdown & "</select>" & vbNewLine
+                        Case 2 'Üres álláshely
+                            strHash = TextToMD5Hex(rs![Álláshely azonosító])
+                            
+                            'Legördülõ menü
+                            strDropdown = "<div class=""tooltip"" >" & vbNewLine
+                            strDropdown = strDropdown & "<select name=""" & strHash & """>" & vbNewLine
+                            strDropdown = strDropdown & "<option value=""0"" selected>-</option>" & vbNewLine
+                            Do Until VisszJelTípusok.EOF
+                                strDropdown = strDropdown & "<option value=""" & VisszJelTípusok![VisszajelzésKód] & """ >" & VisszJelTípusok![VisszajelzésSzövege] & "</option>" & vbNewLine
+                                VisszJelTípusok.MoveNext
+                            Loop
+                            VisszJelTípusok.MoveFirst
+                            strDropdown = strDropdown & "</select>" & vbNewLine
+                            strDropdown = strDropdown & "   <div class=""left"">" & vbNewLine & _
+                                                        "       <h3>A visszajelzések története</h3>" & vbNewLine & _
+                                                                sBuborék(strHash, db) & vbNewLine & _
+                                                        "           <i></i>" & vbNewLine & _
+                                                        "    </div>" & vbNewLine & _
+                                                        "</div>"
+                            'Dátum választó
+                            
+                            strDropdown = strDropdown & "<div class=""tooltip valaszDatum""  > <input type=""date""  class=""valaszDatumInput"" ></div>" 'name=""" & strHash & """
+                    End Select
+                End If
+                
+                hf.writeline "<td class=""valaszOszlop""  > " & strDropdown & "</td>"
+            End If
             hf.writeline "</tr>"
             
-            ' Increment the row index
+            ' A sorszámáló növelése
             rowIndex = rowIndex + 1
             
             rs.MoveNext
@@ -312,71 +498,105 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
 Tovalép:
         With hf
             .writeline "</table>"
-            .writeline "<script>"
-            If vaneGraf Then
-                .writeline " generateLineChart('table" & TáblaSzám & "');"
-            End If
-            .writeline " handleFilter('table" & TáblaSzám & "');"
-            .writeline "</script>"
+            '.writeline "<script>"
+                    '.writeline " handleFilter('table" & TáblaSzám & "');"
+            '.writeline "</script>"
             .writeline "<span class=""megjegyzes"">" & megj & "</span>"
             .writeline "</div>"
             .writeline "<br/>"
         End With
-        sFoly oÛrl, névelõvel(táblaCím, , , True) & ":; elkészült."
-        ' Close the recordset
+        sFoly oÛrl, névelõvel(Táblacím, , , True) & ":; elkészült."
+        ' A rekordkészlet lezárása
         rs.Close
 
-        ' Move to the next query
+        ' Ugrás a következõ lekérdezésre
         lkEll.MoveNext
-Loop
-'Külsõ loop
+        ehj.Novel
+Loop 'Külsõ loop
+
 tesztpont:
-    hf.writeline "<button id=""tetejereGomb"">Vissza a tetejére</button>"
-    ' Behúzzuk a javascriptet
-    hf.writeline "<script src=""./js/hrellvég.js""></script>"
-    ' Write the HTML file footer
-    hf.writeline "</div>" 'fõtartalom
-    hf.writeline "</div>" 'fõkeret
-    'hf.writeline "<a href=""" & fvReferenseknekLevél(hfNév, oldalcím) & """>&pi;</a>"
-    hf.writeline "</body>"
-    hf.writeline "</html>"
-    
+    lábléc hf
     ' Close the HTML file
     hf.Close
+    Set fájlobj = CreateObject("Scripting.FileSystemObject")
+    fájlobj.CopyFile hfNév, mfnév, True 'True = felülírja. Ez az alapértelmezett, itt csak az áttekinthetõség érdekében marad.
     
     ' Open the HTML file in the default web browser
-    Shell "explorer.exe " & hfNév, vbNormalFocus
-    Call GenMailto(hfNév, oldalcím)
+    Shell "explorer.exe " & mfnév, vbNormalFocus
     
+    If Not teszt And Not oÛrl.Mindet Then
+        Call GenMailto(mfnév, oldalcím)
+        sFoly oÛrl, "E-mail üzenet:;összeállítva. Fájlnév:" & hfNév, True, 2
+    End If
     
+    CloseHibaTábla
+    fvki
     Exit Sub
     
 Err_Export:
     MsgBox "Error: " & Err.Description, vbExclamation, "Error"
+    logba , "Error: " & Err.Description & "," & vbExclamation & "," & "Error", 0
+    fvki
 End Sub
-Function fvReferenseknekLevél(ByVal fájlnév As String, ByVal oldalcím As String) As String
-    Const nLN As String = "%0d%0a"
-    Dim tart As String
-    Dim cím As String
+Function VisszajelzésTípusLista(db As Database, oldalcím As String)
+    Dim lekVisszJelTípus As QueryDef
+    Dim VisszJelTípusok As Recordset
+    Dim ViszTípCsop As Long
     
-    tart = tart & "Kedves Kollégák!" & nLN & nLN
-    tart = tart & "Az alábbi helyen találjátok a legújabb adatok alapján elkészített ellenõrzõ táblákat:" & nLN & nLN
-    tart = tart & "file://" & fájlnév '& "%22"
-    cím = fvRefLevCím()
+    Dim Kimenet As String
     
-    fvReferenseknekLevél = "mailto:" & cím & "?subject=" & oldalcím & "&body=" & tart
+    VisszTípCsop = Nz(DLookup("azVisszaJelzésTípusCsoport", "tLekérdezésOsztályok", "[Oldalcím]=""" & oldalcím & """"), 0)
+    If VisszTípCsop = 0 Then Exit Function 'Az "If hibae Then" helyett
+    
+        Set lekVisszJelTípus = db.CreateQueryDef("", "SELECT tVisszajelzésTípusok.[VisszajelzésKód], tVisszajelzésTípusok.[VisszajelzésSzövege] " & _
+                                        " From [tVisszajelzésTípusok]" & _
+                                        " Where [VisszaJelzésTípusCsoport] = " & VisszTípCsop & _
+                                        " ORDER BY tVisszajelzésTípusok.[VisszajelzésKód];")
+        Set VisszJelTípusok = lekVisszJelTípus.OpenRecordset(dbOpenSnapshot)
+                    'Ezzel mi legyen???
+                    '                strHash = TextToMD5Hex(egyesítettMezõk(rs, rs.Bookmark))
+                    '                hf.writeline "<td class=""rejtettOszlop""  > " & Nz(DLookup("azIntfajta", "lkRégiHibákUtolsóIntézkedés", "[HASH]='" & strHash & "'"), "0") & "</td>"
+                    '                strDropdown = "<select name=""" & strHash & """>"
+        Kimenet = "<option value=""0"" selected>-</option>" & vbNewLine
+        Do Until VisszJelTípusok.EOF
+            Kimenet = Kimenet & "<option value=""" & VisszJelTípusok![VisszajelzésKód] & """ >" & VisszJelTípusok![VisszajelzésSzövege] & "</option>" & vbNewLine
+            VisszJelTípusok.MoveNext
+        Loop
+                    '                hf.writeline "<td class=""valaszOszlop""  > " & strDropdown & "</td>"
+    
+    VisszajelzésTípusLista = Kimenet
 End Function
-Sub GenMailto(ByVal fájlnév As String, ByVal oldalcím As String)
-    'Specify the file path where you want to save the HTML file
+Sub lábléc(ByRef hf As Object)
+    With hf
+        .writeline "</form>"
+        .writeline "<button id=""tetejereGomb"">Vissza a tetejére</button>"
+        .writeline "<script src=""./js/hrellvég.js""></script>"
+        .writeline "</div>" 'fõtartalom
+        .writeline "</div>" 'fõkeret
+        .writeline "</body>"
+        .writeline "</html>"
+    End With
+End Sub
+
+Sub GenMailto(ByVal fájlnév As String, ByVal oldalcím As String, Optional teszt As Boolean = False)
+fvbe ("GenMailto")
+'# Meghívja ezt: fvReferenseknekLevél(fájlnév, oldalcím,  teszt )
+'#
+'# Készít egy HTML állományt (szöveges fájlt),
+'# amiben a javascript az oldal betöltésére indul,
+'# s miután megnyitja a HTML hivatkozást, vár egy picit, majd bezárja a böngészõ ablakot.
+'# Az utolsó sorban megynitjuk ezt a HTML fájlt az alapértelmezett böngészõben, s ezzel elindul a fenti folyamat.
+
+    'Hova tegyük az állományt
     Dim filePath As String
     filePath = "\\Teve1-jkf-hrf2-oes\vol1\Human\HRF\Ugyintezok\Adatszolgáltatók\HRELL\levelek\" & oldalcím & Format(Now(), "yyyy-mm-dd-hh-nn-ss") & ".html"
     
-    'Create or overwrite the HTML file
+    'A HTML állomány megkezdése
     Dim fileNumber As Integer
     fileNumber = FreeFile
     Open filePath For Output As fileNumber
     
-    'Write HTML content to the file
+    'A HTML tartalom
     Print #fileNumber, "<html>"
     Print #fileNumber, "<head><title>" & oldalcím & "</title>"
     Print #fileNumber, "<script type='text/javascript'>"
@@ -387,7 +607,7 @@ Sub GenMailto(ByVal fájlnév As String, ByVal oldalcím As String)
     Print #fileNumber, "</script>"
     Print #fileNumber, "</head>"
     Print #fileNumber, "<body onload='onLoad()'>"
-    Print #fileNumber, "<a id='mailtoLink' href='" & fvReferenseknekLevél(fájlnév, oldalcím) & "'>Kattints ide az e-mailhez...</a>"
+    Print #fileNumber, "<a id='mailtoLink' href='" & fvReferenseknekLevél(fájlnév, oldalcím, teszt) & "'>Kattints ide az e-mailhez...</a>"
     Print #fileNumber, "</body>"
     Print #fileNumber, "</html>"
     
@@ -395,33 +615,76 @@ Sub GenMailto(ByVal fájlnév As String, ByVal oldalcím As String)
     Close fileNumber
     
     Shell "explorer.exe " & filePath, vbNormalFocus
+fvki
 End Sub
-Function fvRefLevCím() As String
+Function fvReferenseknekLevél(ByVal fájlnév As String, ByVal oldalcím As String, Optional teszt As Boolean = False) As String
+fvbe ("fvReferenseknekLevél")
+    Const nLN As String = "%0d%0a"
+    Dim tart As String
+    Dim címTO As String
+    Dim címCC As String
+    Dim a As Boolean
+    
+    tart = tart & "Kedves Kollégák!" & nLN & nLN
+    tart = tart & "Az alábbi helyen találjátok a legújabb adatok alapján elkészített " & oldalcím & " táblákat:" & nLN & nLN
+    tart = tart & "file://" & fájlnév '& "%22"
+    címTO = fvRefLevCím(1)
+        If teszt Then címTO = "example@example.com"
+    címCC = fvRefLevCím(2)
+        If teszt Then címCC = "cc@example.com"
+    'logba sFN & "E-mail címek:", címTO, 2
+    logba sFN & "CC:", címCC, 2
+    logba sFN & "oldalcím:", oldalcím, 2
+    
+    fvReferenseknekLevél = "mailto:" & címTO & _
+                            "?cc=" & címCC & _
+                            "&subject=" & oldalcím & _
+                            "&body=" & tart
+fvki
+End Function
+Function fvRefLevCím(Típus As Integer) As String
 'Lekérdezzük az lkReferensek lekérdezésbõl
+fvbe ("fvRefLevCím")
 Dim db As DAO.Database
 Dim rs As Recordset
 Dim cím As String
 Dim reksz As Integer
 
+Select Case Típus
+    Case 1 'TO:
+        feltétel = " VanTerülete = True and TT = False and Vezetõ=false"
+    Case 2 'CC:
+        feltétel = " TT = False and Vezetõ=true"
+    Case 3 'BCC:
+        fvRefLevCím = vbNullString
+End Select
+
     Set db = CurrentDb
-    Set rs = db.OpenRecordset("Select [Hivatali email] From lkReferensek")
+    logba sFN & "; lkReferensek", "Lekérdezés indul", 3
+    Set rs = db.OpenRecordset("Select [Hivatali email] From lkReferensek WHERE " & feltétel & ";")
+    logba sFN & "; lkReferensek", "Lekérdezés lefutott", 3
     rs.MoveFirst
     reksz = 1
     Do Until rs.EOF
         If rs("Hivatali email") <> "" Then
             If reksz = 1 Then
                 cím = cím & rs("Hivatali email")
+                        logba , cím, 4
             Else
                 cím = cím & ";" & rs("Hivatali email")
+                        logba , cím, 4
             End If
         End If
         reksz = reksz + 1
         rs.MoveNext
     Loop
+    logba sFN & "; Referensek száma:", CStr(reksz), 3
     fvRefLevCím = cím
+fvki
 End Function
 
 Function formazo(mezõTípus As Integer, érték As Variant, Optional className As String = "") As String
+fvbe ("formazo")
     Dim hibakeres As Boolean
     
     Select Case mezõTípus
@@ -452,4 +715,110 @@ Function formazo(mezõTípus As Integer, érték As Variant, Optional className As S
     End Select
     formazo = "<td class='" & className & "'>" & formáz & "</td>"
     'If hibakeres Then: Debug.Print formazo
+fvki
+End Function
+Public Sub InitHibaTábla()
+'On Error GoTo Hiba:
+    If jelenDb Is Nothing Then _
+        Set jelenDb = CurrentDb
+        
+    If hibatábla Is Nothing Then _
+        Set hibatábla = jelenDb.OpenRecordset("tRégiHibák", dbOpenDynaset)
+
+    Exit Sub
+Hiba:
+'MsgBox Err.Number, Err.Description
+End Sub
+Private Sub CloseHibaTábla()
+    If Not hibatábla Is Nothing Then _
+        Set hibatábla = Nothing
+        
+    If Not jelenDb Is Nothing Then _
+        Set jelenDb = Nothing
+        
+End Sub
+Private Function RégiHibákTáblába(HtmlKimenetRs As Recordset, leknév As String, VisszTípCsop As Long) As Long
+fvbe ("RégiHibákTáblába")
+    Dim vissza
+    On Error GoTo ErrorHandler
+    'Dim db As Database
+    'Dim rs As DAO.Recordset
+    'Dim hibatábla As DAO.Recordset
+
+    'Set db = CurrentDb()
+    'Set HtmlKimenetRs = db.OpenRecordset(lekNév)
+    'Set hibatábla = db.OpenRecordset("tRégiHibák", dbOpenDynaset)
+    
+    InitHibaTábla
+
+    Do While Not HtmlKimenetRs.EOF
+        Dim unitedField As String
+        Dim hashedText As String
+        Dim recordExists As Boolean
+        Dim LCounter As Integer
+        Dim könyvjelzõ As Variant
+        
+'        unitedField = ""
+'        For LCounter = 0 To HtmlKimenetRs.Fields.count - 1
+'                    unitedField = unitedField & Replace(Nz(HtmlKimenetRs(LCounter).Value, ""), "'", "''") & "|"
+'        Next LCounter
+        könyvjelzõ = HtmlKimenetRs.Bookmark
+        unitedField = egyesítettMezõk(HtmlKimenetRs, könyvjelzõ)
+        hashedText = TextToMD5Hex(unitedField)
+        HtmlKimenetRs.Bookmark = könyvjelzõ
+        If Nz(unitedField, "") <> "" Then
+        With hibatábla
+            .AddNew
+            ![Elsõ mezõ] = hashedText
+            ![Második mezõ] = unitedField
+            ![Elsõ Idõpont] = Date
+            ![Utolsó Idõpont] = Date
+            ![LekérdezésNeve] = leknév
+            .Update
+        End With
+        End If
+        HtmlKimenetRs.MoveNext
+    Loop
+
+'    hibatábla.Close
+'    Set hibatábla = Nothing
+    'rs.Close
+    'Set rs = Nothing
+    'Set db = Nothing
+    RégiHibákTáblába = vissza
+fvki
+Exit Function
+
+
+ErrorHandler:
+
+    If Err.Number = 3022 Then
+        With hibatábla
+            .CancelUpdate
+            .FindFirst "[Elsõ Mezõ] like '" & hashedText & "'"
+            .Edit
+            ![Utolsó Idõpont] = Date
+            ![LekérdezésNeve] = leknév
+            .Update
+        End With
+    Else
+        vált1.név = "Hash:"
+        vált1.érték = hashedText
+        vált2.név = "unitedField"
+        vált2.érték = unitedField
+        MsgBox Hiba(Err) 'Err.Number & vbNewLine & Err.Description & vbNewLine & "Hash:" & hashedText & vbNewLine & "UnitedField:" & unitedField
+    End If
+Resume Next
+End Function
+Function egyesítettMezõk(rs As Recordset, pozíció As Variant) As Variant
+Dim egyMez As String
+        egyMez = ""
+        rs.Bookmark = pozíció
+        For LCounter = 0 To rs.Fields.count - 1
+                    egyMez = egyMez & Replace(Nz(rs(LCounter).Value, ""), "'", "''") & "|"
+        Next LCounter
+        egyesítettMezõk = egyMez
+End Function
+Function oldalakFejezetek(db As Database) As String
+' Az indítópult html kódját hozza létre
 End Function

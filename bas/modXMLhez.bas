@@ -30,7 +30,7 @@ Function XMLátalakító(strXMLneve As String, újPath As String) As Boolean
 '           Debug.Print "3. Régi fájl:" & strRégiFájl
         strXML = Replace(strXML, strRégiFájl, strÚjFájl) 'no itt meg kicseréljük a régi fájlnevet, az újra
 '           Debug.Print "4. Új XML:##" & Mid(strXML, intKezdPoz - 10, Len(strÚjFájl) + 16) & "##"
-        CurrentProject.ImportExportSpecifications.Item(strXMLneve).XML = strXML 'és végül visszatöltjük a rendszerbe
+        CurrentProject.ImportExportSpecifications.item(strXMLneve).XML = strXML 'és végül visszatöltjük a rendszerbe
 XMLátalakító = True
 Exit Function
 Hiba:
@@ -62,9 +62,9 @@ End Function
 Function XMLszöveg(strXMLneve As String, Optional elejét As Boolean = True, Optional mennyit As Long = 2000) As String
 On Error GoTo Hiba:
     If elejét Then
-        XMLszöveg = Left(CurrentProject.ImportExportSpecifications.Item(strXMLneve).XML, mennyit)
+        XMLszöveg = Left(CurrentProject.ImportExportSpecifications.item(strXMLneve).XML, mennyit)
     Else
-        XMLszöveg = CurrentProject.ImportExportSpecifications.Item(strXMLneve).XML
+        XMLszöveg = CurrentProject.ImportExportSpecifications.item(strXMLneve).XML
     End If
 Exit Function
 Hiba:

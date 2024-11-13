@@ -40,17 +40,18 @@ Sub Ellenõrzés1(ByVal Ûrlapnév As String)
 ' Ez a fv. az adathiány lekérdezéseket futtatja (azETípus=1 vagyis Hiba)
 ' és a tEll változóban tárolt nevû táblába írja az eredményt,
 ' majd a végén megnyitja az eredményt
-
+fvbe ("Ellenõrzés1")
 'On Error GoTo Err_Ellenõrzés
     Dim db                  As Database
     Dim lkEll               As Recordset    'A soron következõ ellenõrzõ lekérdezés
+    Dim ehj             As New ehjoszt      'A státusz megjelenítéséhez
     Dim sqlA                As String
-    Dim lkEllLek, lkNév     As String
+    Dim lkEllLek, lknév     As String
     Dim tEll                As String       'Az ellenõrzés tábla neve
 '    Dim lkEredm             As String       'Az eredmény lekérdezés neve
     Dim ûrl                 As Form
     Set ûrl = Application.Forms(Ûrlap)
-    lkEllLek = "SELECT * FROM lkEllenõrzõLekérdezések2 WHERE azETípus = 1 AND Kimenet = False;"    'Ez a lekérdezés sorolja fel azokat a lekérdezéseket, amelyeket le kell futtatnunk.
+    lkEllLek = "SELECT * FROM lkEllenõrzõLekérdezések2 WHERE azETípus = 1 AND Kimenet = False AND azUnion = 1 ;"    'Ez a lekérdezés sorolja fel azokat a lekérdezéseket, amelyeket le kell futtatnunk.
     tEll = "t__Ellenõrzés_02"
 '    lkEredm = "lk_Ellenõrzés_03"
 sFoly ûrl, "Betöltés:; Adathiány ellenõrzés elõkészítése"
@@ -63,31 +64,30 @@ sFoly ûrl, "Betöltés:; Adathiány ellenõrzés elõkészítése"
     lkEll.MoveLast
     lkEll.MoveFirst
     
-sFoly ûrl, "Betöltés:; " & lkEll.recordCount & " db. lekérdezés indul..."
+sFoly ûrl, "Betöltés:; " & lkEll.RecordCount & " db. lekérdezés indul..."
     ' A felsorolt lekérdezések lefuttatása
     sqlA = ""
+    ehj.Ini 100
+    ehj.oszlopszam = lkEll.RecordCount
     Do Until lkEll.EOF
-        lkNév = lkEll("EllenõrzõLekérdezés")
+        lknév = lkEll("EllenõrzõLekérdezés")
         sqlA = sqlA & " INSERT INTO " & tEll
-        sqlA = sqlA & "      SELECT " & lkNév & ".*"
-        sqlA = sqlA & "      FROM " & lkNév & ";"
+        sqlA = sqlA & "      SELECT " & lknév & ".*"
+        sqlA = sqlA & "      FROM " & lknév & ";"
         db.Execute (sqlA)
         
-        'Debug.Print sqlA
+        logba sFN & " - sqlA", sqlA, 4
+        
         sqlA = ""
+        
+        
         lkEll.MoveNext
+        ehj.Novel
     Loop
     'Az adóazonosító jel (szöveg) átalakítása adójel-lé (dupla szám)
 sFoly ûrl, "Betöltés:; adójel konverzió"
     db.Execute (GetQuerySQL("lk_Ellenõrzés_02_táblába_adójelKonverzió"))
 sFoly ûrl, "Betöltés:; elõkészítés véget ért"
-'sFoly ûrl, "Ellenõrzés:; " & DCount("*", lkEredm)
-    
-'sFoly ûrl, "Ellenõrzés:; eredménytábla megnyitása"
-'    DoCmd.OpenQuery lkEredm
-'    DoCmd.SelectObject acQuery, lkEredm
-
-
 
 Err_Kimenet:
     Exit Sub
@@ -95,22 +95,26 @@ Err_Kimenet:
 Err_Ellenõrzés:
     Select Case Err.Number
     Case 3417
-        sqlA = GetQuerySQL(lkNév)
+        sqlA = GetQuerySQL(lknév)
+        logba , Err.Number, 0
         Resume 0
     Case Else
         MsgBox Err.Number & Err.Description
+        logba , Err.Number & Err.Description, 0
         'Resume Next
     End Select
+fvki
 End Sub
 Sub Ellenõrzés2(Ûrlap As Form, Optional Kimenet As Boolean = True)
 ' Ez a fv. az adathiány lekérdezéseket futtatja (azETípus = 1 vagyis Hiba)
 ' és a tEll változóban tárolt nevû táblába írja az eredményt,
 ' majd a végén megnyitja a
+fvbe ("Ellenõrzés2")
 On Error GoTo Err_Ellenõrzés
     Dim db                  As Database
     Dim lkEll               As Recordset    'A soron következõ ellenõrzõ lekérdezés
     Dim sqlA                As String
-    Dim lkEllLek, lkNév     As String
+    Dim lkEllLek, lknév     As String
     Dim tEll                As String       'Az ellenõrzés tábla neve
     Dim lkEredm             As String       'Az eredmény lekérdezés neve
     Dim Üzenet              As String       'Az üzenetek számára
@@ -127,13 +131,13 @@ On Error GoTo Err_Ellenõrzés
     lkEll.MoveLast
     lkEll.MoveFirst
     
-    sFoly Ûrlap, "Ellenõrzés:; " & lkEll.recordCount & " db. lekérdezés indul..."
+    sFoly Ûrlap, "Ellenõrzés:; " & lkEll.RecordCount & " db. lekérdezés indul..."
     
     ' A felsorolt lekérdezések lefuttatása
     sqlA = ""
     Do Until lkEll.EOF
-        lkNév = lkEll("EllenõrzõLekérdezés")
-        DoCmd.OpenQuery lkNév, acViewNormal, acReadOnly
+        lknév = lkEll("EllenõrzõLekérdezés")
+        DoCmd.OpenQuery lknév, acViewNormal, acReadOnly
     sFoly Ûrlap, "Ellenõrzés:;" & lkEll("LapNév")
         lkEll.MoveNext
         DoCmd.OpenForm Ûrlap.Name, acNormal
@@ -141,17 +145,19 @@ On Error GoTo Err_Ellenõrzés
     'Az adóazonosító jel (szöveg) átalakítása adójel-lé (dupla szám)
 
 Err_Kimenet:
+    fvki
     Exit Sub
     
 Err_Ellenõrzés:
     Select Case Err.Number
     Case 3417
-        sqlA = GetQuerySQL(lkNév)
+        sqlA = GetQuerySQL(lknév)
+        logba , Err.Number, 0
         Resume 0
     Case Else
-        MsgBox Err.Number & Err.Description & lkNév
-        Debug.Print Err.Number, Err.Description, sqlA
-        Resume Next
+        MsgBox Err.Number & Err.Description
+        logba , Err.Number & Err.Description & sqlA, 0
+        'Resume Next
     End Select
 End Sub
 
@@ -162,6 +168,5 @@ Set QD = CurrentDb.QueryDefs(MyQueryName)
 GetQuerySQL = QD.sql
  
 End Function
-
 
 

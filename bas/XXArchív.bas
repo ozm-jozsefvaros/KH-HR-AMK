@@ -13,24 +13,25 @@ Function test()
     Debug.Print "teszt"
     caller "fvVane"
 End Function
-Sub caller(fvNév)
-fvNév = RIC(fvNév)
+Sub caller(fvnév)
+fvnév = RIC(fvnév)
 Dim fv As String
-    If fvVane(fvNév) Then
-        Eval (fvNév & "()")
+    If fvVane(fvnév) Then
+        Eval (fvnév & "()")
     End If
 End Sub
-Function fvVane(ByVal fvNév As String) As Boolean
+Function fvVane(ByVal fvnév As String) As Boolean
     ' Check if a procedure with the given name exists in the current module
     
     For Each modul In Application.VBE.ActiveVBProject.VBComponents
         On Error Resume Next
-            fvVane = Not IsNull(modul.CodeModule.ProcBodyLine(fvNév, vbext_pk_Proc))
+            fvVane = Not IsNull(modul.CodeModule.ProcBodyLine(fvnév, vbext_pk_Proc))
         On Error GoTo 0
     Next modul
 
 End Function
 Sub tSzemélyekImport()
+fvbe ("tSzemélyekImport")
     On Error GoTo ErrorHandler
 
     Dim dlg As FileDialog
@@ -63,7 +64,7 @@ Sub tSzemélyekImport()
 
         'Átírjuk az XML-t
         On Error Resume Next
-            strXML = CurrentProject.ImportExportSpecifications.Item(importSpecName).XML 'Itt megszerezzük
+            strXML = CurrentProject.ImportExportSpecifications.item(importSpecName).XML 'Itt megszerezzük
             If Err.Number <> 0 Then
                 MsgBox "Error updating the XML of the import specification.", vbExclamation + vbOKOnly, "Error"
             End If
@@ -75,7 +76,7 @@ Sub tSzemélyekImport()
 '            Debug.Print "3. Régi fájl:" & strRégiFájl
         strXML = Replace(strXML, strRégiFájl, strÚjFájl) 'No itt meg kicseréljük a régi fájlnevet, az újra
 '            Debug.Print "4. Új XML:##" & Mid(strXML, intKezdPoz - 10, Len(strÚjFájl) + 16) & "##"
-        CurrentProject.ImportExportSpecifications.Item(importSpecName).XML = strXML
+        CurrentProject.ImportExportSpecifications.item(importSpecName).XML = strXML
         ' Run the saved import specification with the selected file.
         DoCmd.RunSavedImportExport importSpecName
 
@@ -86,16 +87,17 @@ Sub tSzemélyekImport()
 Kilépés:
     ' Clean up the FileDialog object.
     Set dlg = Nothing
-
+    fvki
     Exit Sub
 
 ErrorHandler:
     ' Display an error message if something goes wrong.
     MsgBox "Error: " & Err.Description, vbExclamation + vbOKOnly, "Error"
-    Debug.Print "Error: " & Err.Description
+    logba , "Error: " & Err.Description & "(" & Err.Number & ")", 0
     Resume Kilépés
 End Sub
 Public Sub SzemélytörzsImport(fájlnév As String, Ûrlap As Object)
+fvbe ("SzemélytörzsImport")
 '(c) Oláh Zoltán 2022. Licencia: MIT
 
     'Az Excel megnyitásához
@@ -115,7 +117,7 @@ Public Sub SzemélytörzsImport(fájlnév As String, Ûrlap As Object)
     Dim db              As DAO.Database     'Ez lesz az adatbázisunk
     Dim rsCél           As DAO.Recordset    'Ahová másolunk
 
-    Dim fájl            As String
+    Dim Fájl            As String
     Dim helyzet         As Variant          'A feltöltendõ rekord eléréséhez
     Dim mezõ            As String           'A mezõ nevének átmeneti tárolására és tisztítására
     
@@ -139,13 +141,13 @@ On Error GoTo Hiba
 
     
     ' azt feltételezzük, hogy a fájlnév jó, helyes és alkalmas
-    fájl = fájlnév
+    Fájl = fájlnév
     ' megnyitjuk az Excel táblát
 '''
     sFoly Ûrlap, "Adatforrás megnyitása:; megkezdve..."
    
     
-    Set objBook = objExcel.Workbooks.Open(fájl, ReadOnly:=True, IgnoreReadOnlyRecommended:=True, Editable:=False, Notify:=False)
+    Set objBook = objExcel.Workbooks.Open(Fájl, ReadOnly:=True, IgnoreReadOnlyRecommended:=True, Editable:=False, Notify:=False)
 
 '''
     sFoly Ûrlap, "Adatforrás megnyitása:; megtörtént!"
@@ -226,8 +228,8 @@ On Error GoTo Hiba
             
         Next sor
 '''
-    sFoly Ûrlap, névelõvel(fájl, , , True) & " adatai beolvastattak; " & névelõvel(xlTábla) & "táblába!"
-    
+    sFoly Ûrlap, névelõvel(Fájl, , , True) & " adatai beolvastattak; " & névelõvel(xlTábla) & "táblába!"
+    fvki
 Exit Sub
 Hiba:
 If Err.Number = 3265 Then

@@ -21,8 +21,14 @@ Sub FájlVálasztó(SzövegMezõ As TextBox, Felirat As String, Optional Munkakönyvtá
     Dim fDialog As Office.FileDialog
     Dim varFile As Variant
     Dim i, n As Integer
- 
-    SzövegMezõ.Value = ""
+    
+    If SzövegMezõ.Value <> "" Then 'Ha már van kiválasztott útvonal a mezõben,
+        If Right(SzövegMezõ.Value, 1) = "\" Or InStr(1, Utolsó(SzövegMezõ.Value, "\"), ".") = 0 Then 'és az egy könyvtárra mutat, (mert \ jelre végzõdik vagy az utolsó \ jel után ".")
+            Munkakönyvtár = SzövegMezõ.Value 'akkor ez lesz a munkakönyvtár
+        Else 'de ha egy fájlra mutat,
+            Munkakönyvtár = Replace(SzövegMezõ.Value, Utolsó(SzövegMezõ.Value, "\"), "") 'akkor a fájlnév részt csonkoljuk, s a maradékot használjuk...
+        End If
+    End If ' egyébként pedig a paraméterként (Munkakönyvtár) megadott útvonal lesz a barátunk.
 
     Set fDialog = Application.FileDialog(msoFileDialogFilePicker)
  
@@ -53,7 +59,7 @@ Sub FájlVálasztó(SzövegMezõ As TextBox, Felirat As String, Optional Munkakönyvtá
             SzövegMezõ.Value = varFile
          Next
  
-       End If
+      End If
    End With
 End Sub
 Sub MappaVálasztó(SzövegMezõ As TextBox, Felirat As String, Optional Munkakönyvtár As String = "")
@@ -98,7 +104,8 @@ Dim a As Boolean
     a = fvHaviTáblaImport(fájlnév, Ûrlap)
 End Sub
 
-Public Function fvHaviTáblaImport(ByVal fájlnév As String, ByRef Ûrlap As Object) As Boolean
+Public Function fvHaviTáblaImport(ByVal fájlnév As String, ByRef Ûrlap As Object, Optional ByVal lnCsoport As Long = 1) As Boolean
+fvbe ("fvHaviTáblaImport")
 'Licencia: MIT Oláh Zoltán 2022 (c)
     'Az Excel megnyitásához
     Dim objExcel        As excel.Application
@@ -106,7 +113,7 @@ Public Function fvHaviTáblaImport(ByVal fájlnév As String, ByRef Ûrlap As Object
     Dim objSheet        As excel.Worksheet
     Dim objRange        As excel.Range
     
-    Dim xlTábla         As String
+    Dim accTábla         As String
     Dim xlTáblaEred     As String
     Dim xlVégcella      As String
     
@@ -122,7 +129,7 @@ Public Function fvHaviTáblaImport(ByVal fájlnév As String, ByRef Ûrlap As Object
     Dim strHáttérDb        As String     'Ez a háttéradatbázis, ahol a táblák laknak
     Dim rs              As DAO.Recordset    'A beolvasandó lapok és területek adatait tartalmazó táblának
     Dim rsCél           As DAO.Recordset    'Ahová másolunk
-    Dim fájl            As String
+    Dim Fájl            As String
     
     Dim Eredmény        As Integer
     Dim tábla           As String           'A tábla : a táblák jellemzõit tároló tábla
@@ -142,163 +149,127 @@ Public Function fvHaviTáblaImport(ByVal fájlnév As String, ByRef Ûrlap As Object
     Set db = CurrentDb()
     'Set háttérdb =
     ' ha az útvonal végén nincs \, akkor hozzáfûzzük, [de ha van, akkor meg nem :)]
-    fájl = fájlnév
+    Fájl = fájlnév
     ' megnyitjuk az Excel táblát
-    Set objBook = objExcel.Workbooks.Open(fájl, ReadOnly:=True, IgnoreReadOnlyRecommended:=True, Editable:=False, Notify:=False)
+    Set objBook = objExcel.Workbooks.Open(Fájl, ReadOnly:=True, IgnoreReadOnlyRecommended:=True, Editable:=False, Notify:=False)
     
     Set rs = db.OpenRecordset(tábla)
     rs.MoveLast
     rs.MoveFirst
-
-    
+        If lnCsoport = 1 Then 'Havi létszámjelentés tábla...
+            xlTáblaEred = "Fedlap"
+            Set objSheet = objBook.Worksheets(xlTáblaEred)
+            objSheet.Select ' Ráugrunk a lapra
+            Dim rHJH As DAO.Recordset
+            Dim hatályID As Long
+            
+            Set rHJH = db.OpenRecordset("tHaviJelentésHatálya", dbOpenDynaset)
+            rHJH.AddNew
+            rHJH!hatálya = objSheet.Range("a2").Value
+            rHJH!fájlnév = Fájl
+            rHJH.Update
+            
+            rHJH.Bookmark = rHJH.LastModified
+            hatályID = rHJH!hatályaID
+            rHJH.Close
+            Set rHJH = Nothing
+        End If
     Do Until rs.EOF
         Erase Értékek
-        xlTábla = rs("AccessNév")
-        xlTáblaEred = rs("EredetiNév"): 'Debug.Print xlTáblaEred & " -- " & xlTábla
-        
-        
-        Set objSheet = objBook.Worksheets(xlTáblaEred)
-        objSheet.Select ' Ráugrunk a lapra
-        '### A Fedlap A2 cellájából a dátumot (a tábla hatályát) beírjuk a hatálytáblába.
-        If xlTáblaEred = "Fedlap" Then
-            Dim qdfHJH As DAO.QueryDef
-            Dim sql As String
-            sql = "INSERT INTO tHaviJelentésHatálya ([hatálya], [fájlnév]) VALUES ([hatály],[fájl]);"
-            Set qdfHJH = db.CreateQueryDef("lkTmp01", sql)
-            qdfHJH!hatály = objSheet.Range("a2").Value
-            qdfHJH!fájl = fájl
-            qdfHJH.Execute
-            db.QueryDefs.Delete ("lktmp01")
-            Set qdfHJH = Nothing
-            sql = ""
-        End If
-        '### Hatály beírása: vége
-        If Nz(rs("Végcella"), "") = "" Then
-            xlHosszmérõ = rs("HosszmérõCella")
-            xlUtolsóOszlop = rs("UtolsóOszlop")
-            intVégcella = objSheet.Range(xlHosszmérõ & 1).Column
-            xlVégcella = objSheet.Cells(objSheet.Cells.Rows.count, intVégcella).End(xlUp).row
-            xlVégcella = xlUtolsóOszlop & xlVégcella
-        Else
-            xlVégcella = rs("Végcella")
-        End If
-        With objSheet
-            .Range(.Range(rs("KezdõCella")), .Range(xlVégcella)).Name = xlTábla 'Elnevezzük a területet
-            sFoly Ûrlap, xlTábla & ":;" & .Range(xlTábla).Rows.count
-            'Debug.Print .Range(xlTábla).Rows.Count
+        If rs("Csoport") = lnCsoport Then
             
-        End With
-        
-        
-        If DCount("[Name]", "MSysObjects", "[Name] = '" & xlTábla & "'") = 1 Then
-            CurrentDb.Execute "Delete * From " & xlTábla & ";", dbFailOnError
-        Else
-            CurrentDb.Execute "Delete * From " & xlTábla & "_tart;", dbFailOnError
-            DoCmd.CopyObject strHáttérDb, xlTábla, acTable, xlTábla & "_tart"
-        End If
-
-
-        'Elkezdjük az adatok betöltését
-        Set rsCél = db.OpenRecordset(xlTábla)
-
-        Értékek = objSheet.Range(xlTábla).Value
-       ' Debug.Print "Az " & xlTábla & " területrõl az adatokat beolvastuk."
-       ' Debug.Print "A céltábla:" & rsCél.Name
-
-        For sor = LBound(Értékek, 1) To UBound(Értékek, 1)
-            intMezõ = 0
-            'új rekord hozzáadása kezdõdik...
-            rsCél.AddNew
-            For oszlop = LBound(Értékek, 2) To UBound(Értékek, 2)
-                If rsCél.Fields.count < oszlop Then
-                    Exit For
+            accTábla = rs("AccessNév")
+            xlTáblaEred = rs("EredetiNév"): 'Debug.Print xlTáblaEred & " -- " & accTábla
+            Set objSheet = objBook.Worksheets(xlTáblaEred)
+            xlVégcella = Nz(rs("Végcella"), "")
+            If xlVégcella = "" Then
+                xlHosszmérõ = rs("HosszmérõCella")
+                xlUtolsóOszlop = rs("UtolsóOszlop")
+                intVégcella = objSheet.Range(xlHosszmérõ & 1).Column
+                xlVégcella = objSheet.Cells(objSheet.Cells.Rows.count, intVégcella).End(xlUp).row
+                xlVégcella = xlUtolsóOszlop & xlVégcella
+                logba , "hosszcella: " & xlHosszmérõ & ", utolsó oszl.: " & xlUtolsóOszlop & ", Végcella: " & xlVégcella, 3
+            End If
+            
+                If DCount("[Name]", "MSysObjects", "[Name] = '" & accTábla & "'") = 1 Then
+                        CurrentDb.Execute "Delete * From " & accTábla & ";", dbFailOnError
+                    Else
+                        CurrentDb.Execute "Delete * From " & accTábla & "_tart;", dbFailOnError
+                        DoCmd.CopyObject strHáttérDb, accTábla, acTable, accTábla & "_tart"
+                    End If
+                If CsakSzám(rs("KezdõCella")) < CsakSzám(xlVégcella) Then
+                    With objSheet
+                        .Range(.Range(rs("KezdõCella")), .Range(xlVégcella)).Name = accTábla 'Elnevezzük a területet
+                        sFoly Ûrlap, accTábla & ":;" & .Range(accTábla).Rows.count
+                        logba , .Range(accTábla).Rows.count, 3
+                    End With
+                    
+            
+                    'Elkezdjük az adatok betöltését
+                    Set rsCél = db.OpenRecordset(accTábla)
+            
+                    Értékek = objSheet.Range(accTábla).Value
+                    logba , "Az " & accTábla & " területrõl az adatokat beolvastuk."
+                    logba , "A céltábla:" & rsCél.Name
+            
+                    For sor = LBound(Értékek, 1) To UBound(Értékek, 1)
+                        intMezõ = 0
+                        'új rekord hozzáadása kezdõdik...
+                        rsCél.AddNew
+                        For oszlop = LBound(Értékek, 2) To UBound(Értékek, 2)
+                            If rsCél.Fields.count < oszlop Then
+                                Exit For
+                            End If
+                            intMezõ = oszlop - 1
+            
+                            rsCél.Fields(intMezõ) = konverter(rsCél.Fields(intMezõ), Értékek(sor, oszlop))
+                            
+                        Next oszlop
+                        rsCél.Fields(oszlop - 1) = hatályID
+                        rsCél.Update
+                        'új rekord hozzáadása véget ért
+                    Next sor
+                    logba , "Az " & accTábla & " nevû táblába az adatokat beírtuk:" & sor & " sor."
+                    logba , "Az " & accTábla & " beolvasása megtörtént."
+                Else
+                    logba , "Az " & accTábla & " nevû táblába nem írtunk adatokat, mert üres volt."
+                    logba , "Az " & accTábla & " beolvasása megtörtént."
                 End If
-                intMezõ = oszlop - 1
 
-                rsCél.Fields(intMezõ) = konverter(rsCél.Fields(intMezõ), Értékek(sor, oszlop))
-                
-            Next oszlop
-            rsCél.Update
-            'új rekord hozzáadása véget ért
-        Next sor
-        'Debug.Print "Az " & xlTábla & " nevû táblába az adatokat beírtuk:" & sor & " sor."
-        'Debug.Print "Az " & xlTábla & " beolvasása megtörtént."
+        End If
         rs.MoveNext
         intVégcella = 0
     Loop
+    logba , objBook.Name & " bezárása mentés nélkül...", 3
+    objBook.Close SaveChanges:=False
+    
+    Set objBook = Nothing
+    'If objBook = Nothing Then logba , fájl & " bezárása mentés nélkül sikerült!", 3
+    Set objExcel = Nothing
+'    If objExcel = Nothing Then
+'        logba , "Excel bezárása sikerült!", 3
+'    Else
+'        logba , fájl & " néven megnyitott Excel bezárása nem sikerült!", 2
+'    End If
 fvHaviTáblaImport = True
+fvki
 Exit Function
 
 
 Hiba:
-Debug.Print Err.Number, Err.Description
-fvHaviTáblaImport = False
+    logba , Err.Number & Err.Description, 0
+    fvHaviTáblaImport = False
 
 End Function
-Sub LekérdezésÍró()
-'Licencia: MIT Oláh Zoltán 2022 (c)
-    Dim rs As Recordset
-    Dim rs2 As Recordset
-    Dim sql As String
-    Dim sql2 As String
-    Dim kSQL As String
-    Dim lekérd As String
-    Dim újnév As String
-    Dim x As Integer
-    Dim Találat, dbTalálat As Integer
-    
-    sql = "SELECT AccessNév, Hiány_lekérdezés FROM tImportálandóTáblák"
-    Set rs = CurrentDb.OpenRecordset(sql)
-    
-    Do Until rs.EOF
-        sql2 = "SELECT Import, Eredeti  FROM tJavítandóMezõnevek WHERE Tábla ='" & rs!AccessNév & "' AND NemKötelezõ = false ;"
-        Set rs2 = CurrentDb.OpenRecordset(sql2)
-        kSQL = ""
-        Do Until rs2.EOF
-            If kSQL <> "" Then kSQL = kSQL & ", " & Chr(10)
-            újnév = RIC(Clean_NPC(rs2!Eredeti.Value))
-            If Len(újnév) > 64 Then
-                újnév = Left(újnév, 60)
-            End If
-            dbTalálat = 0
-            Találat = InStr(1, kSQL, újnév) 'Az új név szerepelt-e már az elõzõekben
-            Do Until dbTalálat >= Találat 'Ha igen, akkor a Találat nagyobb, mint a db találat
-                dbTalálat = Találat 'elõre toljuk a mérési pontot,
-                Találat = InStr(dbTalálat, kSQL, újnév) 'megnézzük innen is,
-            Loop 'hogy nagyobb értéket kapunk-e, mint korábban (ami most a dbTalálat)
-            If dbTalálat > 0 Then
-                újnév = újnév & dbTalálat + 1
-            End If
-            If InStr(1, kSQL, újnév) > 0 Then
-                'újnév
-                dbTalálat = dbTalálat + 1
-            End If
-            If Len(újnév) = 0 Then MsgBox "!": GoTo kijárat
-            kSQL = kSQL & rs!Hiány_lekérdezés.Value & ".[" & rs2!Import.Value & "] AS " & újnév
-            rs2.MoveNext 'a következõ mezõre ugrunk
-        Loop 'rs2
 
-        kSQL = "SELECT " & kSQL & " FROM " & rs!Hiány_lekérdezés & ";"
-        lekérd = rs!Hiány_lekérdezés & "2"
-        
-        If Not IsNull(DLookup("Type", "MSYSObjects", "Name='" & lekérd & "'")) Then
-            CurrentDb.QueryDefs(lekérd).sql = kSQL
-        Else
-            CurrentDb.CreateQueryDef lekérd, kSQL
-        End If
-        'Debug.Print kSQL
-        rs.MoveNext 'A következõ táblára ugrunk
-    Loop 'rs
-
-kijárat:
-
-End Sub
 
 
 Public Function tTáblaImport(strFájl As String, Ûrlap As Form, táblanév As String)
-    'On Error GoTo ErrorHandler
+fvbe ("tTáblaImport")
+On Error GoTo ErrorHandler
 
     Dim importSpecName As String
+    Dim strHiba As String
 '    Dim strXML As String
 '    Dim strRégiFájl As String
 '    Dim strÚjFájl As String
@@ -327,22 +298,21 @@ Public Function tTáblaImport(strFájl As String, Ûrlap As Form, táblanév As Strin
    tTáblaImport = True
     
 Kilépés:
+    fvki
     Exit Function
 
 ErrorHandler:
-    ' Szabványos hibaüzenet elõállítása
-    If Err.Number = 3709 Then
-        
-        'Resume 0
-    End If
-    MsgBox "Error: " & Err.Number & " - " & Err.Description, vbExclamation + vbOKOnly, "Error"
-    Debug.Print "Error: " & Err.Number & " - " & Err.Description
+    strHiba = "Error: " & Err.Number & " - " & Err.Description
+
+    MsgBox strHiba, vbExclamation + vbOKOnly, "Error"
+    logba , strHiba
     tTáblaImport = False
     Resume Kilépés
 End Function
 
 
 Public Function SzervezetiTáblaImport(fájlnév As String, Ûrlap As Object) As Boolean
+fvbe ("SzervezetiTáblaImport")
     'MIT Oláh Zoltán 2022
     'Az Excel megnyitásához
     Dim objExcel       As excel.Application
@@ -351,7 +321,7 @@ Public Function SzervezetiTáblaImport(fájlnév As String, Ûrlap As Object) As Boo
     Dim objRange        As excel.Range
     Dim objRange2       As excel.Range
     
-    Dim xlTábla         As String
+    Dim accTábla         As String
     Dim xlTáblaEred     As String
     Dim xlVégcella      As String
     
@@ -366,7 +336,7 @@ Public Function SzervezetiTáblaImport(fájlnév As String, Ûrlap As Object) As Boo
     Dim db              As DAO.Database     'Ez lesz az adatbázisunk
     Dim rs              As DAO.Recordset    'A beolvasandó lapok és területek adatait tartalmazó táblának
     Dim rsCél           As DAO.Recordset    'Ahová másolunk
-    Dim fájl            As String
+    Dim Fájl            As String
     Dim archfájl        As String           'A régi fájl archiválás utáni neve
     
     Dim Eredmény        As Integer
@@ -378,24 +348,25 @@ Public Function SzervezetiTáblaImport(fájlnév As String, Ûrlap As Object) As Boo
     'Számláláshoz
     Dim sor, oszlop     As Integer
     Dim ehj             As New ehjoszt
-    Dim ElõzõSzakasz    As Integer
+    Dim elõzõszakasz    As Integer
+    Dim SzakaszSzám     As Integer
     
     
 'On Error GoTo Hiba
-    xlTábla = "tSzervezeti"
+    accTábla = "tSzervezeti"
     xlTáblaEred = "Szervezeti alapriport"
     
     Set objExcel = CreateObject("Excel.Application")
     Set db = CurrentDb()
     ' ha az útvonal végén nincs \, akkor hozzáfûzzük, [de ha van, akkor meg nem :)]
-    fájl = fájlnév
-    If Not (vane(fájl)) Then 'Ha nincs ilyen fájl, akkor kiszállunk...
+    Fájl = fájlnév
+    If Not (vane(Fájl)) Then 'Ha nincs ilyen fájl, akkor kiszállunk...
         SzervezetiTáblaImport = False
-        sFoly Ûrlap, xlTábla & ":;fájl nem található, átugorjuk"
+        sFoly Ûrlap, accTábla & ":;fájl nem található, átugorjuk"
         Exit Function
     End If
     ' megnyitjuk az Excel táblát
-    Set objBook = objExcel.Workbooks.Open(fájl, ReadOnly:=True, IgnoreReadOnlyRecommended:=True, Editable:=False, Notify:=False)
+    Set objBook = objExcel.Workbooks.Open(Fájl, ReadOnly:=True, IgnoreReadOnlyRecommended:=True, Editable:=False, Notify:=False)
     
 
 
@@ -412,23 +383,24 @@ Public Function SzervezetiTáblaImport(fájlnév As String, Ûrlap As Object) As Boo
     With objRange
         Set objRange2 = .Range(.Cells(2, 1), objRange.Cells(xlHosszmérõ, xlUtolsóOszlop + 0))  'leszedjük az elsõ sort
     End With
-    sFoly Ûrlap, xlTábla & ":;" & xlHosszmérõ
+    sFoly Ûrlap, accTábla & ":;" & xlHosszmérõ & " sor"
                 'Debug.Print "Sorok száma:" & xlHosszmérõ & ", oszlopok száma:" & xlUtolsóOszlop
    
     Erase Értékek
 
-    If DCount("[Name]", "MSysObjects", "[Name] = '" & xlTábla & "'") = 1 Then 'Ha van már xlTábla nevû tábla, akkor
-        archfájl = xlTábla & RIC(Now())
-        DoCmd.CopyObject , archfájl, acTable, xlTábla 'készítünk egy tartalék másolatot
-        db.Execute ("Delete * From [" & xlTábla & "];") 'majd (az xlTábla táblát) kiürítjük
-        sFoly Ûrlap, xlTábla & ":;Az elõzõ táblát " & archfájl & " néven archiváltuk."
+    If DCount("[Name]", "MSysObjects", "[Name] = '" & accTábla & "'") = 1 Then 'Ha van már accTábla nevû tábla, akkor
+        archfájl = accTábla & RIC(Now())
+        DoCmd.CopyObject , archfájl, acTable, accTábla 'készítünk egy tartalék másolatot
+        db.Execute ("Delete * From [" & accTábla & "];") 'majd (az accTábla táblát) kiürítjük
+        sFoly Ûrlap, accTábla & ":;Az elõzõ táblát " & archfájl & " néven archiváltuk."
     End If
     
     ehj.Ini 100
     'Elkezdjük az adatok betöltését
-    Set rsCél = db.OpenRecordset(xlTábla)
+    Set rsCél = db.OpenRecordset(accTábla)
     Értékek = objRange2.Value
-    'ehj.SzakaszSzám = 5 '20%-konként jelezzük ki az értéket
+    elõzõszakasz = 0
+    SzakaszSzám = 8 '12,5%-konként jelezzük ki az értéket
     ehj.oszlopszam = UBound(Értékek, 1) - (LBound(Értékek, 1) + 1) 'Itt az oszlopszám a sorokat jelöli :)
     For sor = LBound(Értékek, 1) + 1 To UBound(Értékek, 1)
         intMezõ = 0
@@ -442,24 +414,31 @@ Public Function SzervezetiTáblaImport(fájlnév As String, Ûrlap As Object) As Boo
             End If
  
         Next oszlop
-'        If ehj.JelenlegiSzakasz > ElõzõSzakasz Then
-'            sFoly Ûrlap, xlTábla & ":;" & Round(ehj.JelenlegiSzakasz / ehj.SzakaszSzám * 100, 0) & "% elkészült..."
-'            ElõzõSzakasz = ehj.JelenlegiSzakasz
-'        End If
+        If Int(ehj.Value / ehj.oszlopszam * SzakaszSzám) > elõzõszakasz Then
+            sFoly Ûrlap, accTábla & ":;" & Int(ehj.Value / ehj.oszlopszam * 100) & "% elkészült..."
+            elõzõszakasz = Int(ehj.Value / ehj.oszlopszam * SzakaszSzám)
+        End If
         rsCél.Update
         'új rekord hozzáadása véget ért
         'Debug.Print (sor / xlHosszmérõ) * 100 & "%"
-'        ehj.Novel
+        ehj.Novel
     Next sor
     SzervezetiTáblaImport = True 'Visszatérési értéke Igaz, ha nincs hiba
+    
 Kilépés:
     
     rsCél.Close
+    Set objRange = Nothing
+    Set objRange2 = Nothing
+    Set objSheet = Nothing
+    Set objBook = Nothing
+    Set objExcel = Nothing
+fvki
 Exit Function
 
 Hiba:
-    
-    MsgBox "Hiba!! " & Err.Number & ": " & Err.Description
+
+    Hiba Err
     SzervezetiTáblaImport = False 'Visszatérési értéke Hamis, ha hiba történt.
     Resume Kilépés
 End Function
@@ -470,6 +449,7 @@ Function ImportTáblaHibaJavító(terület As excel.Range) As Integer
     'A kapott tábla (Excel.Range) fejlécében megkeresi az azonos nevûeket, és a másodiktól kezdve az oszlop számát hozzáfûzi.
     'Mindeközben a neveket trim-eli.
     'Ha hiba nem történt:0 értékkel tér vissza, egyébként a hibakóddal
+fvbe ("ImportTáblaHibaJavító")
     On Error GoTo Hiba
     Dim intOszlopok     As Integer  'Az oszlopok száma
     Dim i, n            As Integer  'Számláló
@@ -497,11 +477,12 @@ Function ImportTáblaHibaJavító(terület As excel.Range) As Integer
     Next n
     
     ImportTáblaHibaJavító = 0
+fvki
 Exit Function
 Hiba:
     If Err.Number = 457 Then
         gyûjt.Add név & i, név & i
-        Debug.Print név; i
+        logba , név & i, 0
         Resume Next
     End If
     ImportTáblaHibaJavító = Err.Number
@@ -549,7 +530,7 @@ Do Until rst.EOF
 Loop
 End Sub
 
-Sub BeszámolóTábla(fájl As String, lekérdezés As String)
+Sub BeszámolóTábla(Fájl As String, lekérdezés As String)
 '****** (c) Oláh Zoltán 2022 - MIT Licence ****************
  
  'Az adatbázishoz
@@ -567,7 +548,7 @@ Sub BeszámolóTábla(fájl As String, lekérdezés As String)
     
     'A lépegetéshez
     Dim maxoszlop, maxsor As Long
-    Dim Adat As Variant
+    Dim adat As Variant
     Dim mezõ As Field
     'Az elõrehaladás-jelzõhöz
 
@@ -595,7 +576,7 @@ Sub BeszámolóTábla(fájl As String, lekérdezés As String)
         rs.MoveFirst
         rs.MoveLast
         maxoszlop = .Fields.count  'A leendõ oszlopok száma, ahány mezõ van a lekérdezésben és még egy a sorszám miatt
-        maxsor = .recordCount
+        maxsor = .RecordCount
         'Az elõrehaladás-jelzõ elõkészítése
 
         .MoveFirst
@@ -604,9 +585,9 @@ Sub BeszámolóTábla(fájl As String, lekérdezés As String)
                 If oszlop = 1 Then
                     oWs1.Cells(sor + 1, oszlop).Value = sor
                 Else
-                    Adat = .Fields(oszlop - 2).Value
+                    adat = .Fields(oszlop - 2).Value
                     With oWs1
-                        .Cells(sor + 1, oszlop).Value = Adat  'A sorszám oszlop miatt adunk hozzá egyet, így egyel odébb tesszük
+                        .Cells(sor + 1, oszlop).Value = adat  'A sorszám oszlop miatt adunk hozzá egyet, így egyel odébb tesszük
                     End With
                 End If
             Next oszlop
@@ -669,14 +650,14 @@ Sub BeszámolóTábla(fájl As String, lekérdezés As String)
     oWs2.Range("A2").Value = "Adatsor:": oWs2.Range("B2").Value = sor - 1
     
     'Takarítás
-    oWb.SaveAs fileName:=fájl, FileFormat:=xlOpenXMLWorkbook, AddToMru:=True, Local:=True
+    oWb.SaveAs fileName:=Fájl, FileFormat:=xlOpenXMLWorkbook, AddToMru:=True, Local:=True
     oWb.Close
     'Debug.Print fájl & " kész (" & sor & " sor) ."
     Set oWb = Nothing
 '   Kill oWb
     
 End Sub
-Sub Kimutatás(fájl As String, lekérdezés As String)
+Sub Kimutatás(Fájl As String, lekérdezés As String)
 '****** (c) Oláh Zoltán 2022 - MIT Licence ****************
  
  'Az adatbázishoz
@@ -693,7 +674,7 @@ Sub Kimutatás(fájl As String, lekérdezés As String)
     Dim oWc             As Chart
     
     Dim maxoszlop, maxsor As Long
-    Dim Adat As Variant
+    Dim adat As Variant
     Dim mezõ As Field
     'Az elõrehaladás-jelzõhöz
 
@@ -721,7 +702,7 @@ Sub Kimutatás(fájl As String, lekérdezés As String)
         rs.MoveFirst
         rs.MoveLast
         maxoszlop = .Fields.count  'A leendõ oszlopok száma, ahány mezõ van a lekérdezésben és még egy a sorszám miatt
-        maxsor = .recordCount
+        maxsor = .RecordCount
         'Az elõrehaladás-jelzõ elõkészítése
 
         .MoveFirst
@@ -730,9 +711,9 @@ Sub Kimutatás(fájl As String, lekérdezés As String)
                 If oszlop = 1 Then
                     oWs1.Cells(sor + 1, oszlop).Value = sor
                 Else
-                    Adat = .Fields(oszlop - 2).Value
+                    adat = .Fields(oszlop - 2).Value
                     With oWs1
-                        .Cells(sor + 1, oszlop).Value = Adat  'A sorszám oszlop miatt adunk hozzá egyet, így egyel odébb tesszük
+                        .Cells(sor + 1, oszlop).Value = adat  'A sorszám oszlop miatt adunk hozzá egyet, így egyel odébb tesszük
                     End With
                 End If
             Next oszlop
@@ -795,7 +776,7 @@ Sub Kimutatás(fájl As String, lekérdezés As String)
     oWs2.Range("A2").Value = "Adatsor:": oWs2.Range("B2").Value = sor - 1
     
     'Takarítás
-    oWb.SaveAs fileName:=fájl, FileFormat:=xlOpenXMLWorkbook, AddToMru:=True, Local:=True
+    oWb.SaveAs fileName:=Fájl, FileFormat:=xlOpenXMLWorkbook, AddToMru:=True, Local:=True
     oWb.Close
     'Debug.Print fájl & " kész (" & sor & " sor) ."
     Set oWb = Nothing
@@ -884,7 +865,161 @@ Sub TáblaMezõk()
     Loop
     
 End Sub
+Public Sub HaviTáblaPlus( _
+        ByVal Fájl As String, _
+        Optional ByVal lnCsoport As Long = 1)
+Debug.Print fvHaviimpTáblákImportPlus(Fájl, lnCsoport)
+End Sub
+Public Function _
+    fvHaviimpTáblákImportPlus( _
+        ByVal Fájl As String, _
+        Optional ByVal lnCsoport As Long = 1) _
+    As Boolean
 
+fvbe ("fvHaviimpTáblákImportPlus")
+    'Licencia: MIT Oláh Zoltán 2022 (c)
+    '_____________________________________________________________________________________________________________________________
+    '------------------------------------------ Változók deklarációja -----------------------------------------------------------¬
+    'Az Excel megnyitásához
+    '___________________________________|__________________________|______________________________|______________________________|
+    '   Objects                         | Strings                  | Numbers                      | Variants                     |
+    '___________________________________|__________________________|______________________________|______________________________|
+    Dim objExcel   As excel.Application, xlUtolsóOszlop   As String, intVégcella       As Integer, Értékek()        As Variant, _
+        objBook       As excel.Workbook, xlHosszmérõ      As String, intMezõ           As Integer, _
+        objSheet     As excel.Worksheet, accTáblák        As String, intUtolsóSor      As Integer, _
+        objRange         As excel.Range, xlTáblákEred     As String, _
+        xlVégcella       As excel.Range, _
+        xlKezdõCella     As excel.Range
+    'Az adatbázis megnyitásához
+    '___________________________________|__________________________|______________________________|______________________________|
+    '   Objects                         | Strings                  | Numbers                      | Variants                     |
+    '___________________________________|__________________________|______________________________|______________________________|
+    Dim objAccess  As Access.Application, impTáblák       As String, oszlop       As Integer, _
+        db              As DAO.Database, strHáttérDb      As String, sor          As Integer, _
+        rs              As DAO.Recordset, _
+        rsCél           As DAO.Recordset, _
+        rsHatály        As DAO.Recordset     'Számláláshoz
+                                                                Dim hatályaID As Long
+    'A szöveges kimenethez
+    '___________________________________|__________________________|______________________________|______________________________|
+    '   Objects                         | Strings                  | Numbers                      | Variants                     |
+    '___________________________________|__________________________|______________________________|______________________________|
+                                     Dim Üzenet          As String
+    '___________________________________|__________________________|______________________________|______________________________|
+    
+    
+    strHáttérDb = "L:\Ugyintezok\Adatszolgáltatók\Adatbázisok\Háttértárak\EllenõrzésHavi_háttértár.accdb"
+'   Set objAccess = New Access.Application
+    Set db = CurrentDb 'objAccess.DBEngine.OpenDatabase(strHáttérDb, False, False)
+    impTáblák = "tImportálandóTáblák1"
+    
+    intVégcella = 0
+    'On Error GoTo hiba
 
-
-
+    Set objExcel = CreateObject("Excel.Application")
+    
+    Set objBook = objExcel.Workbooks.Open(Fájl, ReadOnly:=True, IgnoreReadOnlyRecommended:=True, Editable:=False, Notify:=False)
+    Set rs = db.OpenRecordset(impTáblák)
+    
+    rs.MoveLast
+    rs.MoveFirst
+    
+    If DCount("*", "tHaviJelentésHatálya1", "fájlnév = '" & Fájl & "'") > 0 Then
+        Set rsHatály = db.OpenRecordset("SELECT hatályaID FROM tHaviJelentésHatálya1 WHERE fájlnév = '" & Fájl & "'")
+        If Not rsHatály.EOF Then
+            hatályaID = rsHatály("hatályaID")
+        End If
+        rsHatály.Close
+    Else
+        Set rsHatály = db.OpenRecordset("tHaviJelentésHatálya1", dbOpenDynaset)
+        rsHatály.AddNew
+        rsHatály("hatálya") = objBook.Worksheets("Fedlap").Range("a2").Value
+        rsHatály("fájlnév") = Fájl
+        rsHatály.Update
+        rsHatály.Bookmark = rsHatály.LastModified
+        hatályaID = rsHatály("hatályaID")
+        rsHatály.Close
+    End If
+    
+    Do Until rs.EOF
+        Erase Értékek
+        If rs("Csoport") = lnCsoport Then
+            accTáblák = rs("AccessNév")
+            xlTáblákEred = rs("EredetiNév")
+            
+            Set objSheet = objBook.Worksheets(xlTáblákEred)
+            With objSheet
+                If .AutoFilterMode Then _
+                    .AutoFilter.ShowAllData 'Kikapcsolja a szûrést az adott lapon???
+                .Select
+                logba sFN & " " & xlTáblákEred, "Adatok beolvasás indul..."
+                If Nz(rs("Végcella"), "") = "" Then
+                    xlHosszmérõ = rs("HosszmérõCella")
+                    xlUtolsóOszlop = rs("UtolsóOszlop")
+                    intVégcella = .Range(xlHosszmérõ & 1).Column
+                    intUtolsóSor = .Cells(objSheet.Cells.Rows.count, intVégcella).End(xlUp).row
+                    Set xlVégcella = .Range(xlUtolsóOszlop & intUtolsóSor)
+                                    logba , "hosszcella: " & xlHosszmérõ & ", utolsó oszl.: " & xlUtolsóOszlop & ", Végcella: " & xlVégcella, 3
+                Else
+                    Set xlVégcella = .Range(rs("Végcella"))
+                End If
+                    Set xlKezdõCella = .Range(rs("KezdõCella"))
+                    
+                    If xlKezdõCella.row < xlVégcella.row Then 'Ha van adat a táblában ...
+                        .Range(xlKezdõCella, xlVégcella).Name = accTáblák
+                    
+                                    logba , accTáblák & ":;" & .Range(accTáblák).Rows.count, 2
+                
+                
+                        Set rsCél = db.OpenRecordset(accTáblák, dbOpenDynaset)
+                        Értékek = .Range(accTáblák).Value
+                                    logba sFN & " " & xlTáblákEred, " területrõl az adatokat beolvastuk."
+                                    logba sFN & " " & xlTáblákEred, "Adatok kiírása indul. Cél:" & accTáblák
+            
+                        For sor = LBound(Értékek, 1) To UBound(Értékek, 1)
+                            intMezõ = 0
+                            'új rekord hozzáadása kezdõdik...
+                            rsCél.AddNew
+                            For oszlop = LBound(Értékek, 2) To UBound(Értékek, 2)
+                                If rsCél.Fields.count < oszlop Then
+                                    Exit For
+                                End If
+                                intMezõ = oszlop - 1
+                                rsCél.Fields(intMezõ) = konverter(rsCél.Fields(intMezõ), Értékek(sor, oszlop))
+                            Next oszlop
+                            rsCél("hatályaID") = hatályaID  ' Add the hatályaID to the new record
+                            rsCél.Update
+                            'új rekord hozzáadása véget ért
+                        Next sor
+                                    logba sFN & " " & xlTáblákEred, "Adatok kiírása " & névelõvel(accTáblák) & "táblába véget ért."
+                    Else 'Ha nincs adat a táblában ...
+                        'nincs mit elnevezni,
+                        'nincs mit kiírni,
+                        'amibõl az következik, hogy ha nincs egy táblában egy hatálynapra ID, akkor arra a napra nem volt adat...
+                    End If
+            End With
+        End If
+        
+        rs.MoveNext
+        intVégcella = 0
+    Loop
+    
+                                    logba sFN & " " & xlTáblákEred, objBook.Name & " bezárása mentés nélkül..."
+    objBook.Close SaveChanges:=False
+    
+    fvHaviimpTáblákImportPlus = True
+    Debug.Print Fájl
+Ki:
+    Set objBook = Nothing
+    Set objExcel = Nothing
+fvki
+    Exit Function
+Hiba:
+    MsgBox Hiba(Err)
+    fvHaviimpTáblákImportPlus = False
+    If intLoglevel >= 2 Then
+        Resume Next
+    Else
+        Resume Ki
+    End If
+End Function

@@ -8,19 +8,86 @@
 'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 'WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Option Compare Database
+Public Const ¸ As String = ";"
+Function ¤(szöveg, Optional távtartó As Variant = "")
+'##########
+'# Oláh Zoltán (c) 2024 MIT
+    távtartó = Left(távtartó, 1)
+    Select Case távtartó
+        Case ";"
+            Debug.Print szöveg;
+        Case ","
+            Debug.Print szöveg,
+        Case Else
+            Debug.Print szöveg
+    End Select
+End Function
 Function Nü(érték As Variant, értékhaüres As Variant) As Variant
 '##########
 '# Oláh Zoltán (c) 2024 MIT
 '# Ha az érték üres (Null, "" vagy 0), akkor az értékhaüres értékét adja vissza, egyébként az értéket.
-'# Akkor használható, ha nem tudjuk, hogy a vizsgált érték hogyan üres, de szeretnénk helyette egy  másik értéket.
+'# Akkor használható, ha nem tudjuk, hogy a vizsgált érték hogyan üres, de szeretnénk helyette egy másik értéket.
 '##########
+    If IsObject(érték) Then
+        If IsEmpty(érték) Then
+            If IsObject(értékhaüres) Then
+                Set Nü = értékhaüres
+            Else
+                Nü = értékhaüres
+            End If
+        Else
+           Set Nü = érték
+        End If
+        Exit Function
+    End If
     If IsNull(érték) Or érték = vbNullString Or érték = 0 Then
-        Nü = értékhaüres
+        If IsObject(értékhaüres) Then
+            Set Nü = értékhaüres
+        Else
+            Nü = értékhaüres
+        End If
         Exit Function
     End If
     Nü = érték
 End Function
 
+Function ÷(ByRef növelendõ As Variant)
+    On Error GoTo Hiba
+        növelendõ = Nü(növelendõ, 0)
+        növelendõ = CLng(növelendõ) + 1
+         ÷ = növelendõ
+    Exit Function
+Hiba:
+    Select Case Err.Number
+        Case 13
+            növelendõ = 1
+        Case Else
+            MsgBox Hiba(Err)
+    End Select
+   
+End Function
+Function ÷_(növelendõ As Long)
+
+End Function
+Function ¡(ByRef csökkentendõ As Long)
+    On Error GoTo Hiba
+        csökkentendõ = Nü(csökkentendõ, 0)
+        csökkentendõ = CLng(csökkentendõ) - 1
+        ¡ = csökkentendõ
+    Exit Function
+Hiba:
+    Select Case Err.Number
+        Case 13
+            csökkentendõ = 1
+        Case Else
+            MsgBox Hiba(Err)
+    End Select
+End Function
+Function §(Optional ByRef megismétlendõ As Variant = Null)
+If Not IsNull(megismétlendõ) Then _
+    megismétlendõ = megismétlendõ & megismétlendõ
+    § = megismétlendõ
+End Function
 Function tömbDim(ByVal tömb As Variant) As Integer
 '#MIT Oláh Zoltán (c) 2024
 '# Egy tömb dimenzióinak a számát adja vissza
@@ -28,19 +95,21 @@ Function tömbDim(ByVal tömb As Variant) As Integer
     On Error GoTo Eredmény
     dimSzám = 1
     Do While LBound(tömb, dimSzám) Or True
-        dimSzám = dimSzám + 1
+        ÷ dimSzám
     Loop: Exit Function
 Eredmény:
-    tömbDim = dimSzám - 1
+    ÷ dimSzám
+    tömbDim = dimSzám
 End Function
 
 Function vane(teljesútvonal As String) As Boolean
     vane = (Dir(teljesútvonal) <> vbNullString)
 End Function
-Function ÚtvonalKészítõ(ByVal útvonal As String, ByVal fájlnév As String)
+
+Function ÚtvonalKészítõ(ByVal Útvonal As String, ByVal fájlnév As String)
 '****** (c) Oláh Zoltán 2022 - MIT Licence ****************
 Dim per As String
-    per = Right(útvonal, 1)
+    per = Right(Útvonal, 1)
     'Debug.Print Útvonal, per
     
     If per <> "\" Then
@@ -49,17 +118,17 @@ Dim per As String
         per = ""
     End If
     'Debug.Print "per = " & per
-    ÚtvonalKészítõ = útvonal & per & fájlnév
+    ÚtvonalKészítõ = Útvonal & per & fájlnév
 End Function
 
 
 
-Function párkeresõ(ByRef tömb As Variant, keresett As Variant) As Variant
+Function párkeresõ(ByRef tömb As Variant, keresett As Variant, Optional hanyadik As Integer = 2) As Variant
 
     For i = 1 To UBound(tömb, 1)
         If tömb(i, 1) = keresett Then
             
-            párkeresõ = tömb(i, 2)
+            párkeresõ = tömb(i, hanyadik)
             Exit Function ' Kilép, ha találtunk
             
         End If
@@ -109,12 +178,46 @@ Function LS(ByVal str1 As String, ByVal str2 As String) As Integer 'Levenshtein 
 End Function
 
 
-Function lejárat(perc As Integer) As Date
+Function Lejárat(perc As Integer) As Date
     Dim idõ As Date
     
     idõ = Now()
-    lejárat = TimeSerial(Hour(idõ), Minute(idõ) + perc, Second(idõ))
+    Lejárat = TimeSerial(Hour(idõ), Minute(idõ) + perc, Second(idõ))
     
 End Function
+Function felhasználó()
+    felhasználó = Environ("USERNAME")
+End Function
+Function szgép()
+    szgép = Environ("Computername")
+End Function
+Function gép()
+    gép = Environ("Computername")
+End Function
 
-
+Sub várakozás(Optional mp As Integer = 1)
+'Másodpercben megadott ideig várakozik, közben fél mp-nként visszaadja a vezérlést...
+Dim tMost As Variant
+Dim tKöv As Variant
+    tVár = Time
+    tVár = DateAdd("s", mp, tVár)
+    tKöv = DateAdd("s", 1, tMost)
+    Do Until tMost >= tVár
+        tMost = Time
+        If tMost > tKöv Then
+            tKöv = DateAdd("s", 0.5, tMost)
+            DoEvents
+        End If
+    Loop
+End Sub
+Sub Status(pstrStatus As String)
+    
+    Dim lvarStatus As Variant
+    
+    If pstrStatus = "" Then
+        lvarStatus = SysCmd(acSysCmdClearStatus)
+    Else
+        lvarStatus = SysCmd(acSysCmdSetStatus, pstrStatus)
+    End If
+    
+End Sub

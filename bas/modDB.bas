@@ -13,6 +13,7 @@ Function ElsõdlegesKulcsMezõ(ByVal táblanév As Variant, Optional adatbázis As Va
 '# ha van, visszaadja a nevét,
 '# ha nincs, üres string-gel tér vissza
 
+
     Dim db As DAO.Database
     Dim tdf As DAO.TableDef
     Dim fld As DAO.Field
@@ -174,11 +175,14 @@ End Function
 Function vFldTípus(sql As String) As Variant
 '#MIT Oláh Zoltán (c) 2023
 'A kapott lekérdezést lefuttatja, s a kapott értékpár eredményt egy tömbben adja vissza
+
     Dim db1 As Database
     Dim rs1 As Recordset
     Dim vFieldTypes() As Variant
     Dim i As Integer
-    
+    Dim t1 As Single, _
+        t2 As Single
+    t1 = Timer()
     ' Set the database object
     Set db1 = CurrentDb
     
@@ -189,15 +193,16 @@ Function vFldTípus(sql As String) As Variant
     If Not rs1.EOF Then
         rs1.MoveLast
         rs1.MoveFirst
-        
+         
         ' Resize the array to hold the number of records
-        ReDim vFieldTypes(1 To rs1.recordCount, 1 To 2)
+        ReDim vFieldTypes(1 To rs1.RecordCount, 1 To 3)
         
         ' Loop through the records and populate the array
         i = 1
         Do While Not rs1.EOF
             vFieldTypes(i, 1) = "" & rs1("MezõNeve") & ""
             vFieldTypes(i, 2) = rs1("MezõTípusa")
+            vFieldTypes(i, 3) = rs1("Grafikonra")
             rs1.MoveNext
             i = i + 1
         Loop
@@ -215,13 +220,15 @@ Function vFldTípus(sql As String) As Variant
     ' Clean up
     Set rs1 = Nothing
     Set db1 = Nothing
+    t2 = Timer
+    Debug.Print t2 - t1
 End Function
 Sub mezõTípusok(lek As String, hfNév As String)
 'Licencia: MIT Oláh Zoltán 2022 (c)
 ' A lek nevû lekérdezésben felsorolt lekérdezéseket sorra megnyitja,
 ' s a lekérdezés nevét, továbbá a mezõ nevét és típusát egy hfNév nevû csv táblába írja.
 ' mezõTípusok "lkEllenõrzõLekérdezések2","C:\Users\olahzolt\Desktop\Fájlok\mezo.csv"
-
+fvbe ("mezõTípusok")
     Dim db As DAO.Database
     Dim rk As Recordset
     'Dim hfnév As String
@@ -237,22 +244,25 @@ Sub mezõTípusok(lek As String, hfNév As String)
     Do Until rk.EOF
         Dim rklek As Recordset
         Set rklek = db.OpenRecordset(rk("EllenõrzõLekérdezés"))
-        Debug.Print rklek.Name
+        logba , rklek.Name, 3
         For Each mezõ In rklek.Fields
             hf.writeline rklek.Name & ";" & mezõ.Name & ";" & mezõ.Type
-            'Debug.Print rklek.Name; ";"; mezõ.Name; ";"; mezõ.Type
+            logba , rklek.Name & "; " & mezõ.Name & "; " & mezõ.Type, 4
         Next mezõ
         rk.MoveNext
         Set rklek = Nothing
     Loop
     hf.Close
     Set hf = Nothing
-    Debug.Print "----------------"
+    logba , "----------------", 3
+fvki
 End Sub
 
 Public Function konverter(fMezõ As Field, érték As Variant)
 '****** (c) Oláh Zoltán 2022 - MIT Licence ****************
-'Debug.Print fMezõ.Type; Érték
+fvbe ("konverter")
+logba , CStr(fMezõ.Type) & ";" & CStr(érték), 4
+
 If IsNull(érték) Then
     konverter = Null
     Exit Function
@@ -268,6 +278,7 @@ Select Case TypeName(érték)
             Case 17: konverter = CVar(érték) 'VarBinary
             Case 18: konverter = CStr(érték) 'Char
             Case Else
+                logba colFvNév.item(1), "Nem lehet konvertálni a" & névelõ(érték) & " " & érték & " értéket a" & névelõ(fMezõ.Type) & " " & fMezõ.Name & " " & fMezõ.Type & "típusába!", 2
                 MsgBox "Nem lehet konvertálni a" & névelõ(érték) & " " & érték & " értéket a" & névelõ(fMezõ.Type) & " " & fMezõ.Name & " " & fMezõ.Type & "típusába!"
         End Select
     Case Else
@@ -291,9 +302,11 @@ Select Case TypeName(érték)
             Case 22: konverter = CDate(érték) 'Time
             Case 23: konverter = CDate(érték) 'Time Stamp
             Case Else
+                logba colFvNév.item(1), "Nem lehet konevertálni a" & névelõ(érték) & " " & érték & " értéket a" & névelõ(fMezõ.Type) & " " & fMezõ.Name & " " & fMezõ.Type & "típusába!", 2
                 MsgBox "Nem lehet konevertálni a" & névelõ(érték) & " " & érték & " értéket a" & névelõ(fMezõ.Type) & " " & fMezõ.Name & " " & fMezõ.Type & "típusába!"
         End Select
 End Select
+fvki
 End Function
 Function ListTdfFields(táblanév As Variant) As Variant
 '#################################################
@@ -333,6 +346,7 @@ End Function
 Sub Táblakészítõ(adatbázis As DAO.Database, ByVal forrástábla As String, ByVal céltábla As String)
 '(c) Oláh Zoltán 2022. Licencia: MIT
 ' A forrástáblában található mezõnevek-nek és típus-nak megfelelõ mezõkkel hoz létre egy céltábla nevû táblát
+fvbe ("Táblakészítõ")
 
     Dim db              As DAO.Database     'Ez lesz az adatbázisunk
     Dim sqlMezõk        As String           'A mezõnevek lekérdezéséhez
@@ -340,6 +354,14 @@ Sub Táblakészítõ(adatbázis As DAO.Database, ByVal forrástábla As String, ByVal c
     Dim rsSorSzám       As Integer
     Dim rsMezõk         As DAO.Recordset    'A mezõnevek táblája
     Dim strMezõNév     As String
+    
+    Dim strHiba As String
+    Dim strHibaelõzõ As String 'hibaüzenet
+    Dim n As Long 'hibák száma
+    Dim ismétlõdõHibák As Boolean
+    ismétlõdõHibák = False
+    
+    
     
 On Error GoTo Hiba
     'Alapértékek beállítása
@@ -369,7 +391,7 @@ On Error GoTo Hiba
     sqlTgy = "CREATE TABLE " & céltábla & "([az" & céltábla & "] COUNTER, CONSTRAINT [PrimaryKey] PRIMARY KEY ([az" & céltábla & "]) );"
     db.Execute (sqlTgy)
     sqlTgy = ""
-    For rsSorSzám = 0 To rsMezõk.recordCount - 1
+    For rsSorSzám = 0 To rsMezõk.RecordCount - 1
         sqlTgy = "ALTER TABLE [" & céltábla & "] ADD COLUMN [" & rsMezõk.Fields("Mezõnév") & "] "  'A mezõnév
         Select Case rsMezõk.Fields("Típus")               'utána jön típus
             Case 10
@@ -384,23 +406,41 @@ On Error GoTo Hiba
                 sqlTgy = sqlTgy & "CHAR; "                'ha semmi más nincs, legyen szöveg
         End Select
 
-'Debug.Print ".";
         strMezõNév = Clean_NPC(sqlTgy)
         If Len(strMezõNév) > 60 Then
             strMezõNév = Left(strMezõNév, 60) & rsSorSzám
         End If
         db.Execute (strMezõNév)
-'Debug.Print ".";
+
         rsMezõk.MoveNext
-'Debug.Print "."
-'Debug.Print rsSorSzám, Len(rsMezõk.Fields("Mezõnév")), strMezõNév;
+
+logba , rsSorSzám & ";" & Len(rsMezõk.Fields("Mezõnév")) & " " & strMezõNév, 4
     Next rsSorSzám
-'Debug.Print "!";
-MsgBox ("!")
+
+Ki:
+    If ismétlõdõHibák Then logba , n & " alkalommal ismétlõdött ez a hiba:" & strHiba, 0
+    fvki
 Exit Sub
 Hiba:
-    MsgBox (Err.Number & ": " & Err.Description & " - " & Err.Source)
-    Exit Sub
+    strHibaelõzõ = strHiba
+    strHiba = Err.Number & ": " & Err.Description & " - " & Err.Source
+    If strHibaelõzõ = strHiba Then
+        ismétlõdõHibák = True
+        n = n + 1
+        Resume Next
+    End If
+    If n > 0 Then
+        logba , strHiba, 0
+        Resume Next
+    End If
+    If MsgBox("A következõ hibába ütköztünk:" & vbNewLine & strHiba & vbNewLine & "Folytassuk?", vbYesNo, "Hiba: folytassuk?") = vbYes Then
+        logba , strHiba, 0
+        n = n + 1
+        Resume Next
+    Else
+        logba , strHiba, 0
+        GoTo Ki
+    End If
 End Sub
 Function mezõnév(ByRef adatbázis As DAO.Database, ByVal MezõListaTábla As String, ByVal oszlopcím As String) As String
     Dim sql As String
@@ -416,73 +456,87 @@ On Error GoTo ErrorHandler
     
     If rekordok.EOF Then
         MsgBox Title:="Az oszlopnév nincs " & névelõvel(MezõListaTábla) & " táblában", _
-               prompt:=névelõvel(oszlopcím, , , True) & "nem szerepel " & névelõvel(MezõListaTábla) & " táblában!"
+               Prompt:=névelõvel(oszlopcím, , , True) & "nem szerepel " & névelõvel(MezõListaTábla) & " táblában!"
     Else
         rekordok.MoveLast
-        szRek = rekordok.recordCount
+        szRek = rekordok.RecordCount
     End If
 
     Set rekordok = Nothing
 Exit Function
  
 ErrorHandler:
-   MsgBox "Error #: " & Err.Number & vbCrLf & vbCrLf & Err.Description
-    
+    logba colFvNév.item(1), "Error #: " & Err.Number & vbCrLf & vbCrLf & Err.Description, 0
+    MsgBox "Error #: " & Err.Number & vbCrLf & vbCrLf & Err.Description
+
 End Function
 
-Public Function tSzemélyekImport02(strFájl As String, Ûrlap As Form)
+Public Function tSzemélyekImport02(strFájl As String, Ûrlap As Form, Optional tábla As String = "tSzemélyek")
     'On Error GoTo ErrorHandler
-
+fvbe ("tSzemélyekImport02")
     Dim importSpecName As String
     Dim db As DAO.Database
+    Dim xlWB As Workbook
     Set db = CurrentDb
     Dim Üzenet As String
     Dim válasz As Boolean
-    Dim Hiba As Boolean
-    Hiba = False
+    Dim Huba As Boolean
+    Huba = False
     
-    importSpecName = "tSzemélyek_import"
+    importSpecName = tábla & "_import"
 
     If strFájl <> "" Then
 
                                                     sFoly Ûrlap, importSpecName & ":; importálás üres oszlopok törlése..."
-        UresOszlopokTorlese strFájl 'A megadott állományból töröljük az üres oszlopokat
+        If tábla = "tSzemélyek" Then 'Ha személytörzs,
+            UresOszlopokTorlese strFájl, tábla 'a megadott állományból töröljük az üres oszlopokat, de
+        Else 'ha nem,
+            UresOszlopokTorlese strFájl, tábla, False, False, "A2" 'akkor nem töröljük az üres oszlopkat, nem illesztünk be adószámot, és megadjuk a kezdõ cellát
+        End If
                                                     sFoly Ûrlap, importSpecName & ":; importálás üres oszlopok törlése kész!"
 
                                                     sFoly Ûrlap, importSpecName & ":; importálás indítása"
 '#           Kitöröljük a korábbi fájlhoz létrehozott kapcsolatot, ha van ilyen
+On Error Resume Next
         If Len(CurrentDb.TableDefs(importSpecName).Connect) > 0 Then
             DoCmd.DeleteObject acTable, importSpecName
+On Error GoTo 0
                                                     sFoly Ûrlap, importSpecName & ":; a korábbi kapcsolat törölve"
         End If
 '#          Majd létrehozunk ugyanezen a néven egy új kapcsolatot az új fájllal
-        DoCmd.TransferSpreadsheet acLink, 10, importSpecName, strFájl, True, "tSzemélyek" 'TODO : új paraméter az UresOszlopokTorlese-hez: területnév
+        DoCmd.TransferSpreadsheet acLink, 10, importSpecName, strFájl, True, tábla 'TODO : új paraméter az UresOszlopokTorlese-hez: területnév
         '#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
                                                     sFoly Ûrlap, importSpecName & ":; tábla csatolása kész"
-        db.Execute ("lkháttértár_tSzemélyek_törlõ") ' töröljük a már meglévõ adatokat
+        db.Execute ("lkháttértár_" & tábla & "_törlõ") ' töröljük a már meglévõ adatokat
                                                     sFoly Ûrlap, importSpecName & ":; korábbi adatok törlése kész"
                                                     sFoly Ûrlap, importSpecName & ":; adatok áttöltése háttértárba indul..."
-        db.Execute ("lkháttértár_tSzemélyek_áttöltés") 'Áttöltjük az adatokat a háttértárba
+        Dim qdf As QueryDef
+Debug.Print
+        db.Execute ("lkháttértár_" & tábla & "_áttöltés") 'Áttöltjük az adatokat a háttértárba
+
                                                     sFoly Ûrlap, importSpecName & ":; importálás véget ért"
                                                     sFoly Ûrlap, importSpecName & ":; " & DCount("*", "tSzemélyek") & " sor."
     End If
     tSzemélyekImport02 = True
     
 Kilépés:
+    fvki
     Exit Function
 
 ErrorHandler:
     ' Szabványos hibaüzenet elõállítása
     If Err.Number = 3709 Then
-        sFoly Ûrlap, importSpecName & ":;az importálás hibára futott, megpróbáljuk javítani..."
-        Hiba = True
+        logba colFvNév.item(1), importSpecName & ":;az importálás hibára futott, megpróbáljuk javítani..." & "Error: " & Err.Number & " - " & Err.Description
+        Huba = True
         Resume 0
     End If
-    MsgBox "Error: " & Err.Number & " - " & Err.Description, vbExclamation + vbOKOnly, "Error"
-    Debug.Print "Error: " & Err.Number & " - " & Err.Description
+    Hiba Err
+'    logba colFvNév.Item(1), "Error: " & Err.Number & " - " & Err.Description
+'    MsgBox "Error: " & Err.Number & " - " & Err.Description, vbExclamation + vbOKOnly, "Error"
     tSzemélyekImport02 = False
     Resume Kilépés
 End Function
+
 Function vMezõkTípusaImporthoz(eRng As excel.Range) As Variant
 '# Oláh Zoltán (c)2024 MIT
 '# A tartomány címsorát végignézzük, s egy tömbbe összegyûjtjük az alábbi adatokat:
@@ -544,4 +598,41 @@ Function vMezõkTípusaImporthoz(eRng As excel.Range) As Variant
     
     ' Return the array
     vMezõkTípusaImporthoz = arr
+End Function
+Function CreateTableKészítõ(táblanév As String, fromtáblanév As Variant, Optional adatbázis As String = "L:\Ugyintezok\Adatszolgáltatók\Adatbázisok\Háttértárak\Ellenõrzés_0.9.6_háttér_.mdb.accdb")
+    Dim kdb As DAO.Database
+    Dim tbl As TableDef
+    Dim fld As Field
+    Dim sql As String
+    If IsNull(fromtáblanév) Or fromtáblanév = vbNullString Then fromtáblanév = táblanév
+    sql = "CREATE TABLE [" & táblanév & "] (" & vbNullString
+    If adatbázis = "" Then
+        Set kdb = CurrentDb
+    Else
+        Set kdb = OpenDatabase(adatbázis)
+    End If
+    Set tbl = kdb.TableDefs(táblanév)
+    For Each fld In tbl.Fields
+        sql = sql & "[" & fld.Name & "] " & FieldTypeName(fld) & ", " & vbNewLine
+    Next fld
+    sql = Left(sql, Len(sql) - 4) & ");"
+CreateTableKészítõ = sql
+End Function
+Function InsertIntoSelectKészítõ(táblanév, fromtáblanév, Optional adatbázis As String = "L:\Ugyintezok\Adatszolgáltatók\Adatbázisok\Háttértárak\Ellenõrzés_0.9.6_háttér_.mdb.accdb")
+    Dim kdb, db As DAO.Database
+    Dim tbl, tb As TableDef
+    Dim fld, fl As Field
+    Dim sql As String
+    
+    sql = "INSERT INTO [" & táblanév & "] IN '" & adatbázis & "' " & vbNewLine
+    sql = sql & "SELECT "
+    Set kdb = OpenDatabase(adatbázis)
+    Set tbl = kdb.TableDefs(táblanév)
+    For Each fld In tbl.Fields
+        sql = sql & "[" & fromtáblanév & "].[" & fld.Name & "] as [" & fld.Name & "]," & vbNewLine
+    Next fld
+    sql = Left(sql, Len(sql) - 3) & vbNewLine
+    sql = sql & " FROM [" & fromtáblanév & "];"
+   
+InsertIntoSelectKészítõ = sql
 End Function

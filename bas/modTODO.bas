@@ -13,11 +13,36 @@ Option Explicit
 
 
 Sub prooba()
-    Dim a() As Variant
-    a = XMLoszlopok("tSzemélyek")
+    Dim a As Variant
+    Dim i As Long
+    a = XMLoszlopok(CurrentProject.ImportExportSpecifications.item(2).XML)
     Debug.Print "1:", LBound(a, 1), UBound(a, 1)
-    
+    For i = LBound(a, 1) + 1 To UBound(a, 1)
+        Debug.Print a(i, 2) & " " & a(i, 5) & " " & a(i, 6)
+    Next i
 End Sub
+Function XMLoszlopok(strXML As String) As Variant()
+    Dim tömb() As Variant
+    Dim oszlSzám, mezõszám, i, j As Long
+    Dim sor, mezõ As String
+    
+    oszlSzám = StrCount(strXML, "<Column Name=")
+    sor = ffsplit(strXML, "<Column Name", 2)
+    mezõszám = StrCount(sor, " ")
+    sor = ""
+    ReDim tömb(1 To oszlSzám, 1 To mezõszám)
+    
+    For i = 1 To oszlSzám
+        sor = ffsplit(strXML, "<Column Name", i) 'Eredmény: ="Col1" FieldName="Adójel" Indexed="YESDUPLICATES" SkipColumn="false" DataType="Double" />
+        For j = 1 To mezõszám
+            mezõ = ffsplit(sor, " ", j) 'Eredmény: FieldName="Adójel" vagy FieldName="Születési
+            tömb(i, j) = TrimX(ffsplit(mezõ, "=", 2), """") 'Eredmény: "Adójel" majd Adójel
+        Next j
+    Next i
+    
+    XMLoszlopok = tömb
+    Debug.Print tömbDim(tömb)
+End Function
 Sub ParseAndLoadXMLToTable(strXMLneve As String)
     Dim xmlDoc As Object
     Dim i, j As Integer
@@ -294,7 +319,7 @@ Sub LekérdezésÍró()
         kSQL = ""
         Do Until rs2.EOF
             If kSQL <> "" Then kSQL = kSQL & ", " & Chr(10)
-            újnév = RIC(Clean_NPC(rs2!Eredeti.Value))
+            újnév = RIC(Clean_NPC(rs2!eredeti.Value))
             If Len(újnév) > 64 Then
                 újnév = Left(újnév, 60)
             End If

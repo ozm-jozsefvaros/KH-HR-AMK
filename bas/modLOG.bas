@@ -111,8 +111,8 @@ End Sub
 Function Foly(Ûrlap As Form, Üzenet As String, Optional idõtis As Boolean = True, Optional loglevel As Integer = 1) As Boolean
 '#MIT Oláh Zoltán (2023)
 Dim x
-Dim most As Date
-most = Now()
+Dim Most As Date
+Most = Now()
 'Elõször a logtáblába írjuk ki
  logba ffsplit(Üzenet, ";", 1), ffsplit(Üzenet, ";", 2), loglevel
 If loglevel = 1 Then
@@ -122,7 +122,7 @@ If loglevel = 1 Then
             Üzenet = Üzenet & "; Idõpont"
         Else
             If StrCount(Üzenet, ";") = 1 Then
-                Üzenet = Üzenet & "; " & most
+                Üzenet = Üzenet & "; " & Most
             End If
         End If
     End If

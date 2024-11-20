@@ -5,10 +5,14 @@ Private Sub FejezetekGomb_Click()
 End Sub
 
 Private Sub Keresés_Change()
+    Me.TimerInterval = 500
+End Sub
+
+Private Sub Form_Timer()
+    Me.TimerInterval = 0
     Me.Requery
     Me.Keresés.SetFocus
     Me.Keresés.SelStart = Len(Me.Keresés.Text)
-
 End Sub
 
 Private Sub OldalakGomb_Click()

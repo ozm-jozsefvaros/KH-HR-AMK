@@ -74,25 +74,3 @@ Hiba:
     End If
     Resume Next
 End Function
-Function XMLoszlopok(strXML As String) As Variant()
-    Dim tömb() As Variant
-    Dim oszlSzám, mezõszám, i, j As Long
-    Dim sor, mezõ As String
-    
-    oszlSzám = StrCount(strXML, "<Column Name=")
-    sor = ffsplit(strXML, "<Column Name", 2)
-    mezõszám = StrCount(sor, " ")
-    sor = ""
-    ReDim tömb(oszlSzám, mezõszám)
-    
-    For i = 2 To 5 'oszlSzám
-        sor = ffsplit(strXML, "<Column Name", i) 'Eredmény: ="Col1" FieldName="Adójel" Indexed="YESDUPLICATES" SkipColumn="false" DataType="Double" />
-        For j = 1 To 5 'mezõszám
-            mezõ = ffsplit(sor, " ", j) 'Eredmény: FieldName="Adójel" vagy FieldName="Születési
-            tömb(i, j) = TrimX(ffsplit(mezõ, "=", 2), """") 'Eredmény: "Adójel" majd Adójel
-        Next j
-    Next i
-    
-    XMLoszlopok = tömb
-    Debug.Print tömbDim(tömb)
-End Function

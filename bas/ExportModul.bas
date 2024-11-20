@@ -20,7 +20,7 @@ fvbe ("ExportQueriesAndProceduresToFiles")
 '   On Error GoTo ErrorHandler
     
     ' Set the export path where the files will be saved
-    strExportPath = "C:\Users\olahzolt\Desktop\Fájlok\Ellenõrzés\" ' Change this to your desired export path
+    strExportPath = "L:\Ugyintezok\Adatszolgáltatók\Adatbázisok\Fájlok\" ' Change this to your desired export path
     
     Set db = CurrentDb
     Set fso = CreateObject("Scripting.FileSystemObject")
@@ -28,17 +28,11 @@ fvbe ("ExportQueriesAndProceduresToFiles")
     strExportPath = strExportPath & strDbNev & Year(Date) & Right(Replace("0" & Month(Date), "00", "0"), 2) & Right(Replace("0" & Day(Date), "00", "0"), 2) & "\"
     
     konyvtarzo strExportPath
-    
-    'Táblaszerkezet export
-    mappa = "SQL\"
-    strFileName = strExportPath & mappa & strDbNev & "_" & "táblák.sql" 'dif
-    konyvtarzo strExportPath & mappa 'dif
-    GenerateSQLBackup strFileName, db
-    
-    ' Loop through all queries
+
+' Loop through all queries
     mappa = "lk\"
     
-    strFileName = strExportPath & mappa & strDbNev & "_" & "lekerdezesek.sql" 'dif
+    strFileName = strExportPath & mappa & RIC(strDbNev) & "_" & "lekerdezesek.sql" 'dif
     konyvtarzo strExportPath & mappa 'dif
     Set ts = fso.CreateTextFile(strFileName, True) 'dif
     For Each qdf In db.QueryDefs
@@ -55,14 +49,14 @@ fvbe ("ExportQueriesAndProceduresToFiles")
     ts.Close 'dif
     Set ts = Nothing 'dif
     
-    ' Loop through all modules (using Application.Modules collection)
+' Loop through all modules (using Application.Modules collection)
     mappa = "bas\"
 
     For i = 0 To Application.Modules.count - 1 ' mdl In Application.Modules
         Set mdl = Application.Modules(i)
         If Not mdl.Name Like "msys*" Then ' Exclude system modules
             konyvtarzo strExportPath & mappa
-            strFileName = strExportPath & mappa & mdl.Name & ".bas"
+            strFileName = strExportPath & mappa & RIC(mdl.Name) & ".bas"
             Set ts = fso.CreateTextFile(strFileName, True)
             ts.Write mdl.Lines(1, mdl.CountOfLines)
             ts.Close
@@ -70,48 +64,57 @@ fvbe ("ExportQueriesAndProceduresToFiles")
         End If
     Next i
     
-    'Mentett ExportImport-ok kiíratása
+'Mentett ExportImport-ok kiíratása
     mappa = "XML\"
     For i = 0 To CurrentProject.ImportExportSpecifications.count - 1
         Set mentett = CurrentProject.ImportExportSpecifications.item(i)
         With mentett
             konyvtarzo strExportPath & mappa
-            strFileName = strExportPath & mappa & .Name & ".XML"
+            strFileName = strExportPath & mappa & RIC(.Name) & ".XML"
             Set ts = fso.CreateTextFile(strFileName, True)
             ts.Write .XML
             ts.Close
             Set ts = Nothing
         End With
     Next i
-    Set fso = Nothing
-    Set db = Nothing
+
     
-    If MsgBox("A lekérdezések, modulok és XML-ek ebbe a mappába kerültek:" & vbNewLine & _
-            strExportPath & vbNewLine & _
-            "Megynissam a könyvtárat?", vbYesNo) _
-        Then
-        CreateObject("Wscript.Shell").Run (strExportPath)
-    End If
+'    If MsgBox("A lekérdezések, modulok és XML-ek ebbe a mappába kerültek:" & vbNewLine & _
+'            strExportPath & vbNewLine & _
+'            "Megnyissam a könyvtárat?", vbYesNo) _
+'        Then
+'        CreateObject("Wscript.Shell").Run (strExportPath)
+'    End If
     
         Set projekt = Application.CurrentProject
         mappa = "Forms\"
-        For Each accObj In projekt.AllForms
-            objektumnév = accObj.Name
-            strFileName = strExportPath & mappa & accObj.Name & ".txt"
-            konyvtarzo strExportPath & mappa
-            Application.SaveAsText acForm, objektumnév, strFileName
-                                    logba , "Ûrlap neve:" & accObj.Name, 3
-        Next accObj
-
-        mappa = "Tables\"
-        For Each accObj In projekt.AllForms
-            objektumnév = accObj.Name
-            strFileName = strExportPath & mappa & accObj.Name & ".txt"
-            konyvtarzo strExportPath & mappa
-            Application.SaveAsText acTable, objektumnév, strFileName
-                                    logba , "Ûrlap neve:" & accObj.Name, 3
-        Next accObj
-    Exit Sub
+logba , "Forms kezdõdik", 1
+'        For Each accObj In projekt.AllForms
+'            objektumnév = accObj.Name
+'            strFileName = strExportPath & mappa & RIC(accObj.Name) & ".txt"
+'            konyvtarzo strExportPath & mappa
+'            Application.SaveAsText acForm, objektumnév, strFileName
+'                                    logba , "Ûrlap neve:" & accObj.Name, 3
+'        Next accObj
+logba , "Tables kezdõdik", 1
+'        mappa = "Tables\"
+'        For Each accObj In projekt.AllForms
+'            objektumnév = accObj.Name
+'            strFileName = strExportPath & mappa & RIC(accObj.Name) & ".txt"
+'            konyvtarzo strExportPath & mappa
+'            Application.SaveAsText acTable, objektumnév, strFileName
+'                                    logba , "Ûrlap neve:" & accObj.Name, 3
+'        Next accObj
+'Táblaszerkezet export
+logba , "Táblaszerkezet-> SQL kezdõdik"
+    mappa = "SQL\"
+    strFileName = strExportPath & mappa & RIC(strDbNev) & "_" & "táblák.sql" 'dif
+    konyvtarzo strExportPath & mappa 'dif
+    GenerateSQLBackup strFileName, db
+    
+    Set fso = Nothing
+    Set db = Nothing
+Exit Sub
     
     
 ErrorHandler:
@@ -316,6 +319,7 @@ fvbe ("GenerateSQLBackup")
     SzakaszSzám = 8 '12,5%-konként jelezzük ki az értéket
                                                                                                 logba , ehj.oszlopszam & " db. tábla beolvasása", 1
     ' Loop through all tables
+    száml = 0
     For Each tbl In db.TableDefs
         On Error GoTo Hiba
         logba , tbl.Indexes.count, 3
@@ -324,7 +328,7 @@ fvbe ("GenerateSQLBackup")
             folyt = False
         Else
             ' Skip system and temporary tables
-                                                                                                logba , tbl.Name, 3
+                                                                                                logba , tbl.Name & " nevû tábla feldolgozása megkezdve...", 1
             If Left(tbl.Name, 4) <> "MSys" And Left(tbl.Name, 1) <> "~" Then
                 ' Create table SQL
                 strSQL = "CREATE TABLE [" & tbl.Name & "] (" & vbCrLf
@@ -336,7 +340,7 @@ fvbe ("GenerateSQLBackup")
                              IIf(fld.Required, "NOT NULL", "NULL") & "," & vbCrLf
                                                                                                 logba , strSQL, 4
                 Next fld
-                logba , "Fields:" & tbl.Fields.count, 3
+                                                                                                logba , "Fields:" & tbl.Fields.count, 3
                 ' Remove the last comma and add closing parenthesis
                 strSQL = Left(strSQL, Len(strSQL) - 3) & vbCrLf & ");" & vbCrLf
                 
@@ -358,6 +362,7 @@ fvbe ("GenerateSQLBackup")
                 Next idx
                                                                                                 logba , tbl.Indexes.count, 3
                 ' Add primary key constraint
+                száml = 0
                 For Each idx In tbl.Indexes
                     If idx.Primary Then
                         strSQL = "ALTER TABLE [" & tbl.Name & "] ADD CONSTRAINT [PK_" & tbl.Name & "] PRIMARY KEY ("
@@ -366,22 +371,26 @@ fvbe ("GenerateSQLBackup")
                         Next fld
                         strSQL = Left(strSQL, Len(strSQL) - 1) & ");" & vbCrLf
                         Print #outputFile, strSQL
-                        Debug.Print "primary"
+                        ÷ száml
+                        logba , tbl.Name & " táblának a megszorító feltételei kiírva", 3
                     End If
                 Next idx
+                                                                                                logba , tbl.Name & " nevû tábla szerkezete kiírva. Indexek száma:" & tbl.Indexes.count & "; megszorító feltételek száma:" & száml
             End If
         End If
     ehj.Novel
         If Int(ehj.Value / ehj.oszlopszam * SzakaszSzám) > elõzõszakasz Then
-            logba , accTábla & ":;" & Int(ehj.Value / ehj.oszlopszam * 100) & "% elkészült...", 1
+                                                                                                logba , accTábla & ":;" & Int(ehj.Value / ehj.oszlopszam * 100) & "% elkészült...", 1
             elõzõszakasz = Int(ehj.Value / ehj.oszlopszam * SzakaszSzám)
+            DoEvents
         End If
     Next tbl
-    Debug.Print "Relations:",
+    'Debug.Print "Relations:",
     ' Add relationships (foreign keys)
     ehj.Ini
     ehj.oszlopszam = db.Relations.count
-                                                                                                logba , "Kapcsolatok száma:" & ehj.oszlopszam, 3
+    száml = 0
+                                                                                                logba , "Kapcsolatok száma:" & ehj.oszlopszam, 1
     For Each rel In db.Relations
         If rel.Attributes = 0 Then ' Ignore internal relationships
             strSQL = "ALTER TABLE [" & rel.Table & "] ADD CONSTRAINT [" & rel.Name & "] FOREIGN KEY ("
@@ -394,10 +403,17 @@ fvbe ("GenerateSQLBackup")
             Next fld
             strSQL = Left(strSQL, Len(strSQL) - 1) & ");" & vbCrLf
             Print #outputFile, strSQL
-            logba , strSQL, 4
+                                                                                                logba , strSQL, 4
         End If
         ÷ száml
         ehj.Novel
+    
+                                                                                                logba , "A kiírt relációk száma:" & száml
+        If Int(ehj.Value / ehj.oszlopszam * SzakaszSzám) > elõzõszakasz Then
+            logba , accTábla & ":;" & Int(ehj.Value / ehj.oszlopszam * 100) & "% elkészült...", 1
+            elõzõszakasz = Int(ehj.Value / ehj.oszlopszam * SzakaszSzám)
+            DoEvents
+        End If
     Next rel
     ¤ ehj.Value
     ' Close the file

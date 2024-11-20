@@ -121,19 +121,32 @@ Dim per As String
     ÚtvonalKészítõ = Útvonal & per & fájlnév
 End Function
 
-
-
 Function párkeresõ(ByRef tömb As Variant, keresett As Variant, Optional hanyadik As Integer = 2) As Variant
-
+'******************************************************************
+'
+' Ez a függvény megkeresi a megadott értéket (keresett) egy kétdimenziós tömb elsõ oszlopában, és visszaadja
+' a keresett elemhez tartozó párját a tömb egy másik oszlopából (a hanyadik paraméter szerint).
+'
+' Paraméterek:
+' - tömb (ByRef Variant): A kétdimenziós tömb, amelyben a keresést végezzük. Az elsõ oszlopban keresi a keresett értéket.
+' - keresett (Variant): Az az érték, amelyet a tömb elsõ oszlopában keresünk.
+' - hanyadik (Optional Integer): Az oszlop száma, amelybõl a keresett értékhez tartozó párt visszaadjuk. Alapértelmezett értéke 2.
+'
+' Mûködés:
+' - A függvény végigmegy a tömb elsõ oszlopán, és ha megtalálja a keresett értéket, visszaadja annak párját a megadott oszlopból.
+' - Ha nem találja a keresett értéket, akkor 0-t ad vissza.
+'
+' Visszatérési érték:
+' - Variant: A keresett értékhez tartozó elem a megadott oszlopból, vagy 0, ha a keresett érték nem található.
+'
+'******************************************************************
     For i = 1 To UBound(tömb, 1)
         If tömb(i, 1) = keresett Then
-            
             párkeresõ = tömb(i, hanyadik)
             Exit Function ' Kilép, ha találtunk
-            
         End If
     Next i
-    'Ha nem találtunk üresen tér vissza
+    'Ha nem találtunk, üresen tér vissza
     párkeresõ = 0
 End Function
 

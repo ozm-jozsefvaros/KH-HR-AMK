@@ -377,7 +377,7 @@ Function Kerület(Irsz As Variant) As Integer
         Kerület = 0
     End If
 End Function
-Public Function dtÁtal(strDátum As Variant, Optional sorrend As String = "éhn") As Date
+Public Function dtÁtal(strDátum As Variant, Optional Sorrend As String = "éhn") As Date
 ' (c) Oláh Zoltán 2024 MIT
 ' A megadott szöveget (strDátum) átalakítja dátummá.
 ' Érvényes elválasztók: . vagy - vagy /
@@ -389,8 +389,8 @@ Public Function dtÁtal(strDátum As Variant, Optional sorrend As String = "éhn") 
     Dim dtVál, dtVálasztók, strDate As String
     Dim év, hó, nap As String
     Dim i, j, darab, ihó, inap, iév As Integer
-    sorrend = Left(sorrend, 3)
-    If (StrCount(sorrend, "é") <> 1) Or (StrCount(sorrend, "h") <> 1) Or (StrCount(sorrend, "n") <> 1) Then
+    Sorrend = Left(Sorrend, 3)
+    If (StrCount(Sorrend, "é") <> 1) Or (StrCount(Sorrend, "h") <> 1) Or (StrCount(Sorrend, "n") <> 1) Then
         dtÁtal = 0
         Exit Function
     End If
@@ -414,20 +414,20 @@ Public Function dtÁtal(strDátum As Variant, Optional sorrend As String = "éhn") 
         Next i
         If darab >= j Then Exit For
     Next j
-    If InStr(1, sorrend, "é") > darab + 1 Then
+    If InStr(1, Sorrend, "é") > darab + 1 Then
         év = "" & Year(Now())
     Else
-         év = Left(ffsplit(strDátum, dtVál, InStr(1, sorrend, "é")), 4) 'TODO Mi van ha több, mint 4 jegyû az év?
+         év = Left(ffsplit(strDátum, dtVál, InStr(1, Sorrend, "é")), 4) 'TODO Mi van ha több, mint 4 jegyû az év?
     End If
-    If InStr(1, sorrend, "h") > darab + 1 Then
+    If InStr(1, Sorrend, "h") > darab + 1 Then
         hó = "01"
     Else
-         hó = Left(ffsplit(strDátum, dtVál, InStr(1, sorrend, "h")), 4)
+         hó = Left(ffsplit(strDátum, dtVál, InStr(1, Sorrend, "h")), 4)
     End If
-    If InStr(1, sorrend, "n") > darab + 1 Then
+    If InStr(1, Sorrend, "n") > darab + 1 Then
         nap = "01"
     Else
-         nap = Left(ffsplit(strDátum, dtVál, InStr(1, sorrend, "n")), 4)
+         nap = Left(ffsplit(strDátum, dtVál, InStr(1, Sorrend, "n")), 4)
     End If
    
 
@@ -457,21 +457,63 @@ Public Function dtÁtal(strDátum As Variant, Optional sorrend As String = "éhn") 
 End Function
 Function CsakSzám(szöveg As Variant) As Long
 If IsNull(szöveg) Or szöveg = "" Then: CsakSzám = 0: Exit Function
-
+'Todo: negatív számok kezelése
 On Error GoTo Hiba
     Dim jel As String
+    Dim jel2 As String
     Dim p As Integer
+    Dim hossz As Integer
+    Dim maxhossz As Long
     
-    For p = 1 To Len(szöveg)
-        jel = jel & CInt(Mid(szöveg, p, 1))
+    hossz = Len(szöveg)
+    maxhossz = 10
+    For p = 1 To hossz
+        jel2 = ""
+        jel2 = CInt(Mid(szöveg, p, 1))
+        If Len(jel2) > 0 Then
+            jel = jel & jel2
+            ¡ maxhossz '
+            If maxhossz <= 0 Then
+                Exit For
+            End If
+        End If
     Next p
+    If maxhossz <= 0 And jel > "2147483647" Then
+        jel = 0
+    End If
     CsakSzám = CLng(jel)
 Exit Function
 Hiba:
     If Err.Number = 13 Then
         Resume Next
     End If
-    MsgBox Err.Number & ", " & Err.Description, , "Hiba"
+    MsgBox Hiba(Err)
+End Function
+Function CsakSzámJegy(szöveg As Variant) As String
+If IsNull(szöveg) Or szöveg = "" Then: CsakSzámJegy = 0: Exit Function
+'Todo: negatív számok kezelése
+On Error GoTo Hiba
+    Dim jel As String
+
+    Dim p As Integer
+    Dim hossz As Integer
+    Dim maxhossz As Long
+    
+    hossz = Len(szöveg)
+    maxhossz = 10
+    For p = 1 To hossz
+
+        jel = jel & CInt(Mid(szöveg, p, 1))
+
+    Next p
+    
+    CsakSzámJegy = jel
+Exit Function
+Hiba:
+    If Err.Number = 13 Then
+        Resume Next
+    End If
+    MsgBox Hiba(Err)
 End Function
 Function szétbontó(mezõ As Variant, lekérdezés As Variant) As Variant
     If IsNull(mezõ) Then Exit Function
@@ -495,4 +537,166 @@ Function szétbontó(mezõ As Variant, lekérdezés As Variant) As Variant
         Next n
     End With
     szétbontó = Kimenet
+End Function
+Function CalcStrNumber(strInput As String) As Long
+    Dim i As Integer
+    Dim total As Long
+    total = 0
+    
+    ' Loop through each character in the string
+    For i = 1 To Len(strInput)
+        ' Add ASCII value of each character to total
+        total = total + Asc(Mid(strInput, i, 1))
+    Next i
+    
+    CalcStrNumber = total
+End Function
+Function telefonszámjavító(telefonszám As Variant) As String
+Dim poz As Integer
+Dim eredeti As String
+    If IsNull(telefonszám) Or telefonszám = vbNullString Then
+        telefonszámjavító = vbNullString
+        Exit Function
+    End If
+    eredeti = telefonszám
+    '(1)1234-543 / 12345
+    '06-1-896-2474
+    '+3618962378
+    '06-20/123-4567
+    'Nem nyomtatható karakterek eltávolítása:
+    If InStr(telefonszám, Chr(9)) > 0 Then telefonszám = Replace(telefonszám, Chr(9), vbNullString)
+    If InStr(telefonszám, Chr(10)) > 0 Then telefonszám = Replace(telefonszám, Chr(10), vbNullString)
+    If InStr(telefonszám, Chr(13)) > 0 Then telefonszám = Replace(telefonszám, Chr(13), vbNullString)
+    If InStr(telefonszám, Chr(16)) > 0 Then telefonszám = Replace(telefonszám, Chr(16), vbNullString)
+    'Ha a / az elõhívószámot határolja:
+    poz = InStr(1, telefonszám, "/")
+    If poz > 0 And poz <= 6 Then
+        telefonszám = Left(telefonszám, poz - 1) & Replace(telefonszám, "/", "", poz - 1, 1)
+    End If
+    'Levágjuk a melléket
+    telefonszám = ffsplit(telefonszám, "/", 1)
+    'Elõtisztítás
+    telefonszám = Replace(Replace(telefonszám, "(", ""), ")", "")
+    'Ha +szal kezdõdik
+    Select Case Left(telefonszám, 1)
+        Case "+"
+            Select Case Left(telefonszám, 3)
+                Case "+36"
+                    telefonszám = Right(telefonszám, Len(telefonszám) - 3)
+                Case Else 'külföldi szám
+                    telefonszámjavító = telefonszám
+                    Exit Function
+            End Select
+        Case "0"
+            Select Case Left(telefonszám, 2)
+                Case "06" 'Elõhívó
+                    telefonszám = Right(telefonszám, Len(telefonszám) - 2)
+                Case "00" 'külföldi szám
+                    telefonszámjavító = telefonszám
+                    Exit Function
+            End Select
+    End Select
+    
+    
+    'Átalakítjuk csak számokra
+    telefonszám = CsakSzámJegy(telefonszám)
+    'Ha túl rövid, akkor üres stringet adunk vissza és kilépünk
+    If Len(telefonszám) < 7 Then
+        telefonszámjavító = "Hibás szám:" & eredeti
+        Exit Function
+    End If
+    'Ha hétjegyû, akkor budapesti
+    If Len(telefonszám) = 7 Then
+        telefonszám = "1" & telefonszám
+    End If
+    
+    'Ha az elsõ számjegy 6, de a telefonszám több, mint 7 jegyû
+    If Len(telefonszám) > 7 Then
+        Select Case Left(telefonszám, 2)
+            Case "61" To "69"
+                telefonszám = "+3" & telefonszám
+            Case "06"
+                telefonszám = "+36" & Right(telefonszám, Len(telefonszám) - 2)
+            Case Else
+                telefonszám = "+36" & telefonszám
+        End Select
+    Else
+        
+    End If
+    'Formázzuk
+    Select Case Left(telefonszám, 4)
+        Case "+361" 'Ez budapesti vezetékes telefonszám
+            telefonszám = "(" & Left(telefonszám, 4) & ") " & Mid(telefonszám, 5, 3) & "-" & Mid(telefonszám, 8, 4)
+        Case Else 'Mobil vagy nem budapesti vezetékes
+            Select Case Left(telefonszám, 5)
+                Case "+3620", "+3621", "+3630", "+3631", "+3640", "+3650", "+3651", "+3655", "+3660", "+3670", "+3680", "+3690", "+3691" 'Mobil
+                    telefonszám = "(" & Left(telefonszám, 5) & ") " & Mid(telefonszám, 6, 3) & "-" & Mid(telefonszám, 9, 4)
+                Case Else 'Vidéki vezetékes
+                        telefonszám = "(" & Left(telefonszám, 5) & ") " & Mid(telefonszám, 6, 3) & "-" & Mid(telefonszám, 9, 3)
+            End Select
+    End Select
+    'TODO:Kell ez egyáltalán?
+    telefonszámjavító = telefonszám
+End Function
+Function teljavító(telszám As Variant) As String
+'Mintaalapú feldolgozás
+Dim i As Integer
+Dim poz As Integer
+Dim eredeti As String
+Dim telefonszám As String
+    If IsNull(telszám) Then
+        teljavító = vbNullString
+        Exit Function
+    End If
+    If IsArray(telszám) Then
+        teljavító = vbnullsrting
+        Exit Function
+    End If
+    If telszám = vbNullString Then
+        teljavító = vbNullString
+        Exit Function
+    End If
+    eredeti = CStr(telefonszám)
+    On Error GoTo Hiba:
+    telefonszám = CStr(telszám)
+    telefonszám = Replace(telefonszám, "/", "$")
+    telefonszám = Replace(telefonszám, " ", "$")
+    telefonszám = Replace(telefonszám, "-", "$")
+    telefonszám = Replace(telefonszám, "(", "$")
+    telefonszám = Replace(telefonszám, ")", "$")
+    telefonszám = Replace(telefonszám, "+", "$")
+    telefonszám = Duplátlanító(telefonszám)
+    teljavító = telefonszám
+    
+Exit Function
+Hiba:
+    If Err.Number = 1033 Then
+        Resume Next
+    Else
+        MsgBox Hiba(Err)
+    End If
+End Function
+Function Duplátlanító(szöveg As String, Optional mit As String = "$") As String
+    Do While StrCount(szöveg, mit & mit) > 0
+        szöveg = Replace(szöveg, mit & mit, mit)
+    Loop
+    Duplátlanító = szöveg
+End Function
+Function feltöltõ(telefonszám As String) As String
+Dim i As Integer
+Dim kar As String
+Dim Kimenet As String
+telefonszám = teljavító(telefonszám)
+    For i = 1 To Len(telefonszám)
+        kar = Mid(telefonszám, i, 1)
+        If kar <> "$" Then
+            If kar = CStr(CsakSzám(kar)) Then
+                kar = "1"
+            Else
+                kar = vbNullString
+            End If
+        End If
+        Kimenet = Kimenet & kar
+    Next i
+    feltöltõ = Kimenet
 End Function

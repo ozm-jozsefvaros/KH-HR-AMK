@@ -178,6 +178,7 @@ Function LekSQL(leknév As String) As String
     
     Set dbLekSTR = CurrentDb
     LekSQL = dbLekSTR.QueryDefs(leknév).sql
+    Set dbLekSTR = Nothing
     
 End Function
 Function SQLSzépítõ(sql As String) As String
@@ -351,7 +352,7 @@ Dim a As Date
     ¤ "---"
 End Sub
 
-Sub lekérdezésekbenCserélõ(keresendõSzöveg As String, Optional ByVal csereSzöveg As String = "")
+Sub lekérdezésekbenCserélõ(keresendõSzöveg As String, Optional ByVal csereSzöveg As String = "-")
 Dim a As String
 Dim i As Integer, _
     j As Integer
@@ -360,12 +361,12 @@ Dim i As Integer, _
         a = CurrentDb.QueryDefs(i).sql
         If InStr(1, a, keresendõSzöveg) > 0 Then
             ÷ j
-            If csereSzöveg <> "" Then
-                CurrentDb.QueryDefs(i).sql = Replace(a, keresendõSzöveg, csereSzöveg)
+            If csereSzöveg <> "-" Then
+                'CurrentDb.QueryDefs(i).sql = Replace(a, keresendõSzöveg, csereSzöveg)
             End If
-            Debug.Print j, CurrentDb.QueryDefs(i).Name & vbNewLine
+            Debug.Print j & ";" & CurrentDb.QueryDefs(i).Name '& vbNewLine
         Else
-            Debug.Print ".";
+            'Debug.Print ".";
         End If
     Next
 End Sub

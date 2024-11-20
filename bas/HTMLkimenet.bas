@@ -3,6 +3,9 @@ Global állj As Boolean
 Public hibatábla As Recordset
 Public jelenDb As DAO.Database
 Public teszt As Boolean ' False 'Ha ez True, akkor teszt üzemmódban fut (nem futtatja a lekérdezéseket)
+Const cMezõTípusa As Byte = 2
+Const cGrafikonra As Byte = 3
+Const cHashbe As Byte = 4
 Sub OldalPanel(ByRef hf As Object, ByRef lkEll As DAO.Recordset, ByVal Fõcím As String, ByVal oldalcím As String)
 fvbe ("OldalPanel")
     With hf
@@ -80,7 +83,11 @@ fvbe ("fejléc")
         .writeline "<script src=""https://kvotariport.kh.gov.hu/static/quotarep/js/chart.bundle.min.js""></script>"
         .writeline "</head>"
         .writeline "<body style='" & háttérkép & "'>"
-        .writeline "<div id=""fejlec"">   <a href=""file:///L:/Ugyintezok/Adatszolg%C3%A1ltat%C3%B3k/HRELL/Ind%C3%ADt%C3%B3pult.html"" ><button id=""inditopultButton"">Indítópult</button> </a></div>"
+        .writeline "<div id=""fejlec"">   <a href=""file:///L:/Ugyintezok/Adatszolg%C3%A1ltat%C3%B3k/HRELL/Ind%C3%ADt%C3%B3pult.html"" ><button id=""inditopultButton"">Indítópult</button> </a>" & _
+                    "   <div id=""browser-warning"">Ennek az oldalnak a használatához a Firefox böngészõt ajánljuk!</br>Más böngészõk a visszajelzéseket nem, vagy csak hiányosan küldik el." & _
+                    "       <button class=""close-btn"" onclick=""closeWarning()"">×</button>" & _
+                    "   </div>" & _
+                    "</div>"
         .writeline "<div class=""fokeret"">" 'fõkeret
         .writeline "<div id=""gordulooldalpanel"">"
     End With
@@ -134,14 +141,16 @@ Sub subHTMLKimenet(oÛrl As Object, oldal As Integer)
         háttérszín As String, _
         oldalcím As String, _
         fejezetCím As String, _
-        elõzõFejezetCím As String, _
         fejezetmegj As String, _
         Táblacím As String, _
         megj As String, _
-        CheckBox As String
+        CheckBox As String, _
+        formázott As String
+    Dim elõzõFejezetCím As String
     Dim strÜresTábla As String 'ClassName az üres táblák esetén
     Dim FejezetVált As Boolean
     Dim TáblaSzám As Integer '->> "<table id=""table" & TáblaSzám...
+    Dim Most As Date 'tRégiHibák táblába kerülõ idõpont
     
     'Számláláshoz - folyamatjelzõ
     Dim sor, oszlop     As Integer
@@ -161,13 +170,13 @@ Sub subHTMLKimenet(oÛrl As Object, oldal As Integer)
     Dim blKellVisszajelzes As Boolean
     
     Dim gráftípus As Variant, _
-        mezTip As Variant
-    Dim válasz As Integer
+        meztip As Variant
+    'Dim válasz As Integer
     Dim vaneGraf As String, _
         strHash As String, _
-        strDropdown As String, _
-        grIkon As String
-    grIkon = "&#x1F4CA;" ' A grafikont jelzõ ikon
+        strDropdown As String ', _
+'        grIkon As String
+'    grIkon = "&#x1F4CA;" ' A grafikont jelzõ ikon áthelyezve: OldalPanel()
     
     
     Dim maxsor As Integer 'Ha a tábla ennél több sorból áll, akkor a táblát egyáltalán nem írjuk ki.
@@ -181,14 +190,7 @@ Sub subHTMLKimenet(oÛrl As Object, oldal As Integer)
 
     oldalcím = oldalcím & " (" & oÛrl.HaviHatálya & ")" 'Date & ")" 'Az oldalcím a dátummal együtt az igazi, ami pedig a havi jelentés hatálya
 
-    '### Ha nincs Kimenet megadva, akkor kilépünk, de elõtte üzenünk
-'    If IsNull(AlapadatLek("HTML", "kimenet")) Then
-'        MsgBox Prompt:="Nincs kimeneti mappa megadva, az Alapadatok ablakban meg kell adni, utána újraindítani a lekérdezéseket"
-'        logba , "Nincs kimeneti mappa megadva, megállunk!"
-'        sFoly oÛrl, "Nincs kimeneti mappa, ezért megállunk!!!!"
-'        Exit Sub
-'
-'    End If
+
     If teszt Then
         mappa = ÚtvonalKészítõ(AlapadatLek("HTML", "próbaútvonal"), "")
     Else
@@ -226,6 +228,7 @@ Sub subHTMLKimenet(oÛrl As Object, oldal As Integer)
     '### A html fájl megnyitása --------------------------------------------
     '#######################################################################
     Set hf = FájlMegnyitása(hfNév)
+    Most = Now
     
     '### A html fejrész megírása -------------------------------------------
     fejléc hf, oldalcím, háttérkép
@@ -250,9 +253,9 @@ ehj.Ini 100
 ehj.oszlopszam = lkEll.RecordCount
 
 TáblaSzám = 0
-'If teszt Then GoTo tesztpont
+
 fejezetCím = ""
-elõzõFejezetCím = ""
+'elõzõFejezetCím = ""
 hf.writeline "<form id=""urlap"" >"
 hf.writeline "<button class=""elkuldgomb"" type=""submit"">Visszajelzés...</button>"
 Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
@@ -276,9 +279,9 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
         sFoly oÛrl, névelõvel(Táblacím, , , True) & ":; összeállítása indul..."
         sqlA = "SELECT * FROM [" & queryName & "]" & _
                     IIf(teszt, "WHERE false", "") ' Ha teszt üzemmódban vagyunk, üres táblákat készítünk
-                    
+'TODO:
         'A mezTip tömbben eltároljuk a mezõneveket és a hozzájuk tartozó kimeneti típust (hogy mire kell formázni)
-        mezTip = vFldTípus("SELECT [MezõNeve],[MezõTípusa],[Grafikonra] FROM tLekérdezésMezõTípusok WHERE [LekérdezésNeve]='" & queryName & "';")
+        meztip = vFldTípus("SELECT [MezõNeve],[MezõTípusa],[Grafikonra], [Hashbe] FROM tLekérdezésMezõTípusok WHERE [LekérdezésNeve]='" & queryName & "';")
         'Debug.Print queryName & " : "; LBound(mezTip) & vbTab & UBound(mezTip)
         
         ' A lekérdezés futtatása
@@ -288,7 +291,7 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
         '## A hibák feljegyzése a táblába
         If blKellVisszajelzes Then
             
-            RégiHibákTáblába rs, queryName, VisszTípCsop
+            RégiHibákTáblába rs, queryName, VisszTípCsop, meztip, Most
         End If
         
             DoEvents
@@ -360,7 +363,7 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
             ' A jelölõnégyzet összeállítása
             CheckBox = ""
             If vaneGraf <> vbNullString Then
-                gráftípus = párkeresõ(mezTip, fld.Name, 3)
+                gráftípus = párkeresõ(meztip, fld.Name, cGrafikonra)
                 If IsNull(gráftípus) Then
                 CheckBox = ""
                 Else
@@ -436,13 +439,10 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
                 If columnIndex = rs.Fields.count Then
                     className = "utolsooszlop " & className
                 End If
-                'Debug.Print mezTip(columnIndex, 1), fld.Name, fld.Value, className
-'                If queryName = "lkOrvosÁlláshelyekenDolgozókEllenõrzésbe" Then
-'                    formáz = formazo(párkeresõ(mezTip, fld.Name), fld.Value, className)
-'                Else
-                    formáz = formazo(párkeresõ(mezTip, fld.Name), fld.Value, className)
-'                End If
-                hf.writeline formáz
+
+                    formázott = formazo(párkeresõ(meztip, fld.Name, cMezõTípusa), fld.Value, className)
+
+                hf.writeline formázott '#**
                 ' Debug.Print
                 ÷ columnIndex '= columnIndex + 1
             Next fld
@@ -451,7 +451,7 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
                     
                     Select Case VisszTípCsop
                         Case 1 'Hibacsoport
-                            strHash = TextToMD5Hex(egyesítettMezõk(rs, rs.Bookmark))
+                            strHash = TextToMD5Hex(egyesítettMezõk(rs, rs.Bookmark, meztip)) ' & queryName) 'Nem kell a queryName elõtt elválasztó, mert az összefûzés végén marad egy :) !
                             hf.writeline "<td class=""rejtettOszlop""  > " & Nz(DLookup("azIntfajta", "lkRégiHibákUtolsóIntézkedés", "[HASH]='" & strHash & "'"), "0") & "</td>"
                             strDropdown = "<select name=""" & strHash & """>" & vbNewLine
                             strDropdown = strDropdown & "<option value=""0"" selected>-</option>" & vbNewLine
@@ -737,7 +737,7 @@ Private Sub CloseHibaTábla()
         Set jelenDb = Nothing
         
 End Sub
-Private Function RégiHibákTáblába(HtmlKimenetRs As Recordset, leknév As String, VisszTípCsop As Long) As Long
+Private Function RégiHibákTáblába(HtmlKimenetRs As Recordset, leknév As String, VisszTípCsop As Long, meztip As Variant, Most As Date) As Long
 fvbe ("RégiHibákTáblába")
     Dim vissza
     On Error GoTo ErrorHandler
@@ -763,7 +763,7 @@ fvbe ("RégiHibákTáblába")
 '                    unitedField = unitedField & Replace(Nz(HtmlKimenetRs(LCounter).Value, ""), "'", "''") & "|"
 '        Next LCounter
         könyvjelzõ = HtmlKimenetRs.Bookmark
-        unitedField = egyesítettMezõk(HtmlKimenetRs, könyvjelzõ)
+        unitedField = egyesítettMezõk(HtmlKimenetRs, könyvjelzõ, meztip)
         hashedText = TextToMD5Hex(unitedField)
         HtmlKimenetRs.Bookmark = könyvjelzõ
         If Nz(unitedField, "") <> "" Then
@@ -771,8 +771,8 @@ fvbe ("RégiHibákTáblába")
             .AddNew
             ![Elsõ mezõ] = hashedText
             ![Második mezõ] = unitedField
-            ![Elsõ Idõpont] = Date
-            ![Utolsó Idõpont] = Date
+            ![Elsõ Idõpont] = Most
+            ![Utolsó Idõpont] = Most
             ![LekérdezésNeve] = leknév
             .Update
         End With
@@ -797,7 +797,7 @@ ErrorHandler:
             .CancelUpdate
             .FindFirst "[Elsõ Mezõ] like '" & hashedText & "'"
             .Edit
-            ![Utolsó Idõpont] = Date
+            ![Utolsó Idõpont] = Most
             ![LekérdezésNeve] = leknév
             .Update
         End With
@@ -810,14 +810,17 @@ ErrorHandler:
     End If
 Resume Next
 End Function
-Function egyesítettMezõk(rs As Recordset, pozíció As Variant) As Variant
+Function egyesítettMezõk(rs As Recordset, pozíció As Variant, meztip As Variant) As Variant
+'mezTip tartalmazza a boole-i értéket arról, hogy a mezõt bele kell-e tenni a Hash-be avagy sem
 Dim egyMez As String
         egyMez = ""
         rs.Bookmark = pozíció
         For LCounter = 0 To rs.Fields.count - 1
+            If párkeresõ(meztip, rs(LCounter).Name, cHashbe) Then 'Új:2024.11.11
                     egyMez = egyMez & Replace(Nz(rs(LCounter).Value, ""), "'", "''") & "|"
+            End If 'Új:2024.11.11
         Next LCounter
-        egyesítettMezõk = egyMez
+        egyesítettMezõk = egyMez '!!Ehhez még hozzá kell fûzni - a meghívó eljárásban - a lekérdezés nevét!!!
 End Function
 Function oldalakFejezetek(db As Database) As String
 ' Az indítópult html kódját hozza létre

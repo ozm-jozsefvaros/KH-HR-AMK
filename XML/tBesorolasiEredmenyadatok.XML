@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<ImportExportSpecification Path="L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Besorolási eredmény\1-BesorolasoEredmenyadatokRiport-202404031431.xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+	<ImportExcel FirstRowHasNames="true" Destination="tBesorolásiEredményadatok" Range="'Besorolási eredményadatok$'_xlnm#_FilterDatabase">
+		<Columns PrimaryKey="{Auto}">
+			<Column Name="Col1" FieldName="Adóazonosító jel" Indexed="YESDUPLICATES" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col2" FieldName="TAJ szám" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col3" FieldName="Egyedi azonosító" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col4" FieldName="Törzsszám" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col5" FieldName="Elõnév" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col6" FieldName="Családi név" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col7" FieldName="Utónév" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col8" FieldName="Jogviszony ID" Indexed="NO" SkipColumn="false" DataType="Double"/>
+			<Column Name="Col9" FieldName="Kód" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col10" FieldName="Megnevezés" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col11" FieldName="Kezdete" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col12" FieldName="Vége" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col13" FieldName="Változás dátuma" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col14" FieldName="Mezõ14" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col15" FieldName="Mezõ15" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col16" FieldName="Mezõ16" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col17" FieldName="Mezõ17" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col18" FieldName="Mezõ18" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col19" FieldName="Napi óra" Indexed="NO" SkipColumn="false" DataType="Double"/>
+			<Column Name="Col20" FieldName="Heti óra" Indexed="NO" SkipColumn="false" DataType="Double"/>
+			<Column Name="Col21" FieldName="Havi óra" Indexed="NO" SkipColumn="false" DataType="Double"/>
+			<Column Name="Col22" FieldName="Mezõ22" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col23" FieldName="Mezõ23" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col24" FieldName="Típus" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col25" FieldName="Jelleg" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col26" FieldName="Mezõ26" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col27" FieldName="Mezõ27" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col28" FieldName="Besorolási fokozat" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col29" FieldName="Nem fogadta el a besorolást" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col30" FieldName="Mezõ30" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col31" FieldName="Mezõ31" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col32" FieldName="Kulcsszám" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col33" FieldName="Besorolási osztály" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col34" FieldName="Mezõ34" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col35" FieldName="Következõ besorolási fokozat dátum" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col36" FieldName="Fiktív kulcsszám" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col37" FieldName="Fiktív besorolási osztály" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col38" FieldName="Fiktív besorolási fokozat" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col39" FieldName="Fiktív következõ besorolási fokozat dátum" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col40" FieldName="Utolsó besorolás dátuma" Indexed="YESDUPLICATES" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col41" FieldName="Mezõ41" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col42" FieldName="Mezõ42" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col43" FieldName="Eszmei fizetési fokozat idõ" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col44" FieldName="Mezõ44" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col45" FieldName="Mezõ45" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col46" FieldName="Eszmei közszolgálati jogviszony idõ" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col47" FieldName="Mezõ47" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col48" FieldName="Mezõ48" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col49" FieldName="Közszolgálati jogviszony idõ" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col50" FieldName="Mezõ50" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col51" FieldName="Mezõ51" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col52" FieldName="Számított fizetési fokozat idõ" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col53" FieldName="Mezõ53" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col54" FieldName="Mezõ54" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col55" FieldName="Szolgálati elismerés / Jubileum jutalom idõ" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col56" FieldName="Mezõ56" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col57" FieldName="Mezõ57" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col58" FieldName="Végkielégítésre jogosító idõ" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col59" FieldName="Mezõ59" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col60" FieldName="Mezõ60" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col61" FieldName="Szolgálati jogviszonyban eltöltött idõ" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col62" FieldName="Mezõ62" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col63" FieldName="Mezõ63" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col64" FieldName="Álláshelyi idõ" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col65" FieldName="Mezõ65" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col66" FieldName="Mezõ66" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col67" FieldName="Saját munkahelyen eltöltött idõ" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col68" FieldName="Mezõ68" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col69" FieldName="Mezõ69" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col70" FieldName="Szakmai gyakorlat kezdõ dátuma" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col71" FieldName="Mezõ71" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col72" FieldName="Mezõ72" Indexed="NO" SkipColumn="false" DataType="DateTime"/>
+			<Column Name="Col73" FieldName="Alapilletmény" Indexed="NO" SkipColumn="false" DataType="Double"/>
+			<Column Name="Col74" FieldName="Garantált bérminimum" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col75" FieldName="Kerekítés" Indexed="NO" SkipColumn="false" DataType="Text"/>
+			<Column Name="Col76" FieldName="Összesen" Indexed="NO" SkipColumn="false" DataType="Double"/>
+		</Columns>
+	</ImportExcel>
+</ImportExportSpecification>

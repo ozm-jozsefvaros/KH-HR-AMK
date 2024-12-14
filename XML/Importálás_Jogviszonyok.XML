@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ImportExportSpecification Path = "L:\Kozos\2024_Humán\00_Havi adatszolgáltatás\KIRA listák_PGF havi listák\Jogviszonyok_202406.xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+        <ImportExcel FirstRowHasNames="true" AppendToTable="tIlletmények" Range="&apos;20240628_122002_220821_13621362$&apos;" >
+          <Columns PrimaryKey="{Auto}">
+                  <Column Name="Col1" FieldName="ISZH azonosító" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col2" FieldName="Ügyintézõ kódja" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col3" FieldName="Törzsszám" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col4" FieldName="Intézmény" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col5" FieldName="Szervezeti egység kódja" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col6" FieldName="Szervezeti egység megnevezése" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col7" FieldName="Fõkönyvi számlaszám" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col8" FieldName="Fökönyvi számla megnevezése" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col9" FieldName="Témaszám" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col10" FieldName="Témaszám megnevezése" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col11" FieldName="Kormányzati funkció kódja" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col12" FieldName="Kormányzati funkció neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col13" FieldName="Adóazonosító jel" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col14" FieldName="FOGSOR" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col15" FieldName="TAJ szám" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col16" FieldName="Születési hely" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col17" FieldName="Születési dátum" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col18" FieldName="Anyja neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col19" FieldName="Jv kezdete" Indexed="NO" SkipColumn="false" DataType="DateTime" />
+                  <Column Name="Col20" FieldName="Jv vége" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col21" FieldName="Jogviszony, juttatás típusa" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col22" FieldName="Jogviszony, juttatás megnevezése" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col23" FieldName="Kulcsszám" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col24" FieldName="Kulcsszám neve" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col25" FieldName="FEOR" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col26" FieldName="Munkakör megnevezése" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col27" FieldName="Átsorolás összesen" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col28" FieldName="Illetmény kifizetésének módja" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col29" FieldName="Folyószámlaszám" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col30" FieldName="Lakcím" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col31" FieldName="Elérési cím" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col32" FieldName="Tényleges munkaidõ hossza" Indexed="NO" SkipColumn="false" DataType="Double" />
+                  <Column Name="Col33" FieldName="Név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col34" FieldName="Álláshely" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col35" FieldName="Nyugdíjas státusz" Indexed="NO" SkipColumn="false" DataType="Text" />
+             </Columns>
+        </ImportExcel>
+</ImportExportSpecification>

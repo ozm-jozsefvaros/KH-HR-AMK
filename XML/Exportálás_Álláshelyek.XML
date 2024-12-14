@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ImportExportSpecification Path = "H:\Dokumentumok\Álláshelyek.txt" xmlns="urn:www.microsoft.com/office/access/imexspec">
+	<ExportTextPresentation  AccessObject="Álláshelyek" ObjectType="Table" AutoStart="true" Encoding="WindowsDefault" />
+</ImportExportSpecification>

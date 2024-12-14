@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ImportExportSpecification Path="L:\Kozos\2023_Humán\00_Havi adatszolgáltatás\KIRA listák_PGF havi listák\Jogviszonyok_202310.xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+<ImportExportSpecification Path="L:\Kozos\2024_Humán\00_Havi adatszolgáltatás\KIRA listák_PGF havi listák\Jogviszonyok_202403.xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
 	<ImportExcel FirstRowHasNames="true" Destination="tIlletmények" Range="tIlletmények">
 		<Columns PrimaryKey="{Auto}">
 			<Column Name="Col1" FieldName="ISZH azonosító" Indexed="NO" SkipColumn="false" DataType="Double"/>

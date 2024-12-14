@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ImportExportSpecification Path = "L:\Ugyintezok\Adatszolgáltatók\Alapadatok\KSZDR\KSZDR lista 20231107.xlsx" xmlns="urn:www.microsoft.com/office/access/imexspec">
+     <ImportExcel FirstRowHasNames="true" Destination="tKSZDR" Range="tKSZDR" >
+            <Columns PrimaryKey="{Auto}">
+                  <Column Name="Col1" FieldName="Adóazonosító jel" Indexed="YESDUPLICATES" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col2" FieldName="Teljes név" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col3" FieldName="Szervezeti egység" Indexed="NO" SkipColumn="false" DataType="Text" />
+                  <Column Name="Col4" FieldName="Szervezet" Indexed="NO" SkipColumn="false" DataType="Text" />
+             </Columns>
+        </ImportExcel>
+</ImportExportSpecification>

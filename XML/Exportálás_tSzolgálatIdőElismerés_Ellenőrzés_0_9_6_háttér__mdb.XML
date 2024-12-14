@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ImportExportSpecification Path = "L:\Ugyintezok\Adatszolgáltatók\Adatbázisok\Háttértárak\Ellenõrzés_0.9.6_háttér_.mdb.accdb" xmlns="urn:www.microsoft.com/office/access/imexspec">
+	<ExportAccess StructureAndData="true">
+		<AccessObject Source="tSzolgálatiIdõElsimerés" ObjectType="Table" Destination="tSzolgálatiIdõElsimerés" />
+	</ExportAccess>
+</ImportExportSpecification>

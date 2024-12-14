@@ -110,7 +110,7 @@ Sub sFoly(Ûrlap As Form, Üzenet As String, Optional idõtis As Boolean = True, Op
 End Sub
 Function Foly(Ûrlap As Form, Üzenet As String, Optional idõtis As Boolean = True, Optional loglevel As Integer = 1) As Boolean
 '#MIT Oláh Zoltán (2023)
-Dim x
+Dim X
 Dim Most As Date
 Most = Now()
 'Elõször a logtáblába írjuk ki
@@ -240,7 +240,7 @@ Kezd:
         End With
     intSzamlalo = 0
     Flush = False
-Ki:
+ki:
 Exit Sub
 Hibapont:
 Debug.Print "Err.Number"
@@ -256,11 +256,11 @@ Debug.Print "Err.Number"
             ÷ próbálkozás 'Eggyel növeljük, mint a C++. Zárójelet nem teszünk!
             Resume Kezd
         Else
-            GoTo Ki 'elértük a próbálkozások megengedett számát, továbblépünk. Majd máskor kiírjuk, nemde?
+            GoTo ki 'elértük a próbálkozások megengedett számát, továbblépünk. Majd máskor kiírjuk, nemde?
         End If
     Else
         MsgBox Err.Number & " :" & Err.Description
-        GoTo Ki
+        GoTo ki
         
     End If
     

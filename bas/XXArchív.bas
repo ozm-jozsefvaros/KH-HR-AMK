@@ -101,10 +101,10 @@ fvbe ("SzemélytörzsImport")
 '(c) Oláh Zoltán 2022. Licencia: MIT
 
     'Az Excel megnyitásához
-    Dim objExcel        As excel.Application
-    Dim objBook         As excel.Workbook
-    Dim objSheet        As excel.Worksheet
-    Dim objRange        As excel.Range
+    Dim objExcel        As Excel.Application
+    Dim objBook         As Excel.Workbook
+    Dim objSheet        As Excel.Worksheet
+    Dim objRange        As Excel.Range
     
     Dim xlTábla, kieg   As String
     Dim xlTáblaEred     As String

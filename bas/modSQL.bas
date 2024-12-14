@@ -230,7 +230,7 @@ For Each qdK In qdKk
                 Exit For ' és akkor már tovább keresgélni sem érdemes
             End If
         Next qdB
-        If bRoot Then 'Ha egyik lekérdezésnek a neve sem szerepel a külsõ lekérdezésben,
+        If bRoot Then 'Ha az egyik lekérdezésnek a neve sem szerepel a külsõ lekérdezésben,
             
             ReDim Preserve Kimenet(n)
             Kimenet(n) = névK 'akkor a külsõ lekérdezés egy gyökér.
@@ -345,7 +345,7 @@ Sub tegnapiLek()
 Dim a As Date
     For i = 0 To CurrentDb.QueryDefs.count - 9
         a = CurrentDb.QueryDefs(i).DateCreated
-        If a > Date - 2 Then
+        If a > Date - 5 Then
             Debug.Print a, CurrentDb.QueryDefs(i).Name
         End If
     Next

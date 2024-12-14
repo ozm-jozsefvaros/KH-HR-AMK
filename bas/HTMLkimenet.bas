@@ -1,6 +1,11 @@
 Option Compare Database
 Global állj As Boolean
 Public hibatábla As Recordset
+Public újhibatábla As Recordset
+Public futtatáshibatábla As Recordset
+Public futtatásoktábla As Recordset
+Public tHibák As Recordset
+Public tFuttatásokHibák As Recordset
 Public jelenDb As DAO.Database
 Public teszt As Boolean ' False 'Ha ez True, akkor teszt üzemmódban fut (nem futtatja a lekérdezéseket)
 Const cMezõTípusa As Byte = 2
@@ -78,6 +83,7 @@ fvbe ("fejléc")
         .writeline "<html>"
         .writeline "<head>"
         .writeline "<title>" & oldalcím & "</title>"
+        .writeline "<link rel=""icon"" href=""./css/MinervaHR_logo6.png"">"
         .writeline "<link rel=""stylesheet"" href=""./css/hrell.css"">"
         .writeline "<script src=""./js/hrell.js""></script>"
         .writeline "<script src=""https://kvotariport.kh.gov.hu/static/quotarep/js/chart.bundle.min.js""></script>"
@@ -292,6 +298,7 @@ Do Until lkEll.EOF 'Külsõ loop kezdete: végigjárjuk a táblákat ###
         If blKellVisszajelzes Then
             
             RégiHibákTáblába rs, queryName, VisszTípCsop, meztip, Most
+            tHibákba rs, queryName, Nz(lkEll("azHibaCsoport"), 1), meztip, Most
         End If
         
             DoEvents
@@ -724,14 +731,27 @@ Public Sub InitHibaTábla()
         
     If hibatábla Is Nothing Then _
         Set hibatábla = jelenDb.OpenRecordset("tRégiHibák", dbOpenDynaset)
+    If újhibatábla Is Nothing Then _
+        Set újhibatábla = jelenDb.OpenRecordset("tHibák", dbOpenDynaset)
+    If futtatáshibatábla Is Nothing Then _
+        Set futtatáshibatábla = jelenDb.OpenRecordset("tFuttatásokHibák", dbOpenDynaset)
+    If futtatásoktábla Is Nothing Then _
+        Set futtatásoktábla = jelenDb.OpenRecordset("tLekérdezésFuttatások", dbOpenDynaset)
 
     Exit Sub
 Hiba:
 'MsgBox Err.Number, Err.Description
 End Sub
+
 Private Sub CloseHibaTábla()
     If Not hibatábla Is Nothing Then _
         Set hibatábla = Nothing
+    If Not újhibatábla Is Nothing Then _
+        Set újhibatábla = Nothing
+    If Not futtatáshibatábla Is Nothing Then _
+        Set futtatáshibatábla = Nothing
+    If Not futtatásoktábla Is Nothing Then _
+        Set futtatásoktábla = Nothing
         
     If Not jelenDb Is Nothing Then _
         Set jelenDb = Nothing
@@ -741,13 +761,6 @@ Private Function RégiHibákTáblába(HtmlKimenetRs As Recordset, leknév As String, 
 fvbe ("RégiHibákTáblába")
     Dim vissza
     On Error GoTo ErrorHandler
-    'Dim db As Database
-    'Dim rs As DAO.Recordset
-    'Dim hibatábla As DAO.Recordset
-
-    'Set db = CurrentDb()
-    'Set HtmlKimenetRs = db.OpenRecordset(lekNév)
-    'Set hibatábla = db.OpenRecordset("tRégiHibák", dbOpenDynaset)
     
     InitHibaTábla
 
@@ -758,10 +771,7 @@ fvbe ("RégiHibákTáblába")
         Dim LCounter As Integer
         Dim könyvjelzõ As Variant
         
-'        unitedField = ""
-'        For LCounter = 0 To HtmlKimenetRs.Fields.count - 1
-'                    unitedField = unitedField & Replace(Nz(HtmlKimenetRs(LCounter).Value, ""), "'", "''") & "|"
-'        Next LCounter
+
         könyvjelzõ = HtmlKimenetRs.Bookmark
         unitedField = egyesítettMezõk(HtmlKimenetRs, könyvjelzõ, meztip)
         hashedText = TextToMD5Hex(unitedField)
@@ -780,11 +790,6 @@ fvbe ("RégiHibákTáblába")
         HtmlKimenetRs.MoveNext
     Loop
 
-'    hibatábla.Close
-'    Set hibatábla = Nothing
-    'rs.Close
-    'Set rs = Nothing
-    'Set db = Nothing
     RégiHibákTáblába = vissza
 fvki
 Exit Function
@@ -800,6 +805,74 @@ ErrorHandler:
             ![Utolsó Idõpont] = Most
             ![LekérdezésNeve] = leknév
             .Update
+        End With
+    Else
+        vált1.név = "Hash:"
+        vált1.érték = hashedText
+        vált2.név = "unitedField"
+        vált2.érték = unitedField
+        MsgBox Hiba(Err) 'Err.Number & vbNewLine & Err.Description & vbNewLine & "Hash:" & hashedText & vbNewLine & "UnitedField:" & unitedField
+    End If
+Resume Next
+End Function
+Private Function tHibákba(HtmlKimenetRs As Recordset, leknév As String, hibacsoport As Long, meztip As Variant, Most As Date) As Long
+fvbe ("tHibákba")
+    Dim vissza
+    Dim azFuttatás As Long
+    On Error GoTo ErrorHandler
+    
+    InitHibaTábla
+        ' a tlekérdezésekFuttatások táblába feljegyezzük, hogy az adott futtatás megtörtént. Megszerezzük az "azFuttatást", ami az egész lekérdezésre vonatkozik.
+        With futtatásoktábla
+            .AddNew
+            ![idõpont] = Most
+            ![LekérdezésNeve] = leknév
+            .Update
+        End With
+        azFuttatás = CurrentDb.OpenRecordset("SELECT @@Identity")(0)
+        
+    If Not HtmlKimenetRs.BOF Then HtmlKimenetRs.MoveFirst
+    
+    Do While Not HtmlKimenetRs.EOF
+        Dim unitedField As String
+        Dim hashedText As String
+        Dim recordExists As Boolean
+        Dim LCounter As Integer
+        Dim könyvjelzõ As Variant
+        
+        könyvjelzõ = HtmlKimenetRs.Bookmark
+        unitedField = egyesítettMezõk(HtmlKimenetRs, könyvjelzõ, meztip)
+        hashedText = TextToMD5Hex(unitedField)
+        HtmlKimenetRs.Bookmark = könyvjelzõ
+        If Nz(unitedField, "") <> "" Then 'TODO ha üres a lekérdezés - 0 hiba van - hibára fut
+            If DCount("hash", "thibák", "[HASH] = '" & hashedText & "'") = 0 Then
+                With újhibatábla
+                    .AddNew
+                    ![HASH] = hashedText
+                    ![hibacsoport] = hibacsoport
+                    ![hibaszöveg] = unitedField
+                    .Update
+                End With
+            End If
+            With futtatáshibatábla
+                .AddNew
+                ![azFuttatás] = azFuttatás
+                ![HASH] = hashedText
+                .Update
+            End With
+        End If
+        HtmlKimenetRs.MoveNext
+    Loop
+
+    tHibákba = vissza
+fvki
+Exit Function
+
+ErrorHandler:
+
+    If Err.Number = 3022 Then
+        With újhibatábla
+            'Debug.Print
         End With
     Else
         vált1.név = "Hash:"

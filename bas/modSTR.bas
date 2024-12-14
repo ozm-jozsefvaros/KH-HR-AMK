@@ -700,3 +700,21 @@ telefonszám = teljavító(telefonszám)
     Next i
     feltöltõ = Kimenet
 End Function
+Function RegExExec(szöveg As String, minta As String, Optional KisNagybetûNemSzámít As Boolean = True, Optional MindenTalálat As Boolean = True) As MatchCollection
+'FirstIndex - A read-only value that contains the position within the original string where the match occurred. _
+              This index uses a zero-based offset to record positions, meaning that the first position in a string is 0.
+'Length - A read-only value that contains the total length of the matched string.
+'Value - A read-only value that contains the matched value or text. It is also the default value when accessing the Match object.
+   Dim Matches    ' Create variable.
+
+   With New RegExp
+    .Pattern = minta   ' Set pattern.
+    .IgnoreCase = KisNagybetûNemSzámít   ' Set case insensitivity.
+    .Global = MindenTalálat   ' Set global applicability.
+    Set RegExExec = .Execute(szöveg)   ' Execute search.
+   End With
+End Function
+Function RegExTest(szöveg As String, minta As String) As Boolean
+
+
+End Function

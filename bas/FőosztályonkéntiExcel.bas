@@ -107,7 +107,7 @@ Sub ExportTableDataToExcel()
     Set db = Nothing
     Debug.Print "Lefutott:", Now()
 End Sub
-Sub igazítások(ByRef xlSheet As excel.Worksheet, ByVal row As Integer)
+Sub igazítások(ByRef xlSheet As Excel.Worksheet, ByVal row As Integer)
         With xlSheet.UsedRange.Borders
             .LineStyle = xlContinuous
             .Weight = xlThin

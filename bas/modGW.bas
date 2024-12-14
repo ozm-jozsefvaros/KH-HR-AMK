@@ -247,7 +247,7 @@ fvbe ("BejövõÜzenetekTáblába")
             vissza = ![azÜzenet]
         End With
 
-Ki:
+ki:
     'üzenetTábla.Close
     'Set üzenetTábla = Nothing
     BejövõÜzenetekTáblába = vissza
@@ -259,9 +259,9 @@ ErrorHandler:
         üzenetTábla.CancelUpdate
     Else
         MsgBox Hiba(Err)
-        Resume Ki
+        Resume ki
     End If
-    GoTo Ki
+    GoTo ki
 End Function
 Sub BejövõVisszajelzésekTáblába(üzenetaz As Long, HASH As String, VisszajelzésKód As Integer, Hatály As Date, ByRef visszajelzésTábla As DAO.Recordset)
     'Dim tabla As Recordset

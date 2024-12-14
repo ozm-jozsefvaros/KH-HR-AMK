@@ -21,7 +21,7 @@ Public Function GetDistance( _
 
 
    On Error Resume Next
-   Dim x As Double
+   Dim X As Double
 
    Dim EarthRadius As Double
    
@@ -34,10 +34,10 @@ Public Function GetDistance( _
       EarthRadius = 3963 'statute miles
    End Select
    
-    x = (Sin(pLat1 / 57.2958) * Sin(pLat2 / 57.2958)) _
+    X = (Sin(pLat1 / 57.2958) * Sin(pLat2 / 57.2958)) _
       + (Cos(pLat1 / 57.2958) * Cos(pLat2 / 57.2958) * Cos(pLng2 / 57.2958 - pLng1 / 57.2958))
 
-   GetDistance = Abs(EarthRadius * Atn(Sqr(1 - x ^ 2) / x))
+   GetDistance = Abs(EarthRadius * Atn(Sqr(1 - X ^ 2) / X))
   
 End Function
 '

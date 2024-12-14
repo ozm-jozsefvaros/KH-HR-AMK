@@ -1,11 +1,11 @@
 Option Compare Database
 Private gomb As CommandButton
 
-Private Sub Ányr_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Ányr_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Set gomb = Me.Ányr
     gomb.FontBold = True
 End Sub
-Private Sub Elbírálatlan_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Elbírálatlan_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Set gomb = Me.Elbírálatlan
     gomb.FontBold = True
 End Sub
@@ -14,15 +14,29 @@ Private Sub EllenõrzõLekérdezések_Click()
     DoCmd.OpenForm "ûEllenõrzõLekérdezések2", acNormal
 End Sub
 
-Private Sub Havi_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Havi_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Set gomb = Me.Havi
     gomb.FontBold = True
 End Sub
 
-
-
 Private Sub Intézkedések_Click()
     DoCmd.OpenForm "ûRégiHibákIntézkedések"
+End Sub
+
+Private Sub LejáróHatáridõk_Click()
+    Dim Fájl As String
+    Fájl = Nz(Me.FileLejáróHatáridõk, "")
+    
+    FájlVálasztó Me.FileLejáróHatáridõk, "A Lejáró határidõk kiválasztása", "L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Lejáró határidõk", "Lejaro*"
+    
+    If Me.FileLejáróHatáridõk = Fájl Then
+        Me.FileLejáróHatáridõkPipa = False
+    End If
+End Sub
+
+Private Sub LejáróHatáridõk_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    Set gomb = Me.LejáróHatáridõk
+    gomb.FontBold = True
 End Sub
 
 Private Sub Meghagyás_Click()
@@ -39,35 +53,35 @@ Private Sub Mindet_Click()
     End If
 End Sub
 
-Private Sub NexonAzonosító_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub NexonAzonosító_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Set gomb = Me.NexonAzonosító
     gomb.FontBold = True
 End Sub
-Private Sub Személytörzs_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Személytörzs_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Set gomb = Me.Személytörzs
     gomb.FontBold = True
 End Sub
-Private Sub Szervezeti_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Szervezeti_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Set gomb = Me.Szervezeti
     gomb.FontBold = True
 End Sub
-Private Sub BesorolásiEredményadatok_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub BesorolásiEredményadatok_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Set gomb = Me.BesorolásiEredményadatok
     gomb.FontBold = True
 End Sub
-Private Sub HozzátartozókGomb_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub HozzátartozókGomb_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Set gomb = Me.HozzátartozókGomb
     gomb.FontBold = True
 End Sub
 
-Private Sub Téglalap99_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Téglalap99_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If Not gomb Is Nothing Then
         gomb.FontBold = False
         Set gomb = Nothing
     End If
 End Sub
 
-Private Sub VégzettségekGomb_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub VégzettségekGomb_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Set gomb = Me.VégzettségekGomb
     gomb.FontBold = True
 End Sub
@@ -77,7 +91,7 @@ End Sub
 '
 '
 'End Sub
-Private Sub Törzs_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Törzs_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If Not gomb Is Nothing Then
         gomb.FontBold = False
         Set gomb = Nothing
@@ -115,7 +129,7 @@ Private Sub Form_Open(Cancel As Integer)
     Me.FilePipa = False
     Me.FileSzemélyPipa = False
     Me.FileSzervezetPipa = False
-    
+    Me.FileLejáróHatáridõkPipa = False
     Me.FileElbírálatlanPipa = False
     Me.FileNexonAzonosítóPipa = False
     Me.FileBesorolásiEredményadatokPipa = False
@@ -213,7 +227,7 @@ Private Sub BesorolásiEredményadatok_Click()
     FájlVálasztó Me.FileBesorolásiEredményadatok, "A Besorolási eredményadatokat tartalmazó állomány kiválasztása", "L:\Ugyintezok\Adatszolgáltatók\Alapadatok\Besorolási eredmény", "*Beso*"
     
     If Me.FileBesorolásiEredményadatok = Fájl Then
-        Me.FileBesorolásiEredményadatokPipa = True
+        Me.FileBesorolásiEredményadatokPipa = False
     End If
 End Sub
 'Private Sub Kimenet_Click() '####
@@ -238,8 +252,10 @@ Private Sub Eredmény_Click()
     Me.FilePipa = False
     Me.FileSzervezetPipa = False
     Me.FileSzemélyPipa = False
+    Me.FileLejáróHatáridõkPipa = False
     Me.FileElbírálatlanPipa = False
     Me.FileNexonAzonosítóPipa = False
+    Me.FileBesorolásiEredményadatokPipa = False
     
     '## Ha a jelölõnégyzetek Null értéken állnak, hamis értékre állítjuk õket.
     If IsNull(Me.Beolvasás) Then: Me.Beolvasás = False
@@ -286,6 +302,19 @@ Private Sub Eredmény_Click()
             Else
                                     sFoly Me, "A személytörzs tábla:; a beolvasás átugorva."
             End If
+            
+            If Me.FileLejáróHatáridõk.Value <> "" Then
+                If fvLejáróHatáridõkImport(Me.FileLejáróHatáridõk.Value, Me) Then
+                    V = V + 1
+                    Me.FileLejáróHatáridõkPipa = True
+                                    sFoly Me, "A Lejáró határidõk:; beolvastatott."
+                Else
+                                    sFoly Me, "A Lejáró határidõk:; a beolvasás sikertelen."
+                End If
+            Else
+                                    sFoly Me, "A Lejáró határidõk:; a beolvasás átugorva."
+            End If
+            
             If Me.FileElbírálatlan.Value <> "" Then
                 MegnyitMentBezár (Me.FileElbírálatlan.Value) 'Megnyitjuk, elmentjük és bezárjuk - ez csak vajákolás, de mûködik...
                 If tTáblaImport(Me.FileElbírálatlan.Value, Me, "tAdatváltoztatásiIgények") Then

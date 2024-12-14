@@ -4,8 +4,8 @@ fvbe ("ExportQueriesAndProceduresToFiles")
     Dim qdf As DAO.QueryDef
     Dim strExportPath As String
     Dim mappa As String
-    Dim strFileName As String
-    Dim strDbNev As String 'az adatbázis nevének
+    Dim strfilename As String
+    Dim strDBnev As String 'az adatbázis nevének
     Dim fso As Object
     Dim ts As Object
     Dim con As Object ' Container for modules
@@ -14,6 +14,8 @@ fvbe ("ExportQueriesAndProceduresToFiles")
     Dim projekt As CurrentProject
     Dim accObj As AccessObject
     Dim objektumnév As String
+    Dim Üzenet As String
+    Const táblaszerkezettel As Boolean = True
     
 '   Dim mdls As Modules
     
@@ -24,17 +26,101 @@ fvbe ("ExportQueriesAndProceduresToFiles")
     
     Set db = CurrentDb
     Set fso = CreateObject("Scripting.FileSystemObject")
-    strDbNev = Replace(ffsplit(db.Name, "\", StrCount(db.Name, "\") + 1), ".accdb", "")
-    strExportPath = strExportPath & strDbNev & Year(Date) & Right(Replace("0" & Month(Date), "00", "0"), 2) & Right(Replace("0" & Day(Date), "00", "0"), 2) & "\"
+    strDBnev = Replace(ffsplit(db.Name, "\", StrCount(db.Name, "\") + 1), ".accdb", "")
+    strExportPath = strExportPath & strDBnev & Year(Date) & Right(Replace("0" & Month(Date), "00", "0"), 2) & Right(Replace("0" & Day(Date), "00", "0"), 2) & "\"
     
     konyvtarzo strExportPath
 
-' Loop through all queries
-    mappa = "lk\"
+' lekérdezések kiíratása
+        If lekérdezésekkiíratása(strExportPath, db) Then
+            Üzenet = "A lekérdezések kiíratása sikerült."
+            logba , "A lekérdezések kiíratása sikerült", 1
+        Else
+            Üzenet = "A lekérdezések kiíratása nem sikerült."
+            logba , "A lekérdezések kiíratása nem sikerült", 1
+        End If
     
-    strFileName = strExportPath & mappa & RIC(strDbNev) & "_" & "lekerdezesek.sql" 'dif
+' modulok kiíratása Application.Modules gyûjteménybõl
+        If modulokkiíratása(strExportPath, db) Then
+            Üzenet = Üzenet & vbNewLine & "A modulok kiíratása sikerült."
+            logba , "A modulok kiíratása sikerült", 1
+        Else
+            Üzenet = Üzenet & vbNewLine & "A modulok kiíratása nem sikerült."
+            logba , "A modulok kiíratása nem sikerült", 1
+        End If
+    
+'Mentett ExportImport-ok kiíratása
+        If mentettexportimportXMLekkiíratása(strExportPath, db) Then
+            Üzenet = Üzenet & vbNewLine & "A Mentett ExportImport-ok kiíratása sikerült."
+            logba , "A Mentett ExportImport-ok kiíratása sikerült", 1
+        Else
+            Üzenet = Üzenet & vbNewLine & "A Mentett ExportImport-ok kiíratása nem sikerült."
+            logba , "A Mentett ExportImport-ok kiíratása nem sikerült", 1
+        End If
+
+    
+'        Set projekt = Application.CurrentProject
+'        mappa = "Forms\"
+'logba , "Forms kezdõdik", 1
+'        For Each accObj In projekt.AllForms
+'            objektumnév = accObj.Name
+'            strFileName = strExportPath & mappa & RIC(accObj.Name) & ".txt"
+'            konyvtarzo strExportPath & mappa
+'            Application.SaveAsText acForm, objektumnév, strFileName
+'                                    logba , "Ûrlap neve:" & accObj.Name, 3
+'        Next accObj
+'logba , "Reports kezdõdik", 1
+'        mappa = "Jelentések\"
+'        For Each accObj In projekt.AllReports
+'            objektumnév = accObj.Name
+'            strFileName = strExportPath & mappa & RIC(accObj.Name) & ".txt"
+'            konyvtarzo strExportPath & mappa
+'            Application.SaveAsText acTable, objektumnév, strFileName
+'                                    logba , "Ûrlap neve:" & accObj.Name, 3
+'        Next accObj
+
+'Táblaszerkezet export
+        If táblaszerkezettel Then
+            logba , "Táblaszerkezet-> SQL kezdõdik"
+            mappa = "SQL\"
+            strfilename = strExportPath & mappa & RIC(strDBnev) & "_" & "táblák.sql" 'dif
+            konyvtarzo strExportPath & mappa 'dif
+            GenerateSQLBackup strfilename, db
+        End If
+    If MsgBox(Üzenet & vbNewLine & "Az elkészített állomány ebbe a mappába kerültek:" & vbNewLine & _
+            strExportPath & vbNewLine & _
+            "Megnyissam a könyvtárat?", vbYesNo) _
+        Then
+        CreateObject("Wscript.Shell").Run (strExportPath)
+    End If
+    Set fso = Nothing
+    Set db = Nothing
+Exit Sub
+    
+    
+ErrorHandler:
+    MsgBox "An error occurred: " & Err.Description, vbExclamation
+    
+End Sub
+Function lekérdezésekkiíratása(strExportPath As String, db As Database) As Boolean
+Dim hibaszám As Integer
+Dim ts As Object
+Dim qdf As QueryDef
+Dim strDBnev As String, _
+    mappa As String, _
+    strFileFame As String
+Dim fso As Object
+
+
+strDBnev = Replace(ffsplit(db.Name, "\", StrCount(db.Name, "\") + 1), ".accdb", "")
+lekérdezésekkiíratása = False
+On Error GoTo Hiba:
+
+    mappa = "lk\"
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    strfilename = strExportPath & mappa & RIC(strDBnev) & "_" & "lekerdezesek.sql" 'dif
     konyvtarzo strExportPath & mappa 'dif
-    Set ts = fso.CreateTextFile(strFileName, True) 'dif
+    Set ts = fso.CreateTextFile(strfilename, True) 'dif
     For Each qdf In db.QueryDefs
         If Not qdf.Name Like "~*" Then ' Exclude system queries
             'konyvtarzo strExportPath & mappa 'dif
@@ -48,79 +134,92 @@ fvbe ("ExportQueriesAndProceduresToFiles")
     Next qdf
     ts.Close 'dif
     Set ts = Nothing 'dif
+lekérdezésekkiíratása = True
+ki:
+Exit Function
+Hiba:
+    lekérdezésekkiíratása = False
+    MsgBox Hiba(Err)
+    ÷ hibaszám
+    If hibaszám < 10 Then
+        Resume Next
+    End If
     
-' Loop through all modules (using Application.Modules collection)
-    mappa = "bas\"
+End Function
 
+Function modulokkiíratása(strExportPath, db As Database) As Boolean
+Dim hibaszám As Integer
+Dim ts As Object
+Dim qdf As QueryDef
+Dim strDBnev As String, _
+    mappa As String, _
+    strFileFame As String
+    
+strDBnev = Replace(ffsplit(db.Name, "\", StrCount(db.Name, "\") + 1), ".accdb", "")
+modulokkiíratása = False
+'On Error GoTo Hiba:
+    mappa = "bas\"
+Set fso = CreateObject("Scripting.FileSystemObject")
     For i = 0 To Application.Modules.count - 1 ' mdl In Application.Modules
         Set mdl = Application.Modules(i)
         If Not mdl.Name Like "msys*" Then ' Exclude system modules
             konyvtarzo strExportPath & mappa
-            strFileName = strExportPath & mappa & RIC(mdl.Name) & ".bas"
-            Set ts = fso.CreateTextFile(strFileName, True)
+            strfilename = strExportPath & mappa & RIC(mdl.Name) & ".bas"
+            Set ts = fso.CreateTextFile(strfilename, True)
             ts.Write mdl.Lines(1, mdl.CountOfLines)
             ts.Close
             Set ts = Nothing
         End If
     Next i
+modulokkiíratása = True
+ki:
+Exit Function
+Hiba:
+    modulokkiíratása = False
+    Hiba Err
+    ÷ hibaszám
+    If hibaszám < 10 Then
+        Resume Next
+    End If
     
-'Mentett ExportImport-ok kiíratása
+End Function
+
+Function mentettexportimportXMLekkiíratása(strExportPath, db As Database) As Boolean
+Dim hibaszám As Integer
+Dim ts As Object
+Dim qdf As QueryDef
+Dim strDBnev As String, _
+    mappa As String, _
+    strFileFame As String
+    
+strDBnev = Replace(ffsplit(db.Name, "\", StrCount(db.Name, "\") + 1), ".accdb", "")
+mentettexportimportXMLekkiíratása = False
+On Error GoTo Hiba:
     mappa = "XML\"
+    Set fso = CreateObject("Scripting.FileSystemObject")
     For i = 0 To CurrentProject.ImportExportSpecifications.count - 1
         Set mentett = CurrentProject.ImportExportSpecifications.item(i)
         With mentett
             konyvtarzo strExportPath & mappa
-            strFileName = strExportPath & mappa & RIC(.Name) & ".XML"
-            Set ts = fso.CreateTextFile(strFileName, True)
+            strfilename = strExportPath & mappa & RIC(.Name) & ".XML"
+            Set ts = fso.CreateTextFile(strfilename, True)
             ts.Write .XML
             ts.Close
             Set ts = Nothing
         End With
     Next i
-
+mentettexportimportXMLekkiíratása = True
+ki:
+Exit Function
+Hiba:
+    mentettexportimportXMLekkiíratása = False
+    Hiba Err
+    ÷ hibaszám
+    If hibaszám < 10 Then
+        Resume Next
+    End If
     
-'    If MsgBox("A lekérdezések, modulok és XML-ek ebbe a mappába kerültek:" & vbNewLine & _
-'            strExportPath & vbNewLine & _
-'            "Megnyissam a könyvtárat?", vbYesNo) _
-'        Then
-'        CreateObject("Wscript.Shell").Run (strExportPath)
-'    End If
-    
-        Set projekt = Application.CurrentProject
-        mappa = "Forms\"
-logba , "Forms kezdõdik", 1
-'        For Each accObj In projekt.AllForms
-'            objektumnév = accObj.Name
-'            strFileName = strExportPath & mappa & RIC(accObj.Name) & ".txt"
-'            konyvtarzo strExportPath & mappa
-'            Application.SaveAsText acForm, objektumnév, strFileName
-'                                    logba , "Ûrlap neve:" & accObj.Name, 3
-'        Next accObj
-logba , "Tables kezdõdik", 1
-'        mappa = "Tables\"
-'        For Each accObj In projekt.AllForms
-'            objektumnév = accObj.Name
-'            strFileName = strExportPath & mappa & RIC(accObj.Name) & ".txt"
-'            konyvtarzo strExportPath & mappa
-'            Application.SaveAsText acTable, objektumnév, strFileName
-'                                    logba , "Ûrlap neve:" & accObj.Name, 3
-'        Next accObj
-'Táblaszerkezet export
-logba , "Táblaszerkezet-> SQL kezdõdik"
-    mappa = "SQL\"
-    strFileName = strExportPath & mappa & RIC(strDbNev) & "_" & "táblák.sql" 'dif
-    konyvtarzo strExportPath & mappa 'dif
-    GenerateSQLBackup strFileName, db
-    
-    Set fso = Nothing
-    Set db = Nothing
-Exit Sub
-    
-    
-ErrorHandler:
-    MsgBox "An error occurred: " & Err.Description, vbExclamation
-    
-End Sub
+End Function
 Function függõk(leknév)
 Dim db As DAO.Database
 Set db = CurrentDb
@@ -186,8 +285,8 @@ Sub meghagyásLek()
     Dim qdf As DAO.QueryDef
     Dim strExportPath As String
     Dim mappa As String
-    Dim strFileName As String
-    Dim strDbNev As String 'az adatbázis nevének
+    Dim strfilename As String
+    Dim strDBnev As String 'az adatbázis nevének
     Dim fso As Object
     Dim ts As Object
 
@@ -197,15 +296,15 @@ Sub meghagyásLek()
     
     Set db = CurrentDb
     Set fso = CreateObject("Scripting.FileSystemObject")
-    strDbNev = Replace(ffsplit(db.Name, "\", StrCount(db.Name, "\") + 1), ".accdb", "")
+    strDBnev = Replace(ffsplit(db.Name, "\", StrCount(db.Name, "\") + 1), ".accdb", "")
     strExportPath = strExportPath & Year(Date) & Right(Replace("0" & Month(Date), "00", "0"), 2) & Right(Replace("0" & Day(Date), "00", "0"), 2) & "\"
     
     konyvtarzo strExportPath
     
     'mappa = "lk\"
-    strFileName = strExportPath & mappa & strDbNev & "_" & "lekerdezesek.sql"
+    strfilename = strExportPath & mappa & strDBnev & "_" & "lekerdezesek.sql"
     konyvtarzo strExportPath & mappa
-    Set ts = fso.CreateTextFile(strFileName, True)
+    Set ts = fso.CreateTextFile(strfilename, True)
     For Each qdf In db.QueryDefs
     
         If qdf.Name Like "*eghagyás*" Then
@@ -223,6 +322,7 @@ End Sub
 
 
 Public Sub ExportDatabaseObjects()
+fvbe ("ExportDatabaseObjects")
 On Error GoTo Err_ExportDatabaseObjects
     
     Dim db As Database
@@ -232,10 +332,16 @@ On Error GoTo Err_ExportDatabaseObjects
     Dim c As Container
     Dim i As Integer
     Dim sExportLocation As String
+    Dim strDBnev As String
+    Dim n As Integer
+    
+    sExportLocation = "L:\Ugyintezok\Adatszolgáltatók\Adatbázisok\Fájlok\" 'Do not forget the closing back slash! ie: C:\Temp\
     
     Set db = CurrentDb()
+    strDBnev = Replace(ffsplit(db.Name, "\", StrCount(db.Name, "\") + 1), ".accdb", "")
+    sExportLocation = sExportLocation & strDBnev & Year(Date) & Right(Replace("0" & Month(Date), "00", "0"), 2) & Right(Replace("0" & Day(Date), "00", "0"), 2) & "\"
     
-    sExportLocation = "C:\Users\olahzolt\Desktop\Fájlok\Ellenõrzés\" 'Do not forget the closing back slash! ie: C:\Temp\
+    konyvtarzo sExportLocation
     
 '    For Each td In db.TableDefs 'Tables
 '        If Left(td.Name, 4) <> "MSys" Then
@@ -245,34 +351,42 @@ On Error GoTo Err_ExportDatabaseObjects
     
     Set c = db.Containers("Forms")
     For Each d In c.Documents
-        Application.SaveAsText acForm, d.Name, sExportLocation & "Form_" & d.Name & ".txt"
+'        ÷ n
+'        Debug.Print d.Name, sExportLocation & "Form_" & RIC(d.Name, "_") & ".txt", n
+        konyvtarzo sExportLocation & "Form\"
+        Application.SaveAsText acForm, d.Name, sExportLocation & "Form\" & RIC(d.Name, "_") & ".txt"
     Next d
-    
+
     Set c = db.Containers("Reports")
     For Each d In c.Documents
-        Application.SaveAsText acReport, d.Name, sExportLocation & "Report_" & d.Name & ".txt"
+        konyvtarzo sExportLocation & "Report\"
+        Application.SaveAsText acReport, d.Name, sExportLocation & "Report\" & RIC(d.Name, "_") & ".txt"
     Next d
     
     Set c = db.Containers("Scripts")
     For Each d In c.Documents
-        Application.SaveAsText acMacro, d.Name, sExportLocation & "Macro_" & d.Name & ".txt"
+        konyvtarzo sExportLocation & "Macro\"
+        Application.SaveAsText acMacro, d.Name, sExportLocation & "Macro\" & RIC(d.Name, "_") & ".txt"
     Next d
     
     Set c = db.Containers("Modules")
     For Each d In c.Documents
-        Application.SaveAsText acModule, d.Name, sExportLocation & "Module_" & d.Name & ".txt"
+        konyvtarzo sExportLocation & "Module\"
+        Application.SaveAsText acModule, d.Name, sExportLocation & "Module\" & RIC(d.Name, "_") & ".txt"
     Next d
     
     For i = 0 To db.QueryDefs.count - 1
-        Application.SaveAsText acQuery, db.QueryDefs(i).Name, sExportLocation & "Query_" & db.QueryDefs(i).Name & ".txt"
+        konyvtarzo sExportLocation & "Query\"
+        Application.SaveAsText acQuery, db.QueryDefs(i).Name, sExportLocation & "Query\" & RIC(db.QueryDefs(i).Name, "_") & ".txt"
     Next i
     
     Set db = Nothing
     Set c = Nothing
     
-    MsgBox "All database objects have been exported as a text file to " & sExportLocation, vbInformation
+    logba , "All database objects have been exported as a text file to " & sExportLocation, vbInformation
     
 Exit_ExportDatabaseObjects:
+fvki
     Exit Sub
     
 Err_ExportDatabaseObjects:
@@ -286,7 +400,7 @@ Err_ExportDatabaseObjects:
     End If
     MsgBox Err.Number & " - " & Err.Description
     Resume Exit_ExportDatabaseObjects
-    
+fvki
 End Sub
 Sub GenerateSQLBackup(fájlnév As String, db As DAO.Database)
 fvbe ("GenerateSQLBackup")
@@ -382,10 +496,11 @@ fvbe ("GenerateSQLBackup")
         If Int(ehj.Value / ehj.oszlopszam * SzakaszSzám) > elõzõszakasz Then
                                                                                                 logba , accTábla & ":;" & Int(ehj.Value / ehj.oszlopszam * 100) & "% elkészült...", 1
             elõzõszakasz = Int(ehj.Value / ehj.oszlopszam * SzakaszSzám)
+            Debug.Print "DoEvents"
             DoEvents
         End If
     Next tbl
-    'Debug.Print "Relations:",
+    Debug.Print "Relations:",
     ' Add relationships (foreign keys)
     ehj.Ini
     ehj.oszlopszam = db.Relations.count
@@ -405,10 +520,10 @@ fvbe ("GenerateSQLBackup")
             Print #outputFile, strSQL
                                                                                                 logba , strSQL, 4
         End If
-        ÷ száml
+        
         ehj.Novel
     
-                                                                                                logba , "A kiírt relációk száma:" & száml
+                                                                                                logba , "A kiírt relációk száma:" & ehj.Value
         If Int(ehj.Value / ehj.oszlopszam * SzakaszSzám) > elõzõszakasz Then
             logba , accTábla & ":;" & Int(ehj.Value / ehj.oszlopszam * 100) & "% elkészült...", 1
             elõzõszakasz = Int(ehj.Value / ehj.oszlopszam * SzakaszSzám)

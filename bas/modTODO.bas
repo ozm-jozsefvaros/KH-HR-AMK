@@ -134,11 +134,11 @@ Function nFrom(strLekérdNeve As String) As Integer
 End Function
 Public Function xlTáblaImport(ByVal strFájl As String, ByVal táblanév As String) As Boolean 'Ûrlap As Form,
     '##################################
-    Dim objExcel As excel.Application
-    Dim objBook As excel.Workbook
-    Dim objSheet As excel.Worksheet
-    Dim objRange As excel.Range
-    Set objExcel = excel.Application
+    Dim objExcel As Excel.Application
+    Dim objBook As Excel.Workbook
+    Dim objSheet As Excel.Worksheet
+    Dim objRange As Excel.Range
+    Set objExcel = Excel.Application
     Set objBook = objExcel.Workbooks.Open(strFájl, ReadOnly:=True, IgnoreReadOnlyRecommended:=True, Editable:=False, Notify:=False)
     Set objSheet = objBook.Worksheets(táblanév)
     Set objRange = objSheet.Range("A2").CurrentRegion
@@ -283,7 +283,7 @@ End Sub
 Sub haladás()
     Dim ehj As New ehjoszt
     
-    Dim i, j, x
+    Dim i, j, X
     ehj.Ini 100
     ehj.oszlopszam = 0
     
@@ -307,7 +307,7 @@ Sub LekérdezésÍró()
     Dim kSQL As String
     Dim lekérd As String
     Dim újnév As String
-    Dim x As Integer
+    Dim X As Integer
     Dim Találat, dbTalálat As Integer
     Set db = CurrentDb
     sql = "SELECT AccessNév, Hiány_lekérdezés FROM tImportálandóTáblák"
@@ -355,4 +355,8 @@ Sub LekérdezésÍró()
 
 kijárat:
 
+End Sub
+Sub próba02(amibenKeresünk As String, amitKeresünk As String)
+    Dim Eredmény As MatchCollection
+    Debug.Print RegExp(amibenKeresünk, amitKeresünk).item(0).Value
 End Sub

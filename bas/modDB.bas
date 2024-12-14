@@ -180,7 +180,7 @@ End Function
 
 
 
-Function vMezõkTípusaImporthoz(eRng As excel.Range) As Variant
+Function vMezõkTípusaImporthoz(eRng As Excel.Range) As Variant
 '# Oláh Zoltán (c)2024 MIT
 '# A tartomány címsorát végignézzük, s egy tömbbe összegyûjtjük az alábbi adatokat:
     '# - oszlopszám
@@ -431,7 +431,7 @@ On Error GoTo Hiba
 logba , rsSorSzám & ";" & Len(rsMezõk.Fields("Mezõnév")) & " " & strMezõNév, 4
     Next rsSorSzám
 
-Ki:
+ki:
     If ismétlõdõHibák Then logba , n & " alkalommal ismétlõdött ez a hiba:" & strHiba, 0
     fvki
 Exit Sub
@@ -453,7 +453,7 @@ Hiba:
         Resume Next
     Else
         logba , strHiba, 0
-        GoTo Ki
+        GoTo ki
     End If
 End Sub
 

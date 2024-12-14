@@ -108,10 +108,10 @@ Public Function fvHaviTáblaImport(ByVal fájlnév As String, ByRef Ûrlap As Object
 fvbe ("fvHaviTáblaImport")
 'Licencia: MIT Oláh Zoltán 2022 (c)
     'Az Excel megnyitásához
-    Dim objExcel        As excel.Application
-    Dim objBook         As excel.Workbook
-    Dim objSheet        As excel.Worksheet
-    Dim objRange        As excel.Range
+    Dim objExcel        As Excel.Application
+    Dim objBook         As Excel.Workbook
+    Dim objSheet        As Excel.Worksheet
+    Dim objRange        As Excel.Range
     
     Dim accTábla         As String
     Dim xlTáblaEred     As String
@@ -262,7 +262,149 @@ Hiba:
 
 End Function
 
+Public Function fvLejáróHatáridõkImport(fájlnév As String, Ûrlap As Object) As Boolean
+fvbe ("fvLejáróHatáridõkImport")
+'Licencia: MIT Oláh Zoltán 2022 (c)
+    'Az Excel megnyitásához
+    Dim objExcel        As Excel.Application
+    Dim objBook         As Excel.Workbook
+    Dim objSheet        As Excel.Worksheet
+    Dim objRange        As Excel.Range
+    
+    Dim xlTábla         As String
+    Dim xlTáblaEred     As String
+    Dim xlVégcella      As String
+    
+    Dim xlUtolsóOszlop  As String
+    Dim intVégcella     As Integer
+    Dim xlHosszmérõ     As String
+    
+    Dim Értékek()       As Variant
+    Dim intMezõ         As Integer
+    
+    'Az adatbázis megnyitásához
+    Dim db              As DAO.Database     'Ez lesz az adatbázisunk
+    Dim rs              As DAO.Recordset    'A beolvasandó lapok és területek adatait tartalmazó táblának
+    Dim rsCél           As DAO.Recordset    'Ahová másolunk
+    Dim Fájl            As String
+    
+    Dim Eredmény        As Integer
+    Dim tábla           As String           'A tábla : a táblák jellemzõit tároló tábla
+    
+    'Számláláshoz
+    Dim sor, oszlop As Integer
+    
+    tábla = "tImportálandóTáblák"
+    intVégcella = 0
+'On Error GoTo hiba
+    
+    Set objExcel = CreateObject("Excel.Application")
+    Set db = CurrentDb()
+    ' ha az útvonal végén nincs \, akkor hozzáfûzzük, [de ha van, akkor meg nem :)]
+    Fájl = fájlnév
+    ' megnyitjuk az Excel táblát
+    Set objBook = objExcel.Workbooks.Open(Fájl, ReadOnly:=True, IgnoreReadOnlyRecommended:=True, Editable:=False, Notify:=False)
+    
+    Set rs = db.OpenRecordset(tábla)
+    rs.MoveLast
+    rs.MoveFirst
+    sFoly Ûrlap, "Tábla neve;Beolvasott sorok száma"
+    
+    Do Until rs.EOF
+    
+        Erase Értékek
+        xlTábla = rs("AccessNév")
+        
+        If xlTábla = "tLejáróHatáridõk" Then
+            xlTáblaEred = rs("EredetiNév"): Debug.Print xlTáblaEred & " -- " & xlTábla
+            
+            Set objSheet = objBook.Worksheets(xlTáblaEred)
+            objSheet.Select ' Ráugrunk a lapra
+            If Nz(rs("Végcella"), "") = "" Then
+                xlHosszmérõ = rs("HosszmérõCella")
+                xlUtolsóOszlop = rs("UtolsóOszlop")
+                '
+                ' rs("HosszmérõCella") -- a hosszmérésre használt oszlopot keresi ki az adatbázisból.
+                ' objBook.ActiveSheet.Range(rs("HosszmérõCella")&1).Column  -- a hosszmérõ cella oszlopának a számát adja meg.
+                ' Cells(Rows.Count, 1).End(xlUp).Row -- az elsõ oszlopban található cellák számát adja
+                ' Cells(Rows.Count, ActiveSheet.Range(rs("HosszmérõCella")&1).Column).End(xlUp).Row -- a hosszmérõ cella oszlopában a legalsó használt cella sorának a száma?
+                intVégcella = objSheet.Range(xlHosszmérõ & 1).Column
+                xlVégcella = objSheet.Cells(objSheet.Cells.Rows.count, intVégcella).End(xlUp).row
+                xlVégcella = xlUtolsóOszlop & xlVégcella
+            Else
+                xlVégcella = rs("Végcella")
+            End If
+            With objSheet
+                .Range(.Range(rs("KezdõCella")), .Range(xlVégcella)).Name = xlTábla 'Elnevezzük a területet
+                sFoly Ûrlap, xlTábla & ":;" & .Range(xlTábla).Rows.count
+                Debug.Print .Range(xlTábla).Rows.count
+                
+            End With
+            
+            
+            If DCount("[Name]", "MSysObjects", "[Name] = '" & xlTábla & "'") = 1 Then
+                                    sFoly Ûrlap, xlTábla & ":;tábla törlése"
+                CurrentDb.Execute ("DELETE * FROM " & xlTábla)
+                                    sFoly Ûrlap, xlTábla & ":;tábla törölve"
+                'DoCmd.Rename xlTábla & RIC(Now()), acTable, xlTábla
+            Else
+                DoCmd.CopyObject , xlTábla, acTable, xlTábla & "_tart"
+            End If
+    
+            'Elkezdjük az adatok betöltését
+            Set rsCél = db.OpenRecordset(xlTábla)
+    
+            Értékek = objSheet.Range(xlTábla).Value
+            sFoly Ûrlap, "Az " & xlTábla & " területrõl az adatokat; beolvastuk."
+            sFoly Ûrlap, "A céltábla:;" & rsCél.Name
+    
+            For sor = LBound(Értékek, 1) To UBound(Értékek, 1)
+                
+                    intMezõ = 0
+                    'új rekord hozzáadása kezdõdik...
+                    rsCél.AddNew
+                    For oszlop = LBound(Értékek, 2) To UBound(Értékek, 2)
+                        If rsCél.Fields.count < oszlop Then
+                            Exit For
+                        End If
+                        intMezõ = oszlop - 1
+                        'Debug.Print sor & ":" & oszlop & " = "
+                        'Debug.Print Értékek(sor, oszlop)
+                        'Debug.Print " Type:" & rsCél.Fields(intMezõ).Type
+                    'On Error GoTo Hiba
+                        rsCél.Fields(intMezõ) = konverter(rsCél.Fields(intMezõ), Értékek(sor, oszlop))
+                    On Error GoTo 0
+                        
+                    Next oszlop
+                    rsCél.Update
+                    'új rekord hozzáadása véget ért
+                
+            Next sor
+            sFoly Ûrlap, "Az " & xlTábla & " nevû táblába az adatokat beírtuk:;" & sor & " sor."
+            sFoly Ûrlap, "Az " & xlTábla & " beolvasása megtörtént."
+        End If
+        rs.MoveNext
+        intVégcella = 0
 
+    Loop
+    logba , objBook.Name & " bezárása mentés nélkül...", 3
+    objBook.Close SaveChanges:=False
+    
+fvLejáróHatáridõkImport = True
+    logba sFN, "Sikerrel lefutott!"
+fvki
+Exit Function
+
+
+Hiba:
+    If Err.Number = 3759 Then
+        logba sFN, "hiba száma:" & 3759, 0
+        Resume Next
+    End If
+logba sFN, Err.Number & ", " & Err.Description, 0
+fvLejáróHatáridõkImport = False
+
+End Function
 
 Public Function tTáblaImport(strFájl As String, Ûrlap As Form, táblanév As String)
 fvbe ("tTáblaImport")
@@ -315,11 +457,11 @@ Public Function SzervezetiTáblaImport(fájlnév As String, Ûrlap As Object) As Boo
 fvbe ("SzervezetiTáblaImport")
     'MIT Oláh Zoltán 2022
     'Az Excel megnyitásához
-    Dim objExcel       As excel.Application
-    Dim objBook         As excel.Workbook
-    Dim objSheet        As excel.Worksheet
-    Dim objRange        As excel.Range
-    Dim objRange2       As excel.Range
+    Dim objExcel       As Excel.Application
+    Dim objBook         As Excel.Workbook
+    Dim objSheet        As Excel.Worksheet
+    Dim objRange        As Excel.Range
+    Dim objRange2       As Excel.Range
     
     Dim accTábla         As String
     Dim xlTáblaEred     As String
@@ -445,7 +587,7 @@ End Function
 
 
 
-Function ImportTáblaHibaJavító(terület As excel.Range) As Integer
+Function ImportTáblaHibaJavító(terület As Excel.Range) As Integer
     'A kapott tábla (Excel.Range) fejlécében megkeresi az azonos nevûeket, és a másodiktól kezdve az oszlop számát hozzáfûzi.
     'Mindeközben a neveket trim-eli.
     'Ha hiba nem történt:0 értékkel tér vissza, egyébként a hibakóddal
@@ -541,7 +683,7 @@ Sub BeszámolóTábla(Fájl As String, lekérdezés As String)
     
     'Excelhez
     Dim sor, oszlop     As Long
-    Dim oApp            As excel.Application
+    Dim oApp            As Excel.Application
     Dim oWb             As Workbook
     Dim oWs1, oWs2      As Worksheet
     Dim oWc             As Chart
@@ -668,7 +810,7 @@ Sub Kimutatás(Fájl As String, lekérdezés As String)
     
     'Excelhez
     Dim sor, oszlop     As Long
-    Dim oApp            As excel.Application
+    Dim oApp            As Excel.Application
     Dim oWb             As Workbook
     Dim oWs1, oWs2      As Worksheet
     Dim oWc             As Chart
@@ -884,12 +1026,12 @@ fvbe ("fvHaviimpTáblákImportPlus")
     '___________________________________|__________________________|______________________________|______________________________|
     '   Objects                         | Strings                  | Numbers                      | Variants                     |
     '___________________________________|__________________________|______________________________|______________________________|
-    Dim objExcel   As excel.Application, xlUtolsóOszlop   As String, intVégcella       As Integer, Értékek()        As Variant, _
-        objBook       As excel.Workbook, xlHosszmérõ      As String, intMezõ           As Integer, _
-        objSheet     As excel.Worksheet, accTáblák        As String, intUtolsóSor      As Integer, _
-        objRange         As excel.Range, xlTáblákEred     As String, _
-        xlVégcella       As excel.Range, _
-        xlKezdõCella     As excel.Range
+    Dim objExcel   As Excel.Application, xlUtolsóOszlop   As String, intVégcella       As Integer, Értékek()        As Variant, _
+        objBook       As Excel.Workbook, xlHosszmérõ      As String, intMezõ           As Integer, _
+        objSheet     As Excel.Worksheet, accTáblák        As String, intUtolsóSor      As Integer, _
+        objRange         As Excel.Range, xlTáblákEred     As String, _
+        xlVégcella       As Excel.Range, _
+        xlKezdõCella     As Excel.Range
     'Az adatbázis megnyitásához
     '___________________________________|__________________________|______________________________|______________________________|
     '   Objects                         | Strings                  | Numbers                      | Variants                     |
@@ -1009,7 +1151,7 @@ fvbe ("fvHaviimpTáblákImportPlus")
     
     fvHaviimpTáblákImportPlus = True
     Debug.Print Fájl
-Ki:
+ki:
     Set objBook = Nothing
     Set objExcel = Nothing
 fvki
@@ -1020,6 +1162,6 @@ Hiba:
     If intLoglevel >= 2 Then
         Resume Next
     Else
-        Resume Ki
+        Resume ki
     End If
 End Function

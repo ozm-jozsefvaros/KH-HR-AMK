@@ -42,18 +42,18 @@ Sub UresOszlopokTorlese(ByVal strFájlnévÚtvonallal As String, Optional ByVal str
 '#####################################################################################################
     On Error GoTo Hiba
     
-    Dim xlApp As excel.Application
-    Dim xlWB As excel.Workbook
+    Dim xlApp As Excel.Application
+    Dim xlWB As Excel.Workbook
     Dim iCol As Long
     Dim ehj As New ehjoszt
-    Dim lap As excel.Worksheet
+    Dim lap As Excel.Worksheet
     Dim sor As Long
     Dim ezaSor As Long
     Dim terület As Range
     Dim torolt As Boolean
     Dim fejléc As Range
     
-    Set xlApp = New excel.Application
+    Set xlApp = New Excel.Application
     xlApp.DisplayAlerts = False
     Set xlWB = xlApp.Workbooks.Open(strFájlnévÚtvonallal)
     Set lap = xlWB.Sheets(1)
